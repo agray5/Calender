@@ -1,0 +1,222 @@
+body{
+    background: silver;
+}
+.day {
+    background: lightblue;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    width: 150px;
+    height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.nonday {
+    background: gray;
+}
+
+.calNumber{
+    position: absolute; 
+    top: 10px; 
+    right: 10px; 
+    text-align:right;
+    margin-bottom: 3px;
+}
+
+#month {
+    background: pink;
+    user-select: none;
+}
+
+.selectedDay {}
+
+#calender table {
+    margin-left: 30%;
+}
+
+.close {
+    cursor: pointer;
+    background: linear-gradient(to bottom, #feccb1 0%, #f17432 50%, #ea5507 51%, #fb955e 100%);
+    box-shadow: #ea5507 0px 0px 8px;
+    border: 1px solid #ea5507;
+    border-radius: 25px 0px 5px 0px;
+    padding: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /*/margin-bottom: 20px;*/
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+/* <a href="http://www.freepik.com/free-vector/vintage-frame_763280.htm">Designed by Freepik</a> */
+
+.modalContent {
+    background-color: #ffaf35;
+    width: 700px;
+    height: 40%;
+    max-height: 600px;
+    min-height: 400px;
+    position: relative;
+    margin-left: 40%;
+    border-radius: 25px 25px 0px 0px;
+    background: url('img/oranges2.jpg') repeat;
+    background-size: 100px 100px;
+    border-style: solid;
+    border-width: 30px 30px 30px 30px;
+    border-image: url('img/goldFrame.png') 55 55 50 50 fill stretch;
+    /*border: 2px solid orange;*/
+}
+
+.modalHeader {
+    z-index: 10;
+    position: relative;
+    width: 754px;
+    margin-bottom: -20px;
+    margin-left: 40%;
+    padding: 2px;
+    border: 2px solid #207cca;
+    background-color: blue;
+    text-align: center;
+    border-radius: 25px 25px 0px 0px;
+    background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+    color: white;
+}
+
+.modalBackground {
+    background: url('img/oranges2frosted.jpg') repeat;
+    background-size: 100px 100px;
+	background-attachment: fixed;
+    border: 5px double yellow;
+    /*background: radial-gradient(circle, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));*/
+    width: 100%;
+    height: 100%;
+}
+
+.modalBtns {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+
+.modalBtns button {
+    position: relative;
+    float: left;
+    margin: 20px;
+    padding: 5px;
+    background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+    color: white;
+    border-radius: 10px;
+
+}
+
+.modalForm {}
+
+.modalContent ul {
+    list-style: none;
+}
+
+label,
+textarea,
+input {
+    margin-top: 20px;
+}
+
+input,
+textarea {
+    margin-right: 45%;
+    width: 150px;
+    padding: 9px;
+    width: 200px;
+    border: solid 1px #E5E5E5;
+    outline: 0;
+    font: normal 13px/100% Verdana, Tahoma, sans-serif;
+    background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px); 
+    color: black;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
+}
+
+textarea {
+    margin-right: 6.5%;
+    width: 400px;
+    max-width: 400px;
+    height: 150px;
+    line-height: 150%;
+}
+
+input:hover,
+textarea:hover,
+input:focus,
+textarea:focus {
+    box-shadow: 0px 0px 8px rgba(255, 255, 0, 0.3);
+}
+
+label {
+    position: relative;
+    float: left;
+    margin-right: 10px;
+    width: 50px;
+    text-shadow: 1px 1px lightgray;
+}
+
+.calEvent {
+    background: green;
+    border: lightgreen solid 1px;
+    height: 20px;
+    width: 99%;
+    margin-bottom: 2px;
+}
+
+.calEventTime {
+    font-weight: bold;
+    color: darkgray;
+}
+
+.eventContainer{
+    margin-top: 20px;
+    height: 70%;
+    width: 100%;
+    overflow: auto;
+}
+
+
+.viewContent {
+    text-align: center;
+}
+
+#viewEventTitle {
+    font-size: 30px;
+}
+
+
+/* Background pattern from Subtle Patterns */
+
+.stitched {
+    padding: 15px;
+    margin: 10px;
+    background: url('img/cloth.jpg');
+    color: chocolate;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1.3em;
+    border: 2px dashed chocolate;
+    border-radius: 10px;
+    box-shadow: 0 0 0 4px #dadcb7, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+    text-shadow: -1px -1px brown;
+    font-weight: normal;
+}

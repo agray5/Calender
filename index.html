@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>calender</title>
+  <meta name="description" content="calender widget">
+  <meta name="author" content="April Gray">
+
+  <link rel="stylesheet" href="calender.css">
+</head>
+
+<body>
+  <div id="calender">
+  </div>
+
+  <div id="eventModal" class="modal">
+    <div id="eventModalHeader" class="modalHeader">
+      <span class="close">&times;</span>
+      <h2>Add Event to Calender</h2>
+    </div>
+    <div id="eventModalContent" class="modalContent">
+      <div class="modalBackground">
+        <form id="eventForm" class="modalForm">
+          <ul>
+            <li><label for="time">Time: </label><input type="time" id="eventTime" name="time"></input>
+            </li>
+            <li><label for="title">Title: </label><input id="eventTitle" name="title"></input>
+            </li>
+            <li><label for="notes">Notes: </label><textarea id="eventNotes" name="notes" pattern=".{0}"></textarea>
+            </li>
+          </ul>
+          <div class="modalBtns">
+            <button type="submit" id="eventSubmit" class="modalBtn">submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="editModal" class="modal">
+    <div id="editModalHeader" class="modalHeader">
+      <span class="close">&times;</span>
+      <h2>Edit Event</h2>
+    </div>
+    <div id="edittModalContent" class="modalContent">
+      <div class="modalBackground">
+        <form id="editForm" class="modalForm">
+          <ul>
+            <li><label for="time">Time: </label><input id="editTime" name="time" type="time"></input>
+            </li>
+            <li><label for="title">Title: </label><input id="editTitle" name="title"></input>
+            </li>
+            <li><label for="time">Notes: </label> <textarea id="editNotes" name="notes" pattern=".{0}"></textarea>
+            </li>
+          </ul>
+          <div class="modalBtns">
+            <button type="submit" id="editSubmit">submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewModal" class="modal">
+    <div id="viewModalHeader" class="modalHeader">
+      <span class="close">&times;</span>
+      <h2>Event</h2>
+    </div>
+    <div id="viewModalContent" class="modalContent">
+      <div class="modalBackground">
+        <h3 id="viewEventTitle" class="viewContent stitched">EVENT TITLE</h3><br>
+        <p id="viewEventTime" class="viewContent">EVENT TIME</p>
+        <p id="viewEventNotes" class="viewContent" s>Event Notes</p>
+        <div class="modalBtns">
+          <button id="viewEdit" class="modalBtn">edit</button>
+          <button id="viewDelete" class="modalBtn">delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <script src="calender.js"></script>
+</body>
+
+</html>
