@@ -81,8 +81,10 @@ function generateCalHtml(parent) {
             cell++;
             let fday = firstDay.getDay() + 1;
             let day = cell - fday + 1;
-            let td;
+            let td; 
+            let eventContainer;
             if (cell >= fday && day <= totalDays) {
+                eventContainer = elt("div", {class: "eventContainer"})
                 td = elt("td", {
                         class: "day",
                         style: "position: relative",
@@ -90,11 +92,13 @@ function generateCalHtml(parent) {
                     }, elt("text", {
                         class: "calNumber"
                     }, `${day}`),
-                    elt("div", {
-                        class: "eventContainer"
-                    }));
+                    eventContainer);
 
-                td.addEventListener("click", function (event) {
+                eventContainer.addEventListener("click", event => {
+                    document.querySelector("#eventModal").style.display = "block";
+                });
+
+                td.addEventListener("click",  event => {
                     selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
                     selectedDateTD = td;
                     if (event.target == td) // do not display add event if td itself was not clicked
@@ -288,7 +292,6 @@ function load() {
         events.push(newEvent);
         //parse event into an element and append to corresponding div
         let td = document.getElementById(`${newEvent.tdID}`);
-        console.log(td.getElementsByClassName("eventContainer")[0]);
         if (td) //check that query selection is not null
             td.getElementsByClassName("eventContainer")[0].appendChild(newEvent.toElement());
     }
