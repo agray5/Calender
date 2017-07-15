@@ -1,14 +1,19 @@
-body{
+html,
+body {
     background: silver;
+    margin: 0;
+    height: 100%;
 }
+
+
+/* CALENDER */
+
 .day {
     background: lightblue;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
-    width: 150px;
-    height: 100px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -17,11 +22,11 @@ body{
     background: gray;
 }
 
-.calNumber{
-    position: absolute; 
-    top: 10px; 
-    right: 10px; 
-    text-align:right;
+.calNumber {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    text-align: right;
     margin-bottom: 3px;
 }
 
@@ -30,23 +35,93 @@ body{
     user-select: none;
 }
 
-.selectedDay {}
+#calHeader {
+    background: red;
+    height: 10%;
+    width: 100%;
+}
 
 #calender table {
-    margin-left: 30%;
+    width: 100%;
+    height: 100%;
+    table-layout: fixed;
 }
+
+#calender {
+    height: 82%
+}
+
+td,
+th {
+    width: 14.2857142857%;
+}
+
+#calFooter {
+    background: yellow;
+    height: 8%;
+    width: 100%;
+}
+
+.weekday {
+    position: relative;
+    height: 10%;
+}
+
+.weekday span {
+    position: absolute;
+    bottom: 0;
+}
+
+.calEvent {
+    background: rgba(0, 150, 0, .9);
+    border: lightgreen solid 1px;
+    height: 20px;
+    width: 97%;
+    margin-bottom: 2px;
+    overflow: hidden;
+}
+
+.calEventTime {
+    font-weight: bold;
+    color: darkgray;
+}
+
+.eventContainer {
+    margin-top: 20px;
+    height: 70%;
+    width: 100%;
+    overflow: auto;
+}
+
+@media only screen and (max-width:632px) {
+    td {
+        font-size: 12px;
+    }
+    .calEventTime {
+        display: none;
+    }
+    .calEvent {
+        height: 12px;
+    }
+}
+
+
+/* MODAL */
 
 .close {
     cursor: pointer;
     background: linear-gradient(to bottom, #feccb1 0%, #f17432 50%, #ea5507 51%, #fb955e 100%);
-    box-shadow: #ea5507 0px 0px 8px;
     border: 1px solid #ea5507;
-    border-radius: 25px 0px 5px 0px;
+    border-radius: 0px 25px 5px 0px;
     padding: 8px;
     position: absolute;
     top: 0;
-    left: 0;
+    right: 0;
     /*/margin-bottom: 20px;*/
+}
+
+.close:hover {
+    box-shadow: #ea5507 0px 0px 8px;
 }
 
 .modal {
@@ -66,19 +141,21 @@ body{
 
 /* <a href="http://www.freepik.com/free-vector/vintage-frame_763280.htm">Designed by Freepik</a> */
 
+
+/*TODO:*/
+
 .modalContent {
     background-color: #ffaf35;
     width: 700px;
     height: 40%;
     max-height: 600px;
-    min-height: 400px;
     position: relative;
     margin-left: 40%;
     border-radius: 25px 25px 0px 0px;
     background: url('img/oranges2.jpg') repeat;
     background-size: 100px 100px;
     border-style: solid;
-    border-width: 30px 30px 30px 30px;
+    border-width: 30px;
     border-image: url('img/goldFrame.png') 55 55 50 50 fill stretch;
     /*border: 2px solid orange;*/
 }
@@ -101,7 +178,7 @@ body{
 .modalBackground {
     background: url('img/oranges2frosted.jpg') repeat;
     background-size: 100px 100px;
-	background-attachment: fixed;
+    background-attachment: fixed;
     border: 5px double yellow;
     /*background: radial-gradient(circle, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));*/
     width: 100%;
@@ -119,10 +196,10 @@ body{
     float: left;
     margin: 20px;
     padding: 5px;
+    width: 100px;
     background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
     color: white;
     border-radius: 10px;
-
 }
 
 .modalForm {}
@@ -140,15 +217,15 @@ input {
 input,
 textarea {
     margin-right: 45%;
-    width: 150px;
     padding: 9px;
     width: 200px;
     border: solid 1px #E5E5E5;
     outline: 0;
     font: normal 13px/100% Verdana, Tahoma, sans-serif;
-    background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px); 
+    background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
     color: black;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
+    border-radius: 5px;
 }
 
 textarea {
@@ -174,33 +251,51 @@ label {
     text-shadow: 1px 1px lightgray;
 }
 
-.calEvent {
-    background: green;
-    border: lightgreen solid 1px;
-    height: 20px;
-    width: 99%;
-    margin-bottom: 2px;
-}
-
-.calEventTime {
-    font-weight: bold;
-    color: darkgray;
-}
-
-.eventContainer{
-    margin-top: 20px;
-    height: 70%;
-    width: 100%;
-    overflow: auto;
-}
-
-
 .viewContent {
     text-align: center;
 }
 
 #viewEventTitle {
     font-size: 30px;
+}
+
+@media only screen and (max-width:630px) {
+    .modal {
+        font-size: 12px;
+    }
+    .modalContent,
+    .modalHeader {
+        width: 98%;
+        margin-left: 0;
+    }
+    .modalContent {
+        border: 0;
+        position: absolute;
+        top: 9%;
+        left: 0;
+        height: 76%;
+    }
+    .modalHeader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 8%;
+    }
+    label {
+        margin-top: 10px;
+    }
+    input,
+    textarea {
+        padding: 5px;
+        width: 95%;
+        margin-top: 5px;
+    }
+    label {
+        float: 0;
+    }
+    .modalContent ul {
+        padding: 3px;
+    }
 }
 
 

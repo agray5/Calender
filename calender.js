@@ -49,17 +49,15 @@ function generateCalHtml(parent) {
     let year = firstDay.getFullYear();
     let tableDiv = parent;
     let table = elt("table")
-    let tr = elt("tr", {
-        colspan: 7
-    });
-    let th = elt("th", undefined, elt("span", {
+    let tr; 
+    let tdHeight = document.querySelector("body").clientHeight*.82*.15;
+    console.log(tdHeight);
+    let th = elt("div", {id:"calCurrentMonth"}, elt("span", {
         id: "month"
     }, `${month}`), elt("span", {
         id: "year"
     }, `${year}`));
-    tr.appendChild(th);
-
-    table.appendChild(tr);
+    document.querySelector("#calHeader").appendChild(th);
 
     if (firstDay.getMonth() == 1) //february
         if (isLeapYear(firstDay.getFullYear()))
@@ -69,7 +67,7 @@ function generateCalHtml(parent) {
     for (let day = 0; day < 7; day++) {
         let td = elt("td", {
             class: "weekday"
-        }, `${weekLabels[day]}`);
+        }, elt("span", {}, `${weekLabels[day]}`));
         tr.appendChild(td);
     }
     table.appendChild(tr);
@@ -88,7 +86,8 @@ function generateCalHtml(parent) {
                 td = elt("td", {
                         class: "day",
                         style: "position: relative",
-                        id: `event_${day}-${firstDay.getMonth()}-${firstDay.getFullYear()}`
+                        id: `event_${day}-${firstDay.getMonth()}-${firstDay.getFullYear()}`,
+                        height: tdHeight
                     }, elt("text", {
                         class: "calNumber"
                     }, `${day}`),
