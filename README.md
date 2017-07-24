@@ -1,4 +1,4 @@
-#Customizable Calender
+# Customizable Calender
 A monthly view calender that can be used to keep track of events
 
 ## Usage
