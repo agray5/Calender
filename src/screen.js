@@ -4,32 +4,6 @@ import {
     CreateError
 } from './error.js'
 
-/**
-  @typedef elemObj 
-  @type {object}
- */
-/**
-  @typedef labelObj
-  @type {object}
-  @property {string} text - label text
-  @property {string} for  - should match id of element
- */
-/**
-  @typedef inputObj
-  @type {object}
-  @property {string} type    - type attribute
-  @property {string} name    - name attribute
-  @property {string} id      - element id
-  @property {labelObj} label - label object 
- */
-
-/**
- @typedef formObj
- @type {object}
- @property {string[]} elems - array of elements
-*/
-
-
 export const Screen = {
     fillInMenu: (menu) => {
         let menuElt = document.querySelector(".menuWrapper");
@@ -69,7 +43,7 @@ export const Screen = {
             menu.buttons.forEach(button => {
                 if (!button.hasOwnProperty("data") || !button.data.hasOwnProperty("placement")) {
                     buttonPlacements.content.push(button);
-                } 
+                }
                 else {
                     if (buttonPlacements.hasOwnProperty(button.data.placement))
                         buttonPlacements[button.data.placement].push(button);
@@ -77,7 +51,7 @@ export const Screen = {
                         buttonPlacements[button.placement] = [button];
                 }
             });
-        }
+        },
 
         if (menu.hasOwnProperty("header") && menu["header"].hasOwnProperty("title"))
             titleElt.textContent = menu.header.title;
@@ -126,11 +100,30 @@ export const Screen = {
     },
 
     /**
-     * Creates an element node
-     * @param {string} name name of element
-     * @param {{}} attributes attributes of element as an object
-     * @param {HTMLElement|string} children additional arguments added to node as children
-     */
+        * Disables menu if it shown and enables with selected menu when it is not shown
+        * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
+        */
+    toggleMenu: (menu) => {
+        let isShown = (document.querySelector(".menuWrapper").style.display === "none") ? false : true;
+
+        if (menu === true)
+            document.querySelector(".menuWrapper").style.display = "";
+        if (menu === false)
+            document.querySelector(".menuWrapper").style.display = "none";
+
+        if (isShown)
+            document.querySelector(".menuWrapper").style.display = "none";
+        else{
+            fillInMenu(menu);
+            document.querySelector(".menuWrapper").style.display = "none";
+        }
+    },
+    /**
+        * Creates an element node
+        * @param {string} name name of element
+        * @param {{}} attributes attributes of element as an object
+        * @param {HTMLElement|string} children additional arguments added to node as children
+        */
     elt: (name, attributes, ...children) => {
         let node = document.createElement(name);
         if (attributes) {
@@ -147,14 +140,14 @@ export const Screen = {
     },
 
     /**
-     * Creates an object representation of an element
-     * @param {string} element Name of the element
-     * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
-     * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string 
-     * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child eltObjs. Can also be a child text node represented as a string
-     * @return {{element: string, attributes: {}, data: {}, children: []}}
-     */
-    eltObj: (element, attributes = {}, data = {}, ...children = []) => {
+        * Creates an object representation of an element
+        * @param {string} element Name of the element
+        * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
+        * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
+        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child eltObjs. Can also be a child text node represented as a string
+        * @return {{element: string, attributes: {}, data: {}, children: []}}
+        */
+    eltObj: (element, attributes = {}, data = {}, ...children) => {
         let elementObj = {
             elem: element
         }
@@ -181,8 +174,8 @@ export const Screen = {
     },
 
     /**
-     * Transforms element object into an element. 
-     * @param {{element: string, attributes: {}, data: {}, children: []}} createObj 
+     * Transforms element object into an element.
+     * @param {{element: string, attributes: {}, data: {}, children: []}} createObj
      * @return {HTMLElement}
      */
     eltObjToElt: (createObj) => {
@@ -203,25 +196,26 @@ export const Screen = {
     }
 }
 
+let s = Screen;
 
 /**
  * Stores menus
  * {id, header, content, footer, buttons}
- * note: if button placement is in form, should include parent id 
+ * note: if button placement is in form, should include parent id
  */
-const Menus = {
+export const Menus = {
     addEvent: {
         id: "addEvent",
         header: {
             title: "Add Event to Calender"
         },
-        content: 
-            s.eltObj("form", {id: "addEventForm"}, {}, 
-                s.eltObj("input", {type: "time", name: "time", id: "addEventTime"}, {}, 
+        content:
+            s.eltObj("form", {id: "addEventForm", onsubmit: "addEventFormSubmit(event)"}, {},
+                s.eltObj("input", {type: "time", name: "time", id: "addEventTime"}, {},
                     s.eltObj("label", {for: "addEventTime"}, {}, "Time:")),
-                s.eltObj("input", {name: "title", id: "addEventTitle"}, {}, 
+                s.eltObj("input", {name: "title", id: "addEventTitle"}, {},
                     s.eltObj("label", {for: "addEventTitle"}, {}, "Title:")),
-                s.eltObj("textarea", {name: "notes", id: "addEventNotes", pattern: ".{0}"}, {}, 
+                s.eltObj("textarea", {name: "notes", id: "addEventNotes", pattern: ".{0}"}, {},
                     s.eltObj("label", {for: "addEventNotes"}, {}, "Notes:"))
         ),
         buttons: [
@@ -235,26 +229,62 @@ const Menus = {
             title: "Edit Event"
         },
         content:
-         s.eltObj("form", {id: "editEventForm"}, {}, 
-                s.eltObj("input", {type: "time", name: "time", id: "addEventTime"}, {}, 
-                    s.eltObj("label", {for: "addEventTime"}, {}, "Time:")),
-                s.eltObj("input", {name: "title", id: "addEventTitle"}, {}, 
-                    s.eltObj("label", {for: "addEventTitle"}, {}, "Title:")),
-                s.eltObj("textarea", {name: "notes", id: "addEventNotes", pattern: ".{0}"}, {}, 
-                    s.eltObj("label", {for: "addEventNotes"}, {}, "Notes:"))
+         s.eltObj("form", {id: "editEventForm"}, {},
+                s.eltObj("input", {type: "time", name: "time", id: "editEventTime"}, {},
+                    s.eltObj("label", {for: "editEventTime"}, {}, "Time:")),
+                s.eltObj("input", {name: "title", id: "editEventTitle"}, {},
+                    s.eltObj("label", {for: "editEventTitle"}, {}, "Title:")),
+                s.eltObj("textarea", {name: "notes", id: "editEventNotes", pattern: ".{0}"}, {},
+                    s.eltObj("label", {for: "editEventNotes"}, {}, "Notes:"))
         ),
         buttons: [
             s.eltObj("button", {id: "editEventSubmit", type: "submit"}, {placement: "form", parentId: "editEventForm"}, "save")
         ]
     },
 
+    viewEvent:{
+        id: "viewEvent",
+        content:
+        [
+        s.eltObj("h3", {id: "viewTitle", class: "stitched"}, "(No Title)"),
+        s.eltObj("br"),
+        s.eltObj("p",  {id: "viewTime"}, "(No Time)"),
+        s.eltObj("br"),
+        s.eltObj("p",  {id: "viewNotes"}, "(No Notes)")
+        ],
+        buttons: [
+            s.eltObj("button", {id: "viewEdit", onclick:"showEditMenu()"}, {placement: "footer"}, "Edit Event"),
+            s.eltObj("button", {id: "viewDelete", onclick:"deleteEvent()"}, {placement: "footer"}, "Delete Event")
+        ]
+    },
+
     mobile: {
         id: "mobile",
         content: [
-            eltObj("span", {}, {}, "Events")
+            s.eltObj("span", {}, {}, "Events")
         ],
         buttons: [
             s.eltObj("button", {id: "mobileAddEvent"}, {placement: "footer"}, "New Event")
         ]
+    },
+
+    contentGenerators: {
+        viewEvent:
+        /**
+         * Fills in viewEvents content
+         * @param {string} title title of event
+         * @param {string} time time of event
+         * @param {string} notes notes about event
+         */
+         (title = "(No Title)", time = "(No Time)", notes = "(No Notes)") => {
+            Menus.viewEvent.content = content:
+            [
+            s.eltObj("h3", {id: "viewTitle", class: "stitched"}, title),
+            s.eltObj("br"),
+            s.eltObj("p",  {id: "viewTime"}, time),
+            s.eltObj("br"),
+            s.eltObj("p",  {id: "viewNotes"}, notes)
+            ]
+        }
     }
 }

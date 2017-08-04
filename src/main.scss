@@ -1,0 +1,251 @@
+@import "mixins";
+
+//Should add up to 100%
+$cal-header-height: 10%;
+$cal-body-height: 82%;
+$cal-footer-height: 8%;
+//*********************
+
+@function calc-per($target, $container) {
+     @return ($target / $container) * 100%;
+}
+
+body {
+    @include cover;
+    @include layer(0);
+    margin: 0;
+    background-color: silver;
+    font-size: 16px;
+    line-height: 1.25em;
+    user-select: none;
+    @include mq('tablet-wide'){
+        line-height: 1.375em;
+    }
+}
+
+#calender {
+    & .header {
+        @include cover( 'width');
+        background: red;
+        height: $cal-header-height;
+    }
+    & .table {
+        height: $cal-body-height;
+        & table {
+            @include cover;
+            table-layout: fixed;
+            & td {
+                width: calc-per(100, 7);
+                height: 20%;
+                position: relative;
+                overflow-y: auto;
+                overflow-x: hidden;
+                &.weekday {
+                    & span{
+                        @include abs-anchor('b');
+                    }
+                }
+                & .day {
+                    background: lightblue;
+                }
+                & .nonday {
+                    @extend .day ;
+                    background: gray;
+                }
+
+                & .calNumber {
+                    @include abs-pos(10px, 10px);
+                    text-align: right;
+                    margin-bottom: 3px;
+                }
+            }
+        }
+    }
+    & .footer {
+        @include cover('width');
+        @include abs-anchor('b');
+        background: yellow;
+        height: $cal-footer-height;
+    }
+}
+
+.eventContainer {
+    @include cover('width');
+    margin-top: 20px;
+    height: 70%;
+    overflow: auto;
+
+    & .calEvent{
+        background: rgba(0, 150, 0, .9);
+        border: lightgreen solid 1%;
+        height: 20px;
+        width: 97%;
+        margin-bottom: 2%;
+        overflow: hidden;
+
+        & .calEventTime{
+            font-weight: bold;
+            color: darkgray;
+        }
+    }
+}
+
+/* MODAL */
+
+.menu{
+    &.wrapper {
+        @include cover;
+        @include layer(1);
+        @include abs-anchor('tl');
+        display: none;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+    }
+
+    &.header,.background{
+        @include center
+        @include layer(2);
+    }
+
+    &.header{
+        padding: 2px;
+        border: 2px solid #207cca;
+        background-color: blue;
+        text-align: center;
+        border-radius: 25px 25px 0px 0px;
+        background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+        color: white;
+
+        & .close {
+            @include abs-anchor('tr');
+            cursor: pointer;
+            background: linear-gradient(to bottom, #feccb1 0%, #f17432 50%, #ea5507 51%, #fb955e 100%);
+            border: 1px solid #ea5507;
+            border-radius: 0px 25px 5px 0px;
+            padding: 8px;
+            /*/margin-bottom: 20px;*/
+
+            &:hover{
+                box-shadow: #ea5507 0px 0px 8px;
+            }
+        }
+    }
+
+    &.background{
+        @include cover;
+        background: url('img/oranges2frosted.jpg') repeat;
+        background-size: 100px 100px;
+        background-attachment: fixed;
+        border: 5px double yellow;
+        /*background: radial-gradient(circle, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));*/
+    }
+
+/* <a href="http://www.freepik.com/free-vector/vintage-frame_763280.htm">Designed by Freepik</a> */
+    &.content{
+        @include center;
+        background-color: #ffaf35;
+        width: 700px;
+        height: 40%;
+        max-height: 600px;
+        border-radius: 25px 25px 0px 0px;
+        background: url('img/oranges2.jpg') repeat;
+        background-size: 100px 100px;
+        border-style: solid;
+        border-width: 30px;
+        border-image: url('img/goldFrame.png') 55 55 50 50 fill stretch;
+        /*border: 2px solid orange;*/
+
+        & ul{
+            list-style: none;
+        }
+
+        & label,
+          textarea,
+          input{
+            margin-top: 20px;
+        }
+    }
+
+    &.btn-container{
+        @include abs-anchor('bl');
+
+        & .btn{
+            position: relative;
+            float: left;
+            margin: 20px;
+            padding: 5px;
+            width: 100px;
+            background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+            color: white;
+            border-radius: 10px;
+        }
+    }
+}
+
+input,
+textarea {
+    margin-right: 45%;
+    padding: 9px;
+    width: 200px;
+    border: solid 1px #E5E5E5;
+    outline: 0;
+    font: normal 13px/100% Verdana, Tahoma, sans-serif;
+    background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    color: black;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
+    border-radius: 5px;
+
+    &:hover,:focus{
+        box-shadow: 0px 0px 8px rgba(255, 255, 0, 0.3);
+    }
+}
+
+textarea {
+    margin-right: 6.5%;
+    width: 400px;
+    max-width: 400px;
+    height: 150px;
+}
+
+label {
+    position: relative;
+    float: left;
+    margin-right: 10px;
+    width: 50px;
+    text-shadow: 1px 1px lightgray;
+}
+
+
+.viewContent {
+    text-align: center;
+}
+
+#viewEventTitle {
+    font-size: 30px;
+}
+
+
+/* Background pattern from Subtle Patterns */
+
+.stitched {
+    padding: 15px;
+    margin: 10px;
+    background: url('img/cloth.jpg');
+    color: chocolate;
+    font-size: 21px;
+    font-weight: bold;
+    border: 2px dashed chocolate;
+    border-radius: 10px;
+    box-shadow: 0 0 0 4px #dadcb7, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+    text-shadow: -1px -1px brown;
+    font-weight: normal;
+}
+
+/* MOBILE MENU */
+.mobileHeader{
+    display: none;
+}
+
+.menuWrapper{
+    display: none;
+}

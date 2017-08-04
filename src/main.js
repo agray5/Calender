@@ -1,4 +1,4 @@
-import {Screen} from './screen.js'
+import {Screen, Menus} from './screen.js'
 // weekly labels
 let weekLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -42,9 +42,6 @@ let frame = {};
 let s = Screen;
 let elt = s.elt;
 
-let addEventForm = document.querySelector("#eventForm");
-let editForm = document.querySelector("#editForm");
-let viewEvent = document.querySelector("#viewModal");
 let dayEls = document.getElementsByClassName("day");
 
 function generateCalHtml(parent) {
@@ -52,10 +49,9 @@ function generateCalHtml(parent) {
     let month = monthLabels[firstDay.getMonth()];
     let year = firstDay.getFullYear();
     let tableDiv = parent;
-    let table = elt("table")
-    let tr; 
-    let tdHeight = document.querySelector("body").clientHeight*.82*.15;
-    console.log(tdHeight);
+    let table = elt("table");
+    let tr;
+    //let tdHeight = document.querySelector("body").clientHeight*.82*.15;
     let th = elt("div", {id:"calCurrentMonth"}, elt("span", {
         id: "month"
     }, `${month}`), elt("span", {
@@ -83,47 +79,41 @@ function generateCalHtml(parent) {
             cell++;
             let fday = firstDay.getDay() + 1;
             let day = cell - fday + 1;
-            let td; 
+            let td;
             let eventContainer;
             if (cell >= fday && day <= totalDays) {
                 eventContainer = elt("div", {class: "eventContainer"})
                 td = elt("td", {
                         class: "day",
-                        style: "position: relative",
                         id: `event_${day}-${firstDay.getMonth()}-${firstDay.getFullYear()}`,
-                        height: tdHeight
                     }, elt("text", {
                         class: "calNumber"
                     }, `${day}`),
                     eventContainer);
 
                 eventContainer.addEventListener("click", event => {
-                    if(isMobile()){
-                        document.querySelector("#mobileMenuModal").style.display = "block";
-                    }
-                    else{
-                        if (event.target == eventContainer) // do not display add event if eventcontainer itself was not clicked
-                            document.querySelector("#eventModal").style.display = "block";
+                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
+                    selectedDateTD = td;
+                    if (event.target == eventContainer){
+                        if(isMobile())
+                            s.toggleMenu(Menus.mobile);
+                        else
+                            s.toggleMenu(Menus.addEvent);
                     }
                 });
 
                 td.addEventListener("click",  event => {
                     selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
                     selectedDateTD = td;
-
-                    //If the device is mobile open a selection menu
-                    if(isMobile()){
-                        document.querySelector("#mobileMenuModal").style.display = "block";
+                    if (event.target == td){
+                        if(isMobile())
+                            s.toggleMenu(Menus.mobile);
+                        else
+                            s.toggleMenu(Menus.addEvent);
                     }
-                    else{
-                        if (event.target == td) // do not display add event if td itself was not clicked
-                            document.querySelector("#eventModal").style.display = "block";
-                    }
-                    
-                    //addEvent(td);
-                    //event.target.style.border = 'red solid 3px';
                 })
-            } else
+            }
+            else
                 td = elt("td", {
                     class: "nonday"
                 });
@@ -146,7 +136,7 @@ function isLeapYear(year) {
 
 /**
  * Calender Sticker
- * @param {string} type type should correspond to a mapping  
+ * @param {string} type type should correspond to a mapping
  * @param {object} transform transform object
  */
 function Sticker(type, transform) {
@@ -160,8 +150,8 @@ function Sticker(type, transform) {
 
 /**
  * Transformations applied to a sticker
- * @param {number} scale 
- * @param {number} rotate 
+ * @param {number} scale
+ * @param {number} rotate
  */
 function Transform(scale = 0, rotate = 0) {
     this.scale = scale;
@@ -203,10 +193,10 @@ function Event(time, title, notes = "", tdid = null) {
         //click event for event
         e.addEventListener("click", event => {
             selectedEvent = e;
-            fillInView();
-            if(!isMobile())
-                document.querySelector("#viewModal").style.display = "block";
-            //event.stopPropagation();
+            if(!isMobile()){
+                fillInView();
+                fillInMenu(Menus.viewEvent);
+            }
         });
         return e;
     }
@@ -232,9 +222,6 @@ function setStyleNone(selector) {
  * @param {string} notes notes about event
  */
 function fillInView() {
-    let titleELem = document.querySelector("#viewEventTitle");
-    let timeElem = document.querySelector("#viewEventTime");
-    let notesELem = document.querySelector("#viewEventNotes");
     let title = "(No Title)",
         time = "(No Time)",
         notes = "(No Notes)";
@@ -247,15 +234,12 @@ function fillInView() {
             return true;
         }
     })
-
-    titleELem.textContent = title;
-    timeElem.textContent = time;
-    notesELem.textContent = notes;
+    Menus.contentGenerators.viewEvent(title, time, notes);
 }
 
 function isMobile(){
     let w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    
+
     if(w <= 631)
         return true;
     else
@@ -322,20 +306,8 @@ closes.forEach(close => {
 });
 
 
-window.addEventListener("click", function (event) {
-    let eventmodal = document.querySelector("#eventModal");
-    let editmodal = document.querySelector("#editModal");
-    if (event.target == eventmodal) {
-        setStyleNone("#eventModal");
-        addEventForm.reset();
-    } else if (event.target == eventmodal) {
-        setStyleNone("#editModal");
-        editmodal.reset();
-    }
-});
-
-
-addEventForm.addEventListener("submit", function (event) {
+function addEventFormSubmit(event) {
+    let addEventForm = document.querySelector("#addEventForm");
     let time = addEventForm.elements.time.value;
     let title = addEventForm.elements.title.value;
     let notes = addEventForm.elements.notes.value;
@@ -361,7 +333,8 @@ addEventForm.addEventListener("submit", function (event) {
 
 
 
-editForm.addEventListener("submit", function (event) {
+function editFormSubmit(event) {
+    let editForm = document.querySelector("#editEventForm");
     let time = editForm.elements.time.value;
     let title = editForm.elements.title.value;
     let notes = editForm.elements.notes.value;
@@ -384,33 +357,39 @@ editForm.addEventListener("submit", function (event) {
     editForm.reset();
 
     fillInView();
-    viewEvent.style.display = "block";
+    toggleMenu(Menus.viewEvent);
     event.preventDefault();
-
-    //if (time) event.target.getElementsByClassName("calEventTime")[0].textContent = time;
-    //if (title) event.target.getElementsByClassName("calEventTitle")[0].textContent = title;
 });
 
-document.querySelector("#viewEdit").addEventListener("click", event => {
-    //Close event view, open edit modal 
-    setStyleNone(viewEvent);
-    document.querySelector("#editModal").style.display = "block";
+function showEditMenu(){
+    toggleMenu(Menus.editEvent);
 });
 
-document.querySelector("#viewDelete").addEventListener("click", event => {
+function deleteEvent(event = null, eventElt){
     let userConfirm = confirm("This will permanently delete the event. Do you wish to continue?");
     if (userConfirm) {
-        events.some((e) => {
-            //Remove event from stored events
-            if (e.id == selectedEvent.id) {
-                events.splice(events.indexOf(e), 1);
-                save();
-                return true;
-            }
-        });
+        //If event is either not provided or is not an object, search for a matching event
+        if(!event || !eventElt || event.constructor !== Object ){
+            events.some((e) =>
+                if (e.id == selectedEvent.id) {
+                    event = e;
+                    eventElt = selectedEvent;
+                    return true;
+                }
+            );
+        }
+
+        if(event !== null && events.indexOf(event)){
+            events.splice(events.indexOf(event), 1);
+            save();
+        }
+        else{
+            console.warn("Warning: event was not deleted. Event could not be found");
+        }
+
         //remove div
-        selectedEvent.parentElement.removeChild(selectedEvent);
-        setStyleNone(viewEvent);
+        eventElt.parentElement.removeChild(eventElt);
+        setStyleNone(".menu");
     }
 });
 

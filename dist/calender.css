@@ -322,6 +322,10 @@ label {
 }
 
 /* MOBILE MENU */
-#mobileHeader{
+.mobileHeader{
+    display: none;
+}
+
+.menuWrapper{
     display: none;
 }
