@@ -1,0 +1,278 @@
+body {
+  width: 100%;
+  width: 100%;
+  z-index: 0;
+  margin: 0;
+  background-color: silver;
+  font-size: 16px;
+  line-height: 1.25em;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+@media only screen and (min-width: 1024px) {
+  body {
+    line-height: 1.375em;
+  }
+}
+
+#calender .header {
+  width: 100%;
+  background: red;
+  height: 10%;
+}
+
+#calender .table {
+  height: 82%;
+}
+
+#calender .table table {
+  width: 100%;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#calender .table table td {
+  width: 1428.57143%;
+  height: 20%;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#calender .table table td.weekday span {
+  position: absolute;
+  bottom: 0;
+}
+
+#calender .table table td .day, #calender .table table td .nonday {
+  background: lightblue;
+}
+
+#calender .table table td .nonday {
+  background: gray;
+}
+
+#calender .table table td .calNumber {
+  top: 10px;
+  right: 10px;
+  bottom: auto;
+  left: auto;
+  position: absolute;
+  text-align: right;
+  margin-bottom: 3px;
+}
+
+#calender .footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  background: yellow;
+  height: 8%;
+}
+
+.eventContainer {
+  width: 100%;
+  margin-top: 20px;
+  height: 70%;
+  overflow: auto;
+}
+
+.eventContainer .calEvent {
+  background: rgba(0, 150, 0, 0.9);
+  border: lightgreen solid 1%;
+  height: 20px;
+  width: 97%;
+  margin-bottom: 2%;
+  overflow: hidden;
+}
+
+.eventContainer .calEvent .calEventTime {
+  font-weight: bold;
+  color: darkgray;
+}
+
+/* MODAL */
+.menu {
+  /* <a href="http://www.freepik.com/free-vector/vintage-frame_763280.htm">Designed by Freepik</a> */
+}
+
+.menu.wrapper {
+  width: 100%;
+  width: 100%;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  overflow: auto;
+  background-color: black;
+}
+
+.menu.header, .menu .background {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.menu.header {
+  padding: 2px;
+  border: 2px solid #207cca;
+  background-color: blue;
+  text-align: center;
+  border-radius: 25px 25px 0px 0px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#1e5799), color-stop(50%, #2989d8), color-stop(51%, #207cca), to(#7db9e8));
+  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+  color: white;
+}
+
+.menu.header .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  background: -webkit-gradient(linear, left top, left bottom, from(#feccb1), color-stop(50%, #f17432), color-stop(51%, #ea5507), to(#fb955e));
+  background: linear-gradient(to bottom, #feccb1 0%, #f17432 50%, #ea5507 51%, #fb955e 100%);
+  border: 1px solid #ea5507;
+  border-radius: 0px 25px 5px 0px;
+  padding: 8px;
+  /*/margin-bottom: 20px;*/
+}
+
+.menu.header .close:hover {
+  -webkit-box-shadow: #ea5507 0px 0px 8px;
+          box-shadow: #ea5507 0px 0px 8px;
+}
+
+.menu.background {
+  width: 100%;
+  width: 100%;
+  background: url("img/oranges2frosted.jpg") repeat;
+  background-size: 100px 100px;
+  background-attachment: fixed;
+  border: 5px double yellow;
+  /*background: radial-gradient(circle, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));*/
+}
+
+.menu.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  background-color: #ffaf35;
+  width: 700px;
+  height: 40%;
+  max-height: 600px;
+  border-radius: 25px 25px 0px 0px;
+  background: url("img/oranges2.jpg") repeat;
+  background-size: 100px 100px;
+  border-style: solid;
+  border-width: 30px;
+  -o-border-image: url("img/goldFrame.png") 55 55 50 50 stretch;
+     border-image: url("img/goldFrame.png") 55 55 50 50 fill stretch;
+  /*border: 2px solid orange;*/
+}
+
+.menu.content ul {
+  list-style: none;
+}
+
+.menu.content label,
+.menu.content textarea,
+.menu.content input {
+  margin-top: 20px;
+}
+
+.menu.btn-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.menu.btn-container .btn {
+  position: relative;
+  float: left;
+  margin: 20px;
+  padding: 5px;
+  width: 100px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#1e5799), color-stop(50%, #2989d8), color-stop(51%, #207cca), to(#7db9e8));
+  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+  color: white;
+  border-radius: 10px;
+}
+
+input,
+textarea {
+  margin-right: 45%;
+  padding: 9px;
+  width: 200px;
+  border: solid 1px #E5E5E5;
+  outline: 0;
+  font: normal 13px/100% Verdana, Tahoma, sans-serif;
+  background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+  color: black;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
+          box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
+  border-radius: 5px;
+}
+
+input:hover, input :focus,
+textarea:hover,
+textarea :focus {
+  -webkit-box-shadow: 0px 0px 8px rgba(255, 255, 0, 0.3);
+          box-shadow: 0px 0px 8px rgba(255, 255, 0, 0.3);
+}
+
+textarea {
+  margin-right: 6.5%;
+  width: 400px;
+  max-width: 400px;
+  height: 150px;
+}
+
+label {
+  position: relative;
+  float: left;
+  margin-right: 10px;
+  width: 50px;
+  text-shadow: 1px 1px lightgray;
+}
+
+.viewContent {
+  text-align: center;
+}
+
+#viewEventTitle {
+  font-size: 30px;
+}
+
+/* Background pattern from Subtle Patterns */
+.stitched {
+  padding: 15px;
+  margin: 10px;
+  background: url("img/cloth.jpg");
+  color: chocolate;
+  font-size: 21px;
+  font-weight: bold;
+  border: 2px dashed chocolate;
+  border-radius: 10px;
+  -webkit-box-shadow: 0 0 0 4px #dadcb7, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+          box-shadow: 0 0 0 4px #dadcb7, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+  text-shadow: -1px -1px brown;
+  font-weight: normal;
+}
+
+/* MOBILE MENU */
+.mobileHeader {
+  display: none;
+}
+
+.menuWrapper {
+  display: none;
+}
