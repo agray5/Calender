@@ -8128,7 +8128,7 @@
 	    }, '' + month), elt("span", {
 	        id: "year"
 	    }, '' + year));
-	    document.querySelector("#calHeader").appendChild(th);
+	    document.querySelector("#calender .header").appendChild(th);
 
 	    if (firstDay.getMonth() == 1) //february
 	        if (isLeapYear(firstDay.getFullYear())) totalDays = 29;
@@ -8164,6 +8164,7 @@
 	                eventContainer.addEventListener("click", function (event) {
 	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
 	                    selectedDateTD = td;
+	                    console.log("click");
 	                    if (event.target == eventContainer) {
 	                        if (isMobile()) s.toggleMenu(_screen.Menus.mobile);else s.toggleMenu(_screen.Menus.addEvent);
 	                    }
@@ -8261,9 +8262,10 @@
 	        //click event for event
 	        e.addEventListener("click", function (event) {
 	            selectedEvent = e;
-	            fillInView();
-	            if (!isMobile()) document.querySelector("#viewModal").style.display = "block";
-	            //event.stopPropagation();
+	            if (!isMobile()) {
+	                fillInView();
+	                s.fillInMenu(_screen.Menus.viewEvent);
+	            }
 	        });
 	        return e;
 	    };
@@ -8287,9 +8289,6 @@
 	 * @param {string} notes notes about event
 	 */
 	function fillInView() {
-	    var titleELem = document.querySelector("#viewEventTitle");
-	    var timeElem = document.querySelector("#viewEventTime");
-	    var notesELem = document.querySelector("#viewEventNotes");
 	    var title = "(No Title)",
 	        time = "(No Time)",
 	        notes = "(No Notes)";
@@ -8302,10 +8301,7 @@
 	            return true;
 	        }
 	    });
-
-	    titleELem.textContent = title;
-	    timeElem.textContent = time;
-	    notesELem.textContent = notes;
+	    _screen.Menus.contentGenerators.viewEvent(title, time, notes);
 	}
 
 	function isMobile() {
@@ -8373,19 +8369,29 @@
 	    });
 	});
 
-	window.addEventListener("click", function (event) {
-	    var eventmodal = document.querySelector("#eventModal");
-	    var editmodal = document.querySelector("#editModal");
-	    if (event.target == eventmodal) {
-	        setStyleNone("#eventModal");
-	        addEventForm.reset();
-	    } else if (event.target == eventmodal) {
-	        setStyleNone("#editModal");
-	        editmodal.reset();
+	/**
+	 * Shows menu from given string
+	 * @param  {string} menu the menu to show
+	 */
+	function showMenu(menu) {
+	    var menuToShow = null;
+	    switch (menu) {
+	        case 'editEvent':
+	            menuToShow = _screen.Menus.editEvent;break;
+	        case 'addEvent':
+	            menuToShow = _screen.Menus.addEvent;break;
+	        case 'viewEvent':
+	            menuToShow = _screen.Menus.viewEvent;break;
+	        case 'mobile':
+	            menuToShow = _screen.Menus.mobile;break;
+	        default:
+	            throw error("Menu could not be shown. Menu could not be found.");
 	    }
-	});
+	    toggleMenu(menuToShow);
+	}
 
-	addEventForm.addEventListener("submit", function (event) {
+	function addEventFormSubmit(event) {
+	    var addEventForm = document.querySelector("#addEventForm");
 	    var time = addEventForm.elements.time.value;
 	    var title = addEventForm.elements.title.value;
 	    var notes = addEventForm.elements.notes.value;
@@ -8407,9 +8413,10 @@
 	        addEventForm.reset();
 	        event.preventDefault();
 	    }
-	});
+	}
 
-	editForm.addEventListener("submit", function (event) {
+	function editFormSubmit(event) {
+	    var editForm = document.querySelector("#editEventForm");
 	    var time = editForm.elements.time.value;
 	    var title = editForm.elements.title.value;
 	    var notes = editForm.elements.notes.value;
@@ -8432,35 +8439,39 @@
 	    editForm.reset();
 
 	    fillInView();
-	    viewEvent.style.display = "block";
+	    toggleMenu(_screen.Menus.viewEvent);
 	    event.preventDefault();
+	}
 
-	    //if (time) event.target.getElementsByClassName("calEventTime")[0].textContent = time;
-	    //if (title) event.target.getElementsByClassName("calEventTitle")[0].textContent = title;
-	});
+	function deleteEvent() {
+	    var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	    var eventElt = arguments[1];
 
-	document.querySelector("#viewEdit").addEventListener("click", function (event) {
-	    //Close event view, open edit modal
-	    setStyleNone(viewEvent);
-	    document.querySelector("#editModal").style.display = "block";
-	});
-
-	document.querySelector("#viewDelete").addEventListener("click", function (event) {
 	    var userConfirm = confirm("This will permanently delete the event. Do you wish to continue?");
 	    if (userConfirm) {
-	        events.some(function (e) {
-	            //Remove event from stored events
-	            if (e.id == selectedEvent.id) {
-	                events.splice(events.indexOf(e), 1);
-	                save();
-	                return true;
-	            }
-	        });
+	        //If event is either not provided or is not an object, search for a matching event
+	        if (!event || !eventElt || event.constructor !== Object) {
+	            events.some(function (e) {
+	                if (e.id == selectedEvent.id) {
+	                    event = e;
+	                    eventElt = selectedEvent;
+	                    return true;
+	                }
+	            });
+	        }
+
+	        if (event !== null && events.indexOf(event)) {
+	            events.splice(events.indexOf(event), 1);
+	            save();
+	        } else {
+	            console.warn("Warning: event was not deleted. Event could not be found");
+	        }
+
 	        //remove div
-	        selectedEvent.parentElement.removeChild(selectedEvent);
-	        setStyleNone(viewEvent);
+	        eventElt.parentElement.removeChild(eventElt);
+	        setStyleNone(".menu");
 	    }
-	});
+	}
 
 	/////////////////////////////////////////////
 	//////|MAIN|////////////////////////////////
@@ -8472,8 +8483,7 @@
 	    }, false);
 	}
 	//localStorage.clear();
-	//document.querySelector("#calender").innerHTML = generateCalHtml();
-	generateCalHtml(document.querySelector("#calender"));
+	generateCalHtml(document.querySelector("#calender .table"));
 	load();
 
 /***/ }),
@@ -9884,12 +9894,12 @@
 
 	var Screen = exports.Screen = {
 	    fillInMenu: function fillInMenu(menu) {
-	        var menuElt = document.querySelector(".menuWrapper");
-	        var headerElt = document.querySelector(".menuHeader");
-	        var contentElt = document.querySelector(".menuContent");
-	        var titleElt = document.querySelector(".menuTitle");
-	        var bkgElt = document.querySelector(".menuBackground");
-	        var footerElt = document.querySelector(".menuFooter");
+	        var menuElt = document.querySelector(".menu.wrapper");
+	        var headerElt = document.querySelector(".menu.header");
+	        var contentElt = document.querySelector(".menu.content");
+	        var titleElt = headerElt.getElementsByTagName("h2")[0];
+	        var bkgElt = document.querySelector(".menu.background");
+	        var footerElt = document.querySelector(".menu.footer");
 	        var hasId = menu.hasOwnProperty("data") ? menu.data.hasOwnProperty("id") : false;
 	        var buttonPlacements = {
 	            content: []
@@ -9940,18 +9950,18 @@
 	        for (var place in buttonPlacements) {
 	            var _elt = void 0;
 	            if (place === "header") {
-	                if (hasId) _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));else _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));
+	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));
 	                headerElt.appendChild(_elt);
-	            } else if (place === "content" && buttonPlacements.content.length > 0) {
-	                if (hasId) _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
+	            } else if (place === "content" && buttonPlacements.content) {
+	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
 	                bkgElt.appendChild(_elt);
 	            } else if (place === "footer") {
-	                if (hasId) _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
+	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
 	                footerElt.appendChild(_elt);
 	            } else if (place === "form") {
-	                if (hasId) _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else _elt = eltObjToElt(eltObj.apply(undefined, ["div", { class: "menuBtns menuBtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
+	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
 	                document.querySelector("#" + buttonPlacements.form[0].parentId).appendChild(_elt);
-	            } else throw new error("Could not place button. Button placement is invalid");
+	            } else throw new Error("Could not place button. Button placement " + place + " is invalid");
 	        }
 	    },
 
@@ -9960,14 +9970,14 @@
 	        * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
 	        */
 	    toggleMenu: function toggleMenu(menu) {
-	        var isShown = document.querySelector(".menuWrapper").style.display === "none" ? false : true;
+	        var isShown = document.querySelector(".menu.wrapper").style.display === "none" ? false : true;
 
-	        if (menu === true) document.querySelector(".menuWrapper").style.display = "";
-	        if (menu === false) document.querySelector(".menuWrapper").style.display = "none";
+	        if (menu === true) document.querySelector(".menu.wrapper").style.display = "";
+	        if (menu === false) document.querySelector(".menu.wrapper").style.display = "none";
 
-	        if (isShown) document.querySelector(".menuWrapper").style.display = "none";else {
-	            fillInMenu(menu);
-	            document.querySelector(".menuWrapper").style.display = "none";
+	        if (isShown) document.querySelector(".menu.wrapper").style.display = "none";else {
+	            s.fillInMenu(menu);
+	            document.querySelector(".menu.wrapper").style.display = "none";
 	        }
 	    },
 	    /**
@@ -10021,7 +10031,7 @@
 	        * @param {string} element Name of the element
 	        * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
 	        * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
-	        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child eltObjs. Can also be a child text node represented as a string
+	        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child s.eltObjs. Can also be a child text node represented as a string
 	        * @return {{element: string, attributes: {}, data: {}, children: []}}
 	        */
 	    eltObj: function eltObj(element) {
@@ -10036,16 +10046,20 @@
 	            elem: element
 	        };
 
-	        if (attributes.constructor === Object) elementObj["attributes"] = attributes;else if (attributes.constructor === String) {
-	            //attempt to transform string into an object
-	            var parse = JSON.parse("{" + attributes + "}");
-	            if (parse.constructor === Object) elementObj["attributes"] = parse;
+	        if (attributes.constructor === Object) elementObj["attributes"] = attributes;else if (attributes.constructor === String) {//attempt to transform string into an object
+	            /*
+	            let parse = JSON.parse("{" + attributes + "}");
+	            if (parse.constructor === Object)
+	                elementObj["attributes"] = parse;
+	                */
 	        }
 
-	        if (data.constructor === Object) elementObj["data"] = data;else if (data.constructor === String) {
-	            //attempt to transform string into an object
-	            var _parse = JSON.parse("{" + data + "}");
-	            if (_parse.constructor === Object) elementObj["data"] = _parse;
+	        if (data.constructor === Object) elementObj["data"] = data;else if (data.constructor === String) {//attempt to transform string into an object
+	            /*
+	            let parse = JSON.parse("{" + data + "}");
+	            if (parse.constructor === Object)
+	                elementObj["data"] = parse;
+	                */
 	        }
 
 	        elementObj["children"] = children;
@@ -10059,15 +10073,15 @@
 	     * @return {HTMLElement}
 	     */
 	    eltObjToElt: function eltObjToElt(createObj) {
-	        if (!createObj || createObj.constructor === Object && (0, _keys2.default)(createObj).length > 0) throw new error("Create object could not be converted to element: create object must be a non empty object");
-	        if (!createObj.hasOwnProperty("elem")) throw new error("Create object could not be converted to element: create object must have elem as property");
+	        if (!createObj || createObj.constructor === Object && (0, _keys2.default)(createObj).length > 0) throw new Error("Create object could not be converted to element: create object must be a non empty object");
+	        if (!createObj.hasOwnProperty("elem")) throw new Error("Create object could not be converted to element: create object must have elem as property");
 
 	        var children = [];
 	        createObj.children.forEach(function (child) {
 	            children.push(createObjToElt(child));
 	        });
 
-	        if (createObj.constructor === String) return elt(createObj);else if (creatObj.constructor === Object) return elt.apply(undefined, [createObj.elem, createObj.attributes].concat((0, _toConsumableArray3.default)(createObj.children)));else throw new error("Could not convert object to an element. Must be either an object or a string");
+	        if (createObj.constructor === String) return elt(createObj);else if (creatObj.constructor === Object) return elt.apply(undefined, [createObj.elem, createObj.attributes].concat((0, _toConsumableArray3.default)(createObj.children)));else throw new Error("Could not convert object to an element. Must be either an object or a string");
 	    }
 	}; //Menu contains wrapper, header, content, footer, and optional buttons inside or outside of form and optional close button in the header
 	//Menu is an object
@@ -10086,7 +10100,7 @@
 	        header: {
 	            title: "Add Event to Calender"
 	        },
-	        content: s.eltObj("form", { id: "addEventForm" }, {}, s.eltObj("input", { type: "time", name: "time", id: "addEventTime" }, {}, s.eltObj("label", { for: "addEventTime" }, {}, "Time:")), s.eltObj("input", { name: "title", id: "addEventTitle" }, {}, s.eltObj("label", { for: "addEventTitle" }, {}, "Title:")), s.eltObj("textarea", { name: "notes", id: "addEventNotes", pattern: ".{0}" }, {}, s.eltObj("label", { for: "addEventNotes" }, {}, "Notes:"))),
+	        content: s.eltObj("form", { id: "addEventForm", onsubmit: "addEventFormSubmit(event)" }, {}, s.eltObj("input", { type: "time", name: "time", id: "addEventTime" }, {}, s.eltObj("label", { for: "addEventTime" }, {}, "Time:")), s.eltObj("input", { name: "title", id: "addEventTitle" }, {}, s.eltObj("label", { for: "addEventTitle" }, {}, "Title:")), s.eltObj("textarea", { name: "notes", id: "addEventNotes", pattern: ".{0}" }, {}, s.eltObj("label", { for: "addEventNotes" }, {}, "Notes:"))),
 	        buttons: [s.eltObj("button", { id: "addEventSubmit", type: "submit" }, { placement: "form", parentId: "addEventForm" }, "save")]
 	    },
 
@@ -10095,14 +10109,37 @@
 	        header: {
 	            title: "Edit Event"
 	        },
-	        content: s.eltObj("form", { id: "editEventForm" }, {}, s.eltObj("input", { type: "time", name: "time", id: "addEventTime" }, {}, s.eltObj("label", { for: "addEventTime" }, {}, "Time:")), s.eltObj("input", { name: "title", id: "addEventTitle" }, {}, s.eltObj("label", { for: "addEventTitle" }, {}, "Title:")), s.eltObj("textarea", { name: "notes", id: "addEventNotes", pattern: ".{0}" }, {}, s.eltObj("label", { for: "addEventNotes" }, {}, "Notes:"))),
+	        content: s.eltObj("form", { id: "editEventForm" }, {}, s.eltObj("input", { type: "time", name: "time", id: "editEventTime" }, {}, s.eltObj("label", { for: "editEventTime" }, {}, "Time:")), s.eltObj("input", { name: "title", id: "editEventTitle" }, {}, s.eltObj("label", { for: "editEventTitle" }, {}, "Title:")), s.eltObj("textarea", { name: "notes", id: "editEventNotes", pattern: ".{0}" }, {}, s.eltObj("label", { for: "editEventNotes" }, {}, "Notes:"))),
 	        buttons: [s.eltObj("button", { id: "editEventSubmit", type: "submit" }, { placement: "form", parentId: "editEventForm" }, "save")]
+	    },
+
+	    viewEvent: {
+	        id: "viewEvent",
+	        content: [s.eltObj("h3", { id: "viewTitle", class: "stitched" }, "(No Title)"), s.eltObj("br"), s.eltObj("p", { id: "viewTime" }, "(No Time)"), s.eltObj("br"), s.eltObj("p", { id: "viewNotes" }, "(No Notes)")],
+	        buttons: [s.eltObj("button", { id: "viewEdit", onclick: "showEditMenu()" }, { placement: "footer" }, "Edit Event"), s.eltObj("button", { id: "viewDelete", onclick: "deleteEvent()" }, { placement: "footer" }, "Delete Event")]
 	    },
 
 	    mobile: {
 	        id: "mobile",
 	        content: [s.eltObj("span", {}, {}, "Events")],
-	        buttons: [s.eltObj("button", { id: "mobileAddEvent" }, { placement: "footer" }, "New Event")]
+	        buttons: [s.eltObj("button", { id: "mobileAddEvent", onclick: "showMenu('addEvent')" }, { placement: "footer" }, "New Event")]
+	    },
+
+	    contentGenerators: {
+	        viewEvent:
+	        /**
+	         * Fills in viewEvents content
+	         * @param {string} title title of event
+	         * @param {string} time time of event
+	         * @param {string} notes notes about event
+	         */
+	        function viewEvent() {
+	            var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "(No Title)";
+	            var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "(No Time)";
+	            var notes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "(No Notes)";
+
+	            Menus.viewEvent.content = [s.eltObj("h3", { id: "viewTitle", class: "stitched" }, title), s.eltObj("br"), s.eltObj("p", { id: "viewTime" }, time), s.eltObj("br"), s.eltObj("p", { id: "viewNotes" }, notes)];
+	        }
 	    }
 	};
 

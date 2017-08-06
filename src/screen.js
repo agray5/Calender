@@ -6,12 +6,12 @@ import {
 
 export const Screen = {
     fillInMenu: (menu) => {
-        let menuElt = document.querySelector(".menuWrapper");
-        let headerElt = document.querySelector(".menuHeader");
-        let contentElt = document.querySelector(".menuContent");
-        let titleElt = document.querySelector(".menuTitle");
-        let bkgElt = document.querySelector(".menuBackground");
-        let footerElt = document.querySelector(".menuFooter");
+        let menuElt = document.querySelector(".menu.wrapper");
+        let headerElt = document.querySelector(".menu.header");
+        let contentElt = document.querySelector(".menu.content");
+        let titleElt = headerElt.getElementsByTagName("h2")[0];
+        let bkgElt = document.querySelector(".menu.background");
+        let footerElt = document.querySelector(".menu.footer");
         let hasId = menu.hasOwnProperty("data") ? menu.data.hasOwnProperty("id") : false;
         let buttonPlacements = {
             content: []
@@ -51,7 +51,7 @@ export const Screen = {
                         buttonPlacements[button.placement] = [button];
                 }
             });
-        },
+        }
 
         if (menu.hasOwnProperty("header") && menu["header"].hasOwnProperty("title"))
             titleElt.textContent = menu.header.title;
@@ -74,27 +74,27 @@ export const Screen = {
         for (let place in buttonPlacements){
             let elt;
             if (place === "header"){
-                if(hasId) elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader"}, {}, ...buttonPlacements.header));
-                else elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsHeader"}, {}, ...buttonPlacements.header));
+                if(hasId) elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader"}, {}, ...buttonPlacements.header));
+                else elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsHeader"}, {}, ...buttonPlacements.header));
                 headerElt.appendChild(elt);
             }
-            else if (place === "content" && buttonPlacements.content.length > 0){
-                if(hasId) elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent"}, {}, ...buttonPlacements.content));
-                else elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsContent"}, {}, ...buttonPlacements.content));
+            else if (place === "content" && buttonPlacements.content){
+                if(hasId) elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent"}, {}, ...buttonPlacements.content));
+                else elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsContent"}, {}, ...buttonPlacements.content));
                 bkgElt.appendChild(elt);
             }
             else if (place === "footer"){
-                if(hasId) elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter"}, {}, ...buttonPlacements.footer));
-                else elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsFooter"}, {}, ...buttonPlacements.footer));
+                if(hasId) elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter"}, {}, ...buttonPlacements.footer));
+                else elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsFooter"}, {}, ...buttonPlacements.footer));
                 footerElt.appendChild(elt);
             }
             else if (place === "form"){
-                if(hasId) elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm"}, {}, ...buttonPlacements.form));
-                else elt = eltObjToElt(eltObj("div", {class: "menuBtns menuBtnsForm"}, {}, ...buttonPlacements.form));
+                if(hasId) elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm"}, {}, ...buttonPlacements.form));
+                else elt = s.eltObjToElt(s.eltObj("div", {class: "menuBtns menuBtnsForm"}, {}, ...buttonPlacements.form));
                 document.querySelector("#"+buttonPlacements.form[0].parentId).appendChild(elt);
             }
             else
-                throw new error("Could not place button. Button placement is invalid");
+                throw new Error("Could not place button. Button placement " + place + " is invalid");
         }
 
     },
@@ -104,18 +104,18 @@ export const Screen = {
         * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
         */
     toggleMenu: (menu) => {
-        let isShown = (document.querySelector(".menuWrapper").style.display === "none") ? false : true;
+        let isShown = (document.querySelector(".menu.wrapper").style.display === "none") ? false : true;
 
         if (menu === true)
-            document.querySelector(".menuWrapper").style.display = "";
+            document.querySelector(".menu.wrapper").style.display = "";
         if (menu === false)
-            document.querySelector(".menuWrapper").style.display = "none";
+            document.querySelector(".menu.wrapper").style.display = "none";
 
         if (isShown)
-            document.querySelector(".menuWrapper").style.display = "none";
+            document.querySelector(".menu.wrapper").style.display = "none";
         else{
-            fillInMenu(menu);
-            document.querySelector(".menuWrapper").style.display = "none";
+            s.fillInMenu(menu);
+            document.querySelector(".menu.wrapper").style.display = "none";
         }
     },
     /**
@@ -144,7 +144,7 @@ export const Screen = {
         * @param {string} element Name of the element
         * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
         * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
-        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child eltObjs. Can also be a child text node represented as a string
+        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child s.eltObjs. Can also be a child text node represented as a string
         * @return {{element: string, attributes: {}, data: {}, children: []}}
         */
     eltObj: (element, attributes = {}, data = {}, ...children) => {
@@ -155,17 +155,21 @@ export const Screen = {
         if (attributes.constructor === Object)
             elementObj["attributes"] = attributes;
         else if (attributes.constructor === String) { //attempt to transform string into an object
+            /*
             let parse = JSON.parse("{" + attributes + "}");
             if (parse.constructor === Object)
                 elementObj["attributes"] = parse;
+                */
         }
 
         if (data.constructor === Object)
             elementObj["data"] = data;
         else if (data.constructor === String) { //attempt to transform string into an object
+            /*
             let parse = JSON.parse("{" + data + "}");
             if (parse.constructor === Object)
                 elementObj["data"] = parse;
+                */
         }
 
         elementObj["children"] = children;
@@ -180,9 +184,9 @@ export const Screen = {
      */
     eltObjToElt: (createObj) => {
         if (!createObj || (createObj.constructor === Object && Object.keys(createObj).length > 0))
-            throw new error("Create object could not be converted to element: create object must be a non empty object");
+            throw new Error("Create object could not be converted to element: create object must be a non empty object");
         if (!createObj.hasOwnProperty("elem"))
-            throw new error("Create object could not be converted to element: create object must have elem as property");
+            throw new Error("Create object could not be converted to element: create object must have elem as property");
 
 
         let children = [];
@@ -192,7 +196,7 @@ export const Screen = {
 
         if (createObj.constructor === String) return elt(createObj);
         else if (creatObj.constructor === Object) return elt(createObj.elem, createObj.attributes, ...createObj.children);
-        else throw new error("Could not convert object to an element. Must be either an object or a string");
+        else throw new Error("Could not convert object to an element. Must be either an object or a string");
     }
 }
 
@@ -264,7 +268,7 @@ export const Menus = {
             s.eltObj("span", {}, {}, "Events")
         ],
         buttons: [
-            s.eltObj("button", {id: "mobileAddEvent"}, {placement: "footer"}, "New Event")
+            s.eltObj("button", {id: "mobileAddEvent", onclick: "showMenu('addEvent')"}, {placement: "footer"}, "New Event")
         ]
     },
 
@@ -277,7 +281,7 @@ export const Menus = {
          * @param {string} notes notes about event
          */
          (title = "(No Title)", time = "(No Time)", notes = "(No Notes)") => {
-            Menus.viewEvent.content = content:
+            Menus.viewEvent.content =
             [
             s.eltObj("h3", {id: "viewTitle", class: "stitched"}, title),
             s.eltObj("br"),

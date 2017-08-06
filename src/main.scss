@@ -6,12 +6,24 @@ $cal-body-height: 82%;
 $cal-footer-height: 8%;
 //*********************
 
-@function calc-per($target, $container) {
-     @return ($target / $container) * 100%;
+@function weighted-per($total-percent, $weighted-percent, $total-items-amount, $weighted-items-amount: 1){
+    $normal-items-amount: $total-items-amount - $weighted-items-amount;
+    $total-weighted-percent: $weighted-percent * $weighted-items-amount;
+    $remaining-percent: $total-percent - $total-weighted-percent;
+    @return ($remaining-percent / $normal-items-amount);
+}
+
+//100%, 10%, 7, 1
+//6 = 7-1
+//10% = 10% * 1
+//90% = 100% - 10%
+//90% / 6
+
+html, body{
+    @include cover;
 }
 
 body {
-    @include cover;
     @include layer(0);
     margin: 0;
     background-color: silver;
@@ -24,6 +36,7 @@ body {
 }
 
 #calender {
+    @include cover;
     & .header {
         @include cover( 'width');
         background: red;
@@ -35,26 +48,29 @@ body {
             @include cover;
             table-layout: fixed;
             & td {
-                width: calc-per(100, 7);
-                height: 20%;
+                width: percentage((100 / 7) / 100);
+                height: weighted-per(100%, 10%, 7);
                 position: relative;
                 overflow-y: auto;
                 overflow-x: hidden;
                 &.weekday {
+                    height: 10%;
+                    background-color: green;
                     & span{
                         @include abs-anchor('b');
                     }
                 }
-                & .day {
+                &.day {
                     background: lightblue;
                 }
-                & .nonday {
+                &.nonday {
                     @extend .day ;
                     background: gray;
                 }
 
                 & .calNumber {
                     @include abs-pos(10px, 10px);
+                    font-size: 12px;
                     text-align: right;
                     margin-bottom: 3px;
                 }

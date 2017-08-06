@@ -1,6 +1,9 @@
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
 body {
-  width: 100%;
-  width: 100%;
   z-index: 0;
   margin: 0;
   background-color: silver;
@@ -18,6 +21,11 @@ body {
   }
 }
 
+#calender {
+  width: 100%;
+  height: 100%;
+}
+
 #calender .header {
   width: 100%;
   background: red;
@@ -30,16 +38,21 @@ body {
 
 #calender .table table {
   width: 100%;
-  width: 100%;
+  height: 100%;
   table-layout: fixed;
 }
 
 #calender .table table td {
-  width: 1428.57143%;
-  height: 20%;
+  width: 14.28571%;
+  height: 15%;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#calender .table table td.weekday {
+  height: 10%;
+  background-color: green;
 }
 
 #calender .table table td.weekday span {
@@ -47,11 +60,11 @@ body {
   bottom: 0;
 }
 
-#calender .table table td .day, #calender .table table td .nonday {
+#calender .table table td.day, #calender .table table td.nonday {
   background: lightblue;
 }
 
-#calender .table table td .nonday {
+#calender .table table td.nonday {
   background: gray;
 }
 
@@ -61,6 +74,7 @@ body {
   bottom: auto;
   left: auto;
   position: absolute;
+  font-size: 12px;
   text-align: right;
   margin-bottom: 3px;
 }
@@ -101,7 +115,7 @@ body {
 
 .menu.wrapper {
   width: 100%;
-  width: 100%;
+  height: 100%;
   z-index: 1;
   position: absolute;
   top: 0;
@@ -151,7 +165,7 @@ body {
 
 .menu.background {
   width: 100%;
-  width: 100%;
+  height: 100%;
   background: url("img/oranges2frosted.jpg") repeat;
   background-size: 100px 100px;
   background-attachment: fixed;

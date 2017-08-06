@@ -57,7 +57,7 @@ function generateCalHtml(parent) {
     }, `${month}`), elt("span", {
         id: "year"
     }, `${year}`));
-    document.querySelector("#calHeader").appendChild(th);
+    document.querySelector("#calender .header").appendChild(th);
 
     if (firstDay.getMonth() == 1) //february
         if (isLeapYear(firstDay.getFullYear()))
@@ -94,6 +94,7 @@ function generateCalHtml(parent) {
                 eventContainer.addEventListener("click", event => {
                     selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
                     selectedDateTD = td;
+                    console.log("click");
                     if (event.target == eventContainer){
                         if(isMobile())
                             s.toggleMenu(Menus.mobile);
@@ -195,7 +196,7 @@ function Event(time, title, notes = "", tdid = null) {
             selectedEvent = e;
             if(!isMobile()){
                 fillInView();
-                fillInMenu(Menus.viewEvent);
+                s.fillInMenu(Menus.viewEvent);
             }
         });
         return e;
@@ -305,6 +306,22 @@ closes.forEach(close => {
     });
 });
 
+/**
+ * Shows menu from given string
+ * @param  {string} menu the menu to show
+ */
+function showMenu(menu){
+    let menuToShow = null;
+    switch(menu){
+        case 'editEvent': menuToShow = Menus.editEvent; break;
+        case 'addEvent' : menuToShow = Menus.addEvent;  break;
+        case 'viewEvent': menuToShow = Menus.viewEvent; break;
+        case 'mobile'   : menuToShow = Menus.mobile;    break;
+        default: throw error("Menu could not be shown. Menu could not be found.");
+    }
+    toggleMenu(menuToShow);
+}
+
 
 function addEventFormSubmit(event) {
     let addEventForm = document.querySelector("#addEventForm");
@@ -329,7 +346,7 @@ function addEventFormSubmit(event) {
         addEventForm.reset();
         event.preventDefault();
     }
-});
+}
 
 
 
@@ -359,24 +376,20 @@ function editFormSubmit(event) {
     fillInView();
     toggleMenu(Menus.viewEvent);
     event.preventDefault();
-});
-
-function showEditMenu(){
-    toggleMenu(Menus.editEvent);
-});
+}
 
 function deleteEvent(event = null, eventElt){
     let userConfirm = confirm("This will permanently delete the event. Do you wish to continue?");
     if (userConfirm) {
         //If event is either not provided or is not an object, search for a matching event
         if(!event || !eventElt || event.constructor !== Object ){
-            events.some((e) =>
+            events.some((e) => {
                 if (e.id == selectedEvent.id) {
                     event = e;
                     eventElt = selectedEvent;
                     return true;
                 }
-            );
+            });
         }
 
         if(event !== null && events.indexOf(event)){
@@ -391,7 +404,7 @@ function deleteEvent(event = null, eventElt){
         eventElt.parentElement.removeChild(eventElt);
         setStyleNone(".menu");
     }
-});
+}
 
 /////////////////////////////////////////////
 //////|MAIN|////////////////////////////////
@@ -403,6 +416,5 @@ for (var i = 0; i < dayEls.length; i++) {
     }, false);
 }
 //localStorage.clear();
-//document.querySelector("#calender").innerHTML = generateCalHtml();
-generateCalHtml(document.querySelector("#calender"));
+generateCalHtml(document.querySelector("#calender .table"));
 load();
