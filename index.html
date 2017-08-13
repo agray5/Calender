@@ -19,39 +19,16 @@
       <div class="footer">Footer</div>
   </div>
 
-<div class="menu wrapper">
+<div class="menu wrapper hidden">
   <div class="menu header">
     <span class="menu close btn">&times;</span>
     <h2 class"menu title"></h2>
   </div>
   <div class="menu content">
     <div class="menu background">
-    <!-- optional form>
-         <form class="menu form">
-            <ul>
-          <li><label for="time">Time: </label><input type="time" id="menuTime" name="time"></input></li>
-          <li><label for="title">Title: </label><input id="menuTitle" name="title"></input></li>
-          <li><label for="notes">Notes: </label><textarea id="menuNotes" name="notes" pattern=".{0}"></textarea></li>
-        </ul>
-        <-optional buttons inside of form->
-        <div class="menu btn-container">
-            <button type="submit" class="menu in-form save btn">save</button>
-        </div>
-      </form>
-      <-->
-      <!--optional buttons outside of form->
-      <div class="btn-container">
-        <button class="menu in-content save btn">save</button>
-      </div>
-      <-->
     </div>
   </div>
   <div class="menu footer">
-    <!--optional buttons inside of footer->
-    <div class="">
-        <button id="saveBtn" class="menuBtn">save</button>
-    </div>
-    <-->
   </div>
 </div>
 
@@ -136,12 +113,13 @@
     </div>
   </div>
 -->
-
-  <script src="calender.js"></script>
-  <script id="__bs_script__">//<![CDATA[
-    document.write("<script async src='http://HOST:3000/browser-sync/browser-sync-client.js?v=2.18.13'><\/script>".replace("HOST", location.hostname));
-//]]></script>
-
 </body>
 
+<script src="http://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	    crossorigin="anonymous">
+</script>
+
+<script src="global.js"></script>
+<script src="calender.js"></script>
 </html>
