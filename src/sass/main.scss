@@ -113,17 +113,18 @@ body {
         @include cover;
         @include layer(1);
         @include abs-anchor('tl');
-        display: none;
         overflow: auto;
-        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.7);
     }
 
     &.header,.background{
-        @include center
         @include layer(2);
     }
 
     &.header{
+        @include center;
+        width: 760px - 8px;
+        top: 22%;
         padding: 2px;
         border: 2px solid #207cca;
         background-color: blue;
@@ -148,6 +149,7 @@ body {
     }
 
     &.background{
+        @include center
         @include cover;
         background: url('img/oranges2frosted.jpg') repeat;
         background-size: 100px 100px;
@@ -257,11 +259,6 @@ label {
     font-weight: normal;
 }
 
-/* MOBILE MENU */
-.mobileHeader{
-    display: none;
-}
-
-.menuWrapper{
+.hidden {
     display: none;
 }

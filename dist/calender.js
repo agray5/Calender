@@ -8061,430 +8061,30 @@
 
 	'use strict';
 
-	var _stringify = __webpack_require__(298);
-
-	var _stringify2 = _interopRequireDefault(_stringify);
-
-	var _map = __webpack_require__(301);
+	var _map = __webpack_require__(298);
 
 	var _map2 = _interopRequireDefault(_map);
 
-	var _screen = __webpack_require__(370);
+	var _calHtml = __webpack_require__(368);
+
+	var _functions = __webpack_require__(413);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// weekly labels
-	var weekLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-	// monthly labels
-	var monthLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-	// days in months, in order
-	var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-	// current date
-	var currentDate = new Date();
-
-	// selected date
-	var selectedDate = new Date();
-	var selectedDateTD = "none";
-
-	//selected event
-	var selectedEvent = "none";
-
-	//events
-	var eventCnt = 0;
-
-	// starting date of the calender
-	var firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 
 	// map sticker type to image
 	var stickerMap = new _map2.default();
 
-	// stored events
-	var events = [];
-
-	//stored stickers
-	var stickers = [];
-
-	//current frame
-	var frame = {};
-
-	var s = _screen.Screen;
-	var elt = s.elt;
-
 	var dayEls = document.getElementsByClassName("day");
-
-	function generateCalHtml(parent) {
-	    var totalDays = daysInMonth[firstDay.getMonth()];
-	    var month = monthLabels[firstDay.getMonth()];
-	    var year = firstDay.getFullYear();
-	    var tableDiv = parent;
-	    var table = elt("table");
-	    var tr = void 0;
-	    //let tdHeight = document.querySelector("body").clientHeight*.82*.15;
-	    var th = elt("div", { id: "calCurrentMonth" }, elt("span", {
-	        id: "month"
-	    }, '' + month), elt("span", {
-	        id: "year"
-	    }, '' + year));
-	    document.querySelector("#calender .header").appendChild(th);
-
-	    if (firstDay.getMonth() == 1) //february
-	        if (isLeapYear(firstDay.getFullYear())) totalDays = 29;
-
-	    tr = elt("tr");
-	    for (var day = 0; day < 7; day++) {
-	        var td = elt("td", {
-	            class: "weekday"
-	        }, elt("span", {}, '' + weekLabels[day]));
-	        tr.appendChild(td);
-	    }
-	    table.appendChild(tr);
-
-	    var cell = 0;
-	    for (var _i = 0; _i < 6; _i++) {
-	        tr = elt("tr");
-
-	        var _loop = function _loop() {
-	            cell++;
-	            var fday = firstDay.getDay() + 1;
-	            var day = cell - fday + 1;
-	            var td = void 0;
-	            var eventContainer = void 0;
-	            if (cell >= fday && day <= totalDays) {
-	                eventContainer = elt("div", { class: "eventContainer" });
-	                td = elt("td", {
-	                    class: "day",
-	                    id: 'event_' + day + '-' + firstDay.getMonth() + '-' + firstDay.getFullYear()
-	                }, elt("text", {
-	                    class: "calNumber"
-	                }, '' + day), eventContainer);
-
-	                eventContainer.addEventListener("click", function (event) {
-	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
-	                    selectedDateTD = td;
-	                    console.log("click");
-	                    if (event.target == eventContainer) {
-	                        if (isMobile()) s.toggleMenu(_screen.Menus.mobile);else s.toggleMenu(_screen.Menus.addEvent);
-	                    }
-	                });
-
-	                td.addEventListener("click", function (event) {
-	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
-	                    selectedDateTD = td;
-	                    if (event.target == td) {
-	                        if (isMobile()) s.toggleMenu(_screen.Menus.mobile);else s.toggleMenu(_screen.Menus.addEvent);
-	                    }
-	                });
-	            } else td = elt("td", {
-	                class: "nonday"
-	            });
-
-	            td.appendChild(elt("div"));
-
-	            tr.appendChild(td);
-	        };
-
-	        for (var j = 0; j < 7; j++) {
-	            _loop();
-	        }
-	        table.appendChild(tr);
-	    }
-	    tableDiv.appendChild(table);
-	}
-
-	function isLeapYear(year) {
-	    if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) return true;else return false;
-	}
-
-	/**
-	 * Calender Sticker
-	 * @param {string} type type should correspond to a mapping
-	 * @param {object} transform transform object
-	 */
-	function Sticker(type, transform) {
-	    if (stickerMap.has(type)) this.type = type;else console.error("Sticker type does not exsist");
-
-	    this.transform = transform;
-	}
-
-	/**
-	 * Transformations applied to a sticker
-	 * @param {number} scale
-	 * @param {number} rotate
-	 */
-	function Transform() {
-	    var scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	    var rotate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-
-	    this.scale = scale;
-	    this.rotate = rotate;
-	}
-
-	/**
-	 * Calender Events
-	 * @param {string} time time of the event
-	 * @param {string} title title of the event
-	 * @param {string} notes notes of the event
-	 * @param {string} tdid the id of the td that the event belongs to, should be in the form of day-month-year
-	 */
-	function Event(time, title) {
-	    var _this = this;
-
-	    var notes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-	    var tdid = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-
-	    this.time = time;
-	    this.title = title;
-	    this.notes = notes;
-	    this.tdID = tdid;
-	    this.id = 'calEvent_' + this.tdID + '_#' + ++eventCnt;
-
-	    if (this.tdID === null) {
-	        throw new error("Error: event tdID cannot be null");
-	    }
-
-	    if (this.time === '' && this.title === '') {
-	        throw new error("Error: cannot create blank event");
-	    }
-
-	    this.toElement = function () {
-	        var e = elt("div", {
-	            class: 'calEvent',
-	            id: _this.id
-	        }, elt("span", {
-	            class: 'calEventTime'
-	        }, _this.time), elt("span", {
-	            class: 'calEventTitle'
-	        }, _this.title));
-
-	        //click event for event
-	        e.addEventListener("click", function (event) {
-	            selectedEvent = e;
-	            if (!isMobile()) {
-	                fillInView();
-	                s.fillInMenu(_screen.Menus.viewEvent);
-	            }
-	        });
-	        return e;
-	    };
-	}
-
-	/**
-	 * Sets style attribute to none
-	 * @param {string|HTMLElement} selector document selector
-	 */
-	function setStyleNone(selector) {
-	    if (!(selector instanceof HTMLElement)) {
-	        var sel = document.querySelector(selector);
-	        if (sel) sel.style.display = "none";
-	    } else selector.style.display = "none";
-	}
-
-	/**
-	 * Fills in viewModal
-	 * @param {string} title title of event
-	 * @param {string} time time of event
-	 * @param {string} notes notes about event
-	 */
-	function fillInView() {
-	    var title = "(No Title)",
-	        time = "(No Time)",
-	        notes = "(No Notes)";
-
-	    events.some(function (e) {
-	        if (e.id == selectedEvent.id) {
-	            if (e.title != "") title = e.title;
-	            if (e.time != "") time = e.time;
-	            if (e.notes != "") notes = e.notes;
-	            return true;
-	        }
-	    });
-	    _screen.Menus.contentGenerators.viewEvent(title, time, notes);
-	}
-
-	function isMobile() {
-	    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-
-	    if (w <= 631) return true;else return false;
-	}
-
-	/**
-	 * Saves calender information to local storage
-	 */
-	function save() {
-	    //save events
-	    var evs = {};
-	    events.forEach(function (event, i) {
-	        evs[i] = event;
-	    });
-
-	    localStorage.setItem('events', (0, _stringify2.default)(evs));
-
-	    //save stickers
-	    var sckers = {};
-	    stickers.forEach(function (sticker, i) {
-	        sckers[i] = sticker;
-	    });
-	    localStorage.setItem('stickers', (0, _stringify2.default)(sckers));
-
-	    //save frame
-	    localStorage.setItem('frame', (0, _stringify2.default)(frame));
-	}
-
-	/**
-	 * Loads and reinstates calender information from storage a
-	 */
-	function load() {
-	    var evs = JSON.parse(localStorage.getItem('events'));
-	    var sckers = JSON.parse(localStorage.getItem('stickers'));
-	    //let fme = JSON.parse(localStorage.getItem('frame'));
-
-	    for (var e in evs) {
-	        //add events to stored events
-	        var newEvent = new Event(evs[e].time, evs[e].title, evs[e].notes, evs[e].tdID); //create a new event from the stored one
-	        events.push(newEvent);
-	        //parse event into an element and append to corresponding div
-	        var td = document.getElementById('' + newEvent.tdID);
-	        if (td) //check that query selection is not null
-	            td.getElementsByClassName("eventContainer")[0].appendChild(newEvent.toElement());
-	    }
-	    //TODO: load stickers
-	    for (var _s in sckers) {
-	        stickers.push(sckers[_s]);
-	    }
-	    //frame = fme;
-	}
-
-	//////////////////////////////////////////////
-	/////|EVENT LISTENERS|///////////////////////
-	////////////////////////////////////////////
-
-	var closes = document.querySelectorAll(".close");
-	closes.forEach(function (close) {
-	    close.addEventListener("click", function (event) {
-	        var modal = close.parentNode.parentNode;
-	        setStyleNone(modal);
-	    });
-	});
-
-	/**
-	 * Shows menu from given string
-	 * @param  {string} menu the menu to show
-	 */
-	function showMenu(menu) {
-	    var menuToShow = null;
-	    switch (menu) {
-	        case 'editEvent':
-	            menuToShow = _screen.Menus.editEvent;break;
-	        case 'addEvent':
-	            menuToShow = _screen.Menus.addEvent;break;
-	        case 'viewEvent':
-	            menuToShow = _screen.Menus.viewEvent;break;
-	        case 'mobile':
-	            menuToShow = _screen.Menus.mobile;break;
-	        default:
-	            throw error("Menu could not be shown. Menu could not be found.");
-	    }
-	    toggleMenu(menuToShow);
-	}
-
-	function addEventFormSubmit(event) {
-	    var addEventForm = document.querySelector("#addEventForm");
-	    var time = addEventForm.elements.time.value;
-	    var title = addEventForm.elements.title.value;
-	    var notes = addEventForm.elements.notes.value;
-
-	    try {
-	        var ev = new Event(time, title, notes, selectedDateTD.id);
-	        var evElem = ev.toElement();
-	        events.push(ev);
-	        selectedDateTD.getElementsByClassName("eventContainer")[0].appendChild(evElem);
-	        selectedEvent = evElem;
-	        fillInView();
-	        save(); //save the new event
-	    } catch (error) {
-	        //Do not create event if error
-	        console.error("Error:", error.message);
-	        alert('Event could not be created.' + (time != "" && title != "" ? '' : ' Event must have time or title.'));
-	    } finally {
-	        setStyleNone(addEventForm.parentElement.parentElement.parentElement);
-	        addEventForm.reset();
-	        event.preventDefault();
-	    }
-	}
-
-	function editFormSubmit(event) {
-	    var editForm = document.querySelector("#editEventForm");
-	    var time = editForm.elements.time.value;
-	    var title = editForm.elements.title.value;
-	    var notes = editForm.elements.notes.value;
-
-	    //find stored event to update its data
-	    events.some(function (e) {
-	        if (e.id == selectedEvent.id) {
-	            if (time) e.time = time;
-	            if (title) e.title = title;
-	            if (notes) e.notes = notes;
-	            save();
-	            return true;
-	        }
-	    });
-
-	    if (time) selectedEvent.getElementsByClassName("calEventTime")[0].textContent = time;
-	    if (title) selectedEvent.getElementsByClassName("calEventTitle")[0].textContent = title;
-
-	    setStyleNone(editForm.parentElement.parentElement.parentElement);
-	    editForm.reset();
-
-	    fillInView();
-	    toggleMenu(_screen.Menus.viewEvent);
-	    event.preventDefault();
-	}
-
-	function deleteEvent() {
-	    var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	    var eventElt = arguments[1];
-
-	    var userConfirm = confirm("This will permanently delete the event. Do you wish to continue?");
-	    if (userConfirm) {
-	        //If event is either not provided or is not an object, search for a matching event
-	        if (!event || !eventElt || event.constructor !== Object) {
-	            events.some(function (e) {
-	                if (e.id == selectedEvent.id) {
-	                    event = e;
-	                    eventElt = selectedEvent;
-	                    return true;
-	                }
-	            });
-	        }
-
-	        if (event !== null && events.indexOf(event)) {
-	            events.splice(events.indexOf(event), 1);
-	            save();
-	        } else {
-	            console.warn("Warning: event was not deleted. Event could not be found");
-	        }
-
-	        //remove div
-	        eventElt.parentElement.removeChild(eventElt);
-	        setStyleNone(".menu");
-	    }
-	}
-
-	/////////////////////////////////////////////
-	//////|MAIN|////////////////////////////////
-	///////////////////////////////////////////
 
 	for (var i = 0; i < dayEls.length; i++) {
 	    dayEls[i].addEventListener('click', function (event) {
 	        selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), event.innerHTML);
 	    }, false);
 	}
+
 	//localStorage.clear();
-	generateCalHtml(document.querySelector("#calender .table"));
-	load();
+	(0, _calHtml.generateCalHtml)(document.querySelector("#calender .table"));
+	(0, _functions.load)();
 
 /***/ }),
 /* 298 */
@@ -8496,51 +8096,28 @@
 /* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var core  = __webpack_require__(300)
-	  , $JSON = core.JSON || (core.JSON = {stringify: JSON.stringify});
-	module.exports = function stringify(it){ // eslint-disable-line no-unused-vars
-	  return $JSON.stringify.apply($JSON, arguments);
-	};
+	__webpack_require__(300);
+	__webpack_require__(301);
+	__webpack_require__(345);
+	__webpack_require__(349);
+	__webpack_require__(365);
+	module.exports = __webpack_require__(309).Map;
 
 /***/ }),
 /* 300 */
 /***/ (function(module, exports) {
 
-	var core = module.exports = {version: '2.4.0'};
-	if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+	
 
 /***/ }),
 /* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(302), __esModule: true };
-
-/***/ }),
-/* 302 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(303);
-	__webpack_require__(304);
-	__webpack_require__(347);
-	__webpack_require__(351);
-	__webpack_require__(367);
-	module.exports = __webpack_require__(300).Map;
-
-/***/ }),
-/* 303 */
-/***/ (function(module, exports) {
-
-	
-
-/***/ }),
-/* 304 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	'use strict';
-	var $at  = __webpack_require__(305)(true);
+	var $at  = __webpack_require__(302)(true);
 
 	// 21.1.3.27 String.prototype[@@iterator]()
-	__webpack_require__(308)(String, 'String', function(iterated){
+	__webpack_require__(305)(String, 'String', function(iterated){
 	  this._t = String(iterated); // target
 	  this._i = 0;                // next index
 	// 21.1.5.2.1 %StringIteratorPrototype%.next()
@@ -8555,11 +8132,11 @@
 	});
 
 /***/ }),
-/* 305 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var toInteger = __webpack_require__(306)
-	  , defined   = __webpack_require__(307);
+	var toInteger = __webpack_require__(303)
+	  , defined   = __webpack_require__(304);
 	// true  -> String#at
 	// false -> String#codePointAt
 	module.exports = function(TO_STRING){
@@ -8577,7 +8154,7 @@
 	};
 
 /***/ }),
-/* 306 */
+/* 303 */
 /***/ (function(module, exports) {
 
 	// 7.1.4 ToInteger
@@ -8588,7 +8165,7 @@
 	};
 
 /***/ }),
-/* 307 */
+/* 304 */
 /***/ (function(module, exports) {
 
 	// 7.2.1 RequireObjectCoercible(argument)
@@ -8598,20 +8175,20 @@
 	};
 
 /***/ }),
-/* 308 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var LIBRARY        = __webpack_require__(309)
-	  , $export        = __webpack_require__(310)
-	  , redefine       = __webpack_require__(324)
-	  , hide           = __webpack_require__(314)
-	  , has            = __webpack_require__(325)
-	  , Iterators      = __webpack_require__(326)
-	  , $iterCreate    = __webpack_require__(327)
-	  , setToStringTag = __webpack_require__(343)
-	  , getPrototypeOf = __webpack_require__(345)
-	  , ITERATOR       = __webpack_require__(344)('iterator')
+	var LIBRARY        = __webpack_require__(306)
+	  , $export        = __webpack_require__(307)
+	  , redefine       = __webpack_require__(322)
+	  , hide           = __webpack_require__(312)
+	  , has            = __webpack_require__(323)
+	  , Iterators      = __webpack_require__(324)
+	  , $iterCreate    = __webpack_require__(325)
+	  , setToStringTag = __webpack_require__(341)
+	  , getPrototypeOf = __webpack_require__(343)
+	  , ITERATOR       = __webpack_require__(342)('iterator')
 	  , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
 	  , FF_ITERATOR    = '@@iterator'
 	  , KEYS           = 'keys'
@@ -8673,19 +8250,19 @@
 	};
 
 /***/ }),
-/* 309 */
+/* 306 */
 /***/ (function(module, exports) {
 
 	module.exports = true;
 
 /***/ }),
-/* 310 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var global    = __webpack_require__(311)
-	  , core      = __webpack_require__(300)
-	  , ctx       = __webpack_require__(312)
-	  , hide      = __webpack_require__(314)
+	var global    = __webpack_require__(308)
+	  , core      = __webpack_require__(309)
+	  , ctx       = __webpack_require__(310)
+	  , hide      = __webpack_require__(312)
 	  , PROTOTYPE = 'prototype';
 
 	var $export = function(type, name, source){
@@ -8745,7 +8322,7 @@
 	module.exports = $export;
 
 /***/ }),
-/* 311 */
+/* 308 */
 /***/ (function(module, exports) {
 
 	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
@@ -8754,11 +8331,18 @@
 	if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
 
 /***/ }),
-/* 312 */
+/* 309 */
+/***/ (function(module, exports) {
+
+	var core = module.exports = {version: '2.4.0'};
+	if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+
+/***/ }),
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// optional / simple context binding
-	var aFunction = __webpack_require__(313);
+	var aFunction = __webpack_require__(311);
 	module.exports = function(fn, that, length){
 	  aFunction(fn);
 	  if(that === undefined)return fn;
@@ -8779,7 +8363,7 @@
 	};
 
 /***/ }),
-/* 313 */
+/* 311 */
 /***/ (function(module, exports) {
 
 	module.exports = function(it){
@@ -8788,12 +8372,12 @@
 	};
 
 /***/ }),
-/* 314 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var dP         = __webpack_require__(315)
-	  , createDesc = __webpack_require__(323);
-	module.exports = __webpack_require__(319) ? function(object, key, value){
+	var dP         = __webpack_require__(313)
+	  , createDesc = __webpack_require__(321);
+	module.exports = __webpack_require__(317) ? function(object, key, value){
 	  return dP.f(object, key, createDesc(1, value));
 	} : function(object, key, value){
 	  object[key] = value;
@@ -8801,15 +8385,15 @@
 	};
 
 /***/ }),
-/* 315 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var anObject       = __webpack_require__(316)
-	  , IE8_DOM_DEFINE = __webpack_require__(318)
-	  , toPrimitive    = __webpack_require__(322)
+	var anObject       = __webpack_require__(314)
+	  , IE8_DOM_DEFINE = __webpack_require__(316)
+	  , toPrimitive    = __webpack_require__(320)
 	  , dP             = Object.defineProperty;
 
-	exports.f = __webpack_require__(319) ? Object.defineProperty : function defineProperty(O, P, Attributes){
+	exports.f = __webpack_require__(317) ? Object.defineProperty : function defineProperty(O, P, Attributes){
 	  anObject(O);
 	  P = toPrimitive(P, true);
 	  anObject(Attributes);
@@ -8822,17 +8406,17 @@
 	};
 
 /***/ }),
-/* 316 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(317);
+	var isObject = __webpack_require__(315);
 	module.exports = function(it){
 	  if(!isObject(it))throw TypeError(it + ' is not an object!');
 	  return it;
 	};
 
 /***/ }),
-/* 317 */
+/* 315 */
 /***/ (function(module, exports) {
 
 	module.exports = function(it){
@@ -8840,24 +8424,24 @@
 	};
 
 /***/ }),
-/* 318 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = !__webpack_require__(319) && !__webpack_require__(320)(function(){
-	  return Object.defineProperty(__webpack_require__(321)('div'), 'a', {get: function(){ return 7; }}).a != 7;
+	module.exports = !__webpack_require__(317) && !__webpack_require__(318)(function(){
+	  return Object.defineProperty(__webpack_require__(319)('div'), 'a', {get: function(){ return 7; }}).a != 7;
 	});
 
 /***/ }),
-/* 319 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Thank's IE8 for his funny defineProperty
-	module.exports = !__webpack_require__(320)(function(){
+	module.exports = !__webpack_require__(318)(function(){
 	  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 	});
 
 /***/ }),
-/* 320 */
+/* 318 */
 /***/ (function(module, exports) {
 
 	module.exports = function(exec){
@@ -8869,11 +8453,11 @@
 	};
 
 /***/ }),
-/* 321 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(317)
-	  , document = __webpack_require__(311).document
+	var isObject = __webpack_require__(315)
+	  , document = __webpack_require__(308).document
 	  // in old IE typeof document.createElement is 'object'
 	  , is = isObject(document) && isObject(document.createElement);
 	module.exports = function(it){
@@ -8881,11 +8465,11 @@
 	};
 
 /***/ }),
-/* 322 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 7.1.1 ToPrimitive(input [, PreferredType])
-	var isObject = __webpack_require__(317);
+	var isObject = __webpack_require__(315);
 	// instead of the ES6 spec version, we didn't implement @@toPrimitive case
 	// and the second argument - flag - preferred type is a string
 	module.exports = function(it, S){
@@ -8898,7 +8482,7 @@
 	};
 
 /***/ }),
-/* 323 */
+/* 321 */
 /***/ (function(module, exports) {
 
 	module.exports = function(bitmap, value){
@@ -8911,13 +8495,13 @@
 	};
 
 /***/ }),
-/* 324 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(314);
+	module.exports = __webpack_require__(312);
 
 /***/ }),
-/* 325 */
+/* 323 */
 /***/ (function(module, exports) {
 
 	var hasOwnProperty = {}.hasOwnProperty;
@@ -8926,23 +8510,23 @@
 	};
 
 /***/ }),
-/* 326 */
+/* 324 */
 /***/ (function(module, exports) {
 
 	module.exports = {};
 
 /***/ }),
-/* 327 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var create         = __webpack_require__(328)
-	  , descriptor     = __webpack_require__(323)
-	  , setToStringTag = __webpack_require__(343)
+	var create         = __webpack_require__(326)
+	  , descriptor     = __webpack_require__(321)
+	  , setToStringTag = __webpack_require__(341)
 	  , IteratorPrototype = {};
 
 	// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-	__webpack_require__(314)(IteratorPrototype, __webpack_require__(344)('iterator'), function(){ return this; });
+	__webpack_require__(312)(IteratorPrototype, __webpack_require__(342)('iterator'), function(){ return this; });
 
 	module.exports = function(Constructor, NAME, next){
 	  Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
@@ -8950,27 +8534,27 @@
 	};
 
 /***/ }),
-/* 328 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-	var anObject    = __webpack_require__(316)
-	  , dPs         = __webpack_require__(329)
-	  , enumBugKeys = __webpack_require__(341)
-	  , IE_PROTO    = __webpack_require__(338)('IE_PROTO')
+	var anObject    = __webpack_require__(314)
+	  , dPs         = __webpack_require__(327)
+	  , enumBugKeys = __webpack_require__(339)
+	  , IE_PROTO    = __webpack_require__(336)('IE_PROTO')
 	  , Empty       = function(){ /* empty */ }
 	  , PROTOTYPE   = 'prototype';
 
 	// Create object with fake `null` prototype: use iframe Object with cleared prototype
 	var createDict = function(){
 	  // Thrash, waste and sodomy: IE GC bug
-	  var iframe = __webpack_require__(321)('iframe')
+	  var iframe = __webpack_require__(319)('iframe')
 	    , i      = enumBugKeys.length
 	    , lt     = '<'
 	    , gt     = '>'
 	    , iframeDocument;
 	  iframe.style.display = 'none';
-	  __webpack_require__(342).appendChild(iframe);
+	  __webpack_require__(340).appendChild(iframe);
 	  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
 	  // createDict = iframe.contentWindow.Object;
 	  // html.removeChild(iframe);
@@ -8997,14 +8581,14 @@
 
 
 /***/ }),
-/* 329 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var dP       = __webpack_require__(315)
-	  , anObject = __webpack_require__(316)
-	  , getKeys  = __webpack_require__(330);
+	var dP       = __webpack_require__(313)
+	  , anObject = __webpack_require__(314)
+	  , getKeys  = __webpack_require__(328);
 
-	module.exports = __webpack_require__(319) ? Object.defineProperties : function defineProperties(O, Properties){
+	module.exports = __webpack_require__(317) ? Object.defineProperties : function defineProperties(O, Properties){
 	  anObject(O);
 	  var keys   = getKeys(Properties)
 	    , length = keys.length
@@ -9015,25 +8599,25 @@
 	};
 
 /***/ }),
-/* 330 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.2.14 / 15.2.3.14 Object.keys(O)
-	var $keys       = __webpack_require__(331)
-	  , enumBugKeys = __webpack_require__(341);
+	var $keys       = __webpack_require__(329)
+	  , enumBugKeys = __webpack_require__(339);
 
 	module.exports = Object.keys || function keys(O){
 	  return $keys(O, enumBugKeys);
 	};
 
 /***/ }),
-/* 331 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var has          = __webpack_require__(325)
-	  , toIObject    = __webpack_require__(332)
-	  , arrayIndexOf = __webpack_require__(335)(false)
-	  , IE_PROTO     = __webpack_require__(338)('IE_PROTO');
+	var has          = __webpack_require__(323)
+	  , toIObject    = __webpack_require__(330)
+	  , arrayIndexOf = __webpack_require__(333)(false)
+	  , IE_PROTO     = __webpack_require__(336)('IE_PROTO');
 
 	module.exports = function(object, names){
 	  var O      = toIObject(object)
@@ -9049,28 +8633,28 @@
 	};
 
 /***/ }),
-/* 332 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// to indexed object, toObject with fallback for non-array-like ES3 strings
-	var IObject = __webpack_require__(333)
-	  , defined = __webpack_require__(307);
+	var IObject = __webpack_require__(331)
+	  , defined = __webpack_require__(304);
 	module.exports = function(it){
 	  return IObject(defined(it));
 	};
 
 /***/ }),
-/* 333 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// fallback for non-array-like ES3 and non-enumerable old V8 strings
-	var cof = __webpack_require__(334);
+	var cof = __webpack_require__(332);
 	module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
 	  return cof(it) == 'String' ? it.split('') : Object(it);
 	};
 
 /***/ }),
-/* 334 */
+/* 332 */
 /***/ (function(module, exports) {
 
 	var toString = {}.toString;
@@ -9080,14 +8664,14 @@
 	};
 
 /***/ }),
-/* 335 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// false -> Array#indexOf
 	// true  -> Array#includes
-	var toIObject = __webpack_require__(332)
-	  , toLength  = __webpack_require__(336)
-	  , toIndex   = __webpack_require__(337);
+	var toIObject = __webpack_require__(330)
+	  , toLength  = __webpack_require__(334)
+	  , toIndex   = __webpack_require__(335);
 	module.exports = function(IS_INCLUDES){
 	  return function($this, el, fromIndex){
 	    var O      = toIObject($this)
@@ -9106,21 +8690,21 @@
 	};
 
 /***/ }),
-/* 336 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 7.1.15 ToLength
-	var toInteger = __webpack_require__(306)
+	var toInteger = __webpack_require__(303)
 	  , min       = Math.min;
 	module.exports = function(it){
 	  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 	};
 
 /***/ }),
-/* 337 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var toInteger = __webpack_require__(306)
+	var toInteger = __webpack_require__(303)
 	  , max       = Math.max
 	  , min       = Math.min;
 	module.exports = function(index, length){
@@ -9129,20 +8713,20 @@
 	};
 
 /***/ }),
-/* 338 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var shared = __webpack_require__(339)('keys')
-	  , uid    = __webpack_require__(340);
+	var shared = __webpack_require__(337)('keys')
+	  , uid    = __webpack_require__(338);
 	module.exports = function(key){
 	  return shared[key] || (shared[key] = uid(key));
 	};
 
 /***/ }),
-/* 339 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var global = __webpack_require__(311)
+	var global = __webpack_require__(308)
 	  , SHARED = '__core-js_shared__'
 	  , store  = global[SHARED] || (global[SHARED] = {});
 	module.exports = function(key){
@@ -9150,7 +8734,7 @@
 	};
 
 /***/ }),
-/* 340 */
+/* 338 */
 /***/ (function(module, exports) {
 
 	var id = 0
@@ -9160,7 +8744,7 @@
 	};
 
 /***/ }),
-/* 341 */
+/* 339 */
 /***/ (function(module, exports) {
 
 	// IE 8- don't enum bug keys
@@ -9169,30 +8753,30 @@
 	).split(',');
 
 /***/ }),
-/* 342 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(311).document && document.documentElement;
+	module.exports = __webpack_require__(308).document && document.documentElement;
 
 /***/ }),
-/* 343 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var def = __webpack_require__(315).f
-	  , has = __webpack_require__(325)
-	  , TAG = __webpack_require__(344)('toStringTag');
+	var def = __webpack_require__(313).f
+	  , has = __webpack_require__(323)
+	  , TAG = __webpack_require__(342)('toStringTag');
 
 	module.exports = function(it, tag, stat){
 	  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 	};
 
 /***/ }),
-/* 344 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var store      = __webpack_require__(339)('wks')
-	  , uid        = __webpack_require__(340)
-	  , Symbol     = __webpack_require__(311).Symbol
+	var store      = __webpack_require__(337)('wks')
+	  , uid        = __webpack_require__(338)
+	  , Symbol     = __webpack_require__(308).Symbol
 	  , USE_SYMBOL = typeof Symbol == 'function';
 
 	var $exports = module.exports = function(name){
@@ -9203,13 +8787,13 @@
 	$exports.store = store;
 
 /***/ }),
-/* 345 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-	var has         = __webpack_require__(325)
-	  , toObject    = __webpack_require__(346)
-	  , IE_PROTO    = __webpack_require__(338)('IE_PROTO')
+	var has         = __webpack_require__(323)
+	  , toObject    = __webpack_require__(344)
+	  , IE_PROTO    = __webpack_require__(336)('IE_PROTO')
 	  , ObjectProto = Object.prototype;
 
 	module.exports = Object.getPrototypeOf || function(O){
@@ -9221,24 +8805,24 @@
 	};
 
 /***/ }),
-/* 346 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 7.1.13 ToObject(argument)
-	var defined = __webpack_require__(307);
+	var defined = __webpack_require__(304);
 	module.exports = function(it){
 	  return Object(defined(it));
 	};
 
 /***/ }),
-/* 347 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(348);
-	var global        = __webpack_require__(311)
-	  , hide          = __webpack_require__(314)
-	  , Iterators     = __webpack_require__(326)
-	  , TO_STRING_TAG = __webpack_require__(344)('toStringTag');
+	__webpack_require__(346);
+	var global        = __webpack_require__(308)
+	  , hide          = __webpack_require__(312)
+	  , Iterators     = __webpack_require__(324)
+	  , TO_STRING_TAG = __webpack_require__(342)('toStringTag');
 
 	for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
 	  var NAME       = collections[i]
@@ -9249,20 +8833,20 @@
 	}
 
 /***/ }),
-/* 348 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var addToUnscopables = __webpack_require__(349)
-	  , step             = __webpack_require__(350)
-	  , Iterators        = __webpack_require__(326)
-	  , toIObject        = __webpack_require__(332);
+	var addToUnscopables = __webpack_require__(347)
+	  , step             = __webpack_require__(348)
+	  , Iterators        = __webpack_require__(324)
+	  , toIObject        = __webpack_require__(330);
 
 	// 22.1.3.4 Array.prototype.entries()
 	// 22.1.3.13 Array.prototype.keys()
 	// 22.1.3.29 Array.prototype.values()
 	// 22.1.3.30 Array.prototype[@@iterator]()
-	module.exports = __webpack_require__(308)(Array, 'Array', function(iterated, kind){
+	module.exports = __webpack_require__(305)(Array, 'Array', function(iterated, kind){
 	  this._t = toIObject(iterated); // target
 	  this._i = 0;                   // next index
 	  this._k = kind;                // kind
@@ -9288,13 +8872,13 @@
 	addToUnscopables('entries');
 
 /***/ }),
-/* 349 */
+/* 347 */
 /***/ (function(module, exports) {
 
 	module.exports = function(){ /* empty */ };
 
 /***/ }),
-/* 350 */
+/* 348 */
 /***/ (function(module, exports) {
 
 	module.exports = function(done, value){
@@ -9302,14 +8886,14 @@
 	};
 
 /***/ }),
-/* 351 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var strong = __webpack_require__(352);
+	var strong = __webpack_require__(350);
 
 	// 23.1 Map Objects
-	module.exports = __webpack_require__(362)('Map', function(get){
+	module.exports = __webpack_require__(360)('Map', function(get){
 	  return function Map(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 	}, {
 	  // 23.1.3.6 Map.prototype.get(key)
@@ -9324,22 +8908,22 @@
 	}, strong, true);
 
 /***/ }),
-/* 352 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var dP          = __webpack_require__(315).f
-	  , create      = __webpack_require__(328)
-	  , redefineAll = __webpack_require__(353)
-	  , ctx         = __webpack_require__(312)
-	  , anInstance  = __webpack_require__(354)
-	  , defined     = __webpack_require__(307)
-	  , forOf       = __webpack_require__(355)
-	  , $iterDefine = __webpack_require__(308)
-	  , step        = __webpack_require__(350)
-	  , setSpecies  = __webpack_require__(360)
-	  , DESCRIPTORS = __webpack_require__(319)
-	  , fastKey     = __webpack_require__(361).fastKey
+	var dP          = __webpack_require__(313).f
+	  , create      = __webpack_require__(326)
+	  , redefineAll = __webpack_require__(351)
+	  , ctx         = __webpack_require__(310)
+	  , anInstance  = __webpack_require__(352)
+	  , defined     = __webpack_require__(304)
+	  , forOf       = __webpack_require__(353)
+	  , $iterDefine = __webpack_require__(305)
+	  , step        = __webpack_require__(348)
+	  , setSpecies  = __webpack_require__(358)
+	  , DESCRIPTORS = __webpack_require__(317)
+	  , fastKey     = __webpack_require__(359).fastKey
 	  , SIZE        = DESCRIPTORS ? '_s' : 'size';
 
 	var getEntry = function(that, key){
@@ -9471,10 +9055,10 @@
 	};
 
 /***/ }),
-/* 353 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var hide = __webpack_require__(314);
+	var hide = __webpack_require__(312);
 	module.exports = function(target, src, safe){
 	  for(var key in src){
 	    if(safe && target[key])target[key] = src[key];
@@ -9483,7 +9067,7 @@
 	};
 
 /***/ }),
-/* 354 */
+/* 352 */
 /***/ (function(module, exports) {
 
 	module.exports = function(it, Constructor, name, forbiddenField){
@@ -9493,15 +9077,15 @@
 	};
 
 /***/ }),
-/* 355 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var ctx         = __webpack_require__(312)
-	  , call        = __webpack_require__(356)
-	  , isArrayIter = __webpack_require__(357)
-	  , anObject    = __webpack_require__(316)
-	  , toLength    = __webpack_require__(336)
-	  , getIterFn   = __webpack_require__(358)
+	var ctx         = __webpack_require__(310)
+	  , call        = __webpack_require__(354)
+	  , isArrayIter = __webpack_require__(355)
+	  , anObject    = __webpack_require__(314)
+	  , toLength    = __webpack_require__(334)
+	  , getIterFn   = __webpack_require__(356)
 	  , BREAK       = {}
 	  , RETURN      = {};
 	var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
@@ -9523,11 +9107,11 @@
 	exports.RETURN = RETURN;
 
 /***/ }),
-/* 356 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// call something on iterator step with safe closing on error
-	var anObject = __webpack_require__(316);
+	var anObject = __webpack_require__(314);
 	module.exports = function(iterator, fn, value, entries){
 	  try {
 	    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
@@ -9540,12 +9124,12 @@
 	};
 
 /***/ }),
-/* 357 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// check on default Array iterator
-	var Iterators  = __webpack_require__(326)
-	  , ITERATOR   = __webpack_require__(344)('iterator')
+	var Iterators  = __webpack_require__(324)
+	  , ITERATOR   = __webpack_require__(342)('iterator')
 	  , ArrayProto = Array.prototype;
 
 	module.exports = function(it){
@@ -9553,25 +9137,25 @@
 	};
 
 /***/ }),
-/* 358 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var classof   = __webpack_require__(359)
-	  , ITERATOR  = __webpack_require__(344)('iterator')
-	  , Iterators = __webpack_require__(326);
-	module.exports = __webpack_require__(300).getIteratorMethod = function(it){
+	var classof   = __webpack_require__(357)
+	  , ITERATOR  = __webpack_require__(342)('iterator')
+	  , Iterators = __webpack_require__(324);
+	module.exports = __webpack_require__(309).getIteratorMethod = function(it){
 	  if(it != undefined)return it[ITERATOR]
 	    || it['@@iterator']
 	    || Iterators[classof(it)];
 	};
 
 /***/ }),
-/* 359 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// getting tag from 19.1.3.6 Object.prototype.toString()
-	var cof = __webpack_require__(334)
-	  , TAG = __webpack_require__(344)('toStringTag')
+	var cof = __webpack_require__(332)
+	  , TAG = __webpack_require__(342)('toStringTag')
 	  // ES3 wrong here
 	  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
 
@@ -9594,15 +9178,15 @@
 	};
 
 /***/ }),
-/* 360 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var global      = __webpack_require__(311)
-	  , core        = __webpack_require__(300)
-	  , dP          = __webpack_require__(315)
-	  , DESCRIPTORS = __webpack_require__(319)
-	  , SPECIES     = __webpack_require__(344)('species');
+	var global      = __webpack_require__(308)
+	  , core        = __webpack_require__(309)
+	  , dP          = __webpack_require__(313)
+	  , DESCRIPTORS = __webpack_require__(317)
+	  , SPECIES     = __webpack_require__(342)('species');
 
 	module.exports = function(KEY){
 	  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
@@ -9613,18 +9197,18 @@
 	};
 
 /***/ }),
-/* 361 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var META     = __webpack_require__(340)('meta')
-	  , isObject = __webpack_require__(317)
-	  , has      = __webpack_require__(325)
-	  , setDesc  = __webpack_require__(315).f
+	var META     = __webpack_require__(338)('meta')
+	  , isObject = __webpack_require__(315)
+	  , has      = __webpack_require__(323)
+	  , setDesc  = __webpack_require__(313).f
 	  , id       = 0;
 	var isExtensible = Object.isExtensible || function(){
 	  return true;
 	};
-	var FREEZE = !__webpack_require__(320)(function(){
+	var FREEZE = !__webpack_require__(318)(function(){
 	  return isExtensible(Object.preventExtensions({}));
 	});
 	var setMeta = function(it){
@@ -9671,23 +9255,23 @@
 	};
 
 /***/ }),
-/* 362 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var global         = __webpack_require__(311)
-	  , $export        = __webpack_require__(310)
-	  , meta           = __webpack_require__(361)
-	  , fails          = __webpack_require__(320)
-	  , hide           = __webpack_require__(314)
-	  , redefineAll    = __webpack_require__(353)
-	  , forOf          = __webpack_require__(355)
-	  , anInstance     = __webpack_require__(354)
-	  , isObject       = __webpack_require__(317)
-	  , setToStringTag = __webpack_require__(343)
-	  , dP             = __webpack_require__(315).f
-	  , each           = __webpack_require__(363)(0)
-	  , DESCRIPTORS    = __webpack_require__(319);
+	var global         = __webpack_require__(308)
+	  , $export        = __webpack_require__(307)
+	  , meta           = __webpack_require__(359)
+	  , fails          = __webpack_require__(318)
+	  , hide           = __webpack_require__(312)
+	  , redefineAll    = __webpack_require__(351)
+	  , forOf          = __webpack_require__(353)
+	  , anInstance     = __webpack_require__(352)
+	  , isObject       = __webpack_require__(315)
+	  , setToStringTag = __webpack_require__(341)
+	  , dP             = __webpack_require__(313).f
+	  , each           = __webpack_require__(361)(0)
+	  , DESCRIPTORS    = __webpack_require__(317);
 
 	module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 	  var Base  = global[NAME]
@@ -9735,7 +9319,7 @@
 	};
 
 /***/ }),
-/* 363 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 0 -> Array#forEach
@@ -9745,11 +9329,11 @@
 	// 4 -> Array#every
 	// 5 -> Array#find
 	// 6 -> Array#findIndex
-	var ctx      = __webpack_require__(312)
-	  , IObject  = __webpack_require__(333)
-	  , toObject = __webpack_require__(346)
-	  , toLength = __webpack_require__(336)
-	  , asc      = __webpack_require__(364);
+	var ctx      = __webpack_require__(310)
+	  , IObject  = __webpack_require__(331)
+	  , toObject = __webpack_require__(344)
+	  , toLength = __webpack_require__(334)
+	  , asc      = __webpack_require__(362);
 	module.exports = function(TYPE, $create){
 	  var IS_MAP        = TYPE == 1
 	    , IS_FILTER     = TYPE == 2
@@ -9784,23 +9368,23 @@
 	};
 
 /***/ }),
-/* 364 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-	var speciesConstructor = __webpack_require__(365);
+	var speciesConstructor = __webpack_require__(363);
 
 	module.exports = function(original, length){
 	  return new (speciesConstructor(original))(length);
 	};
 
 /***/ }),
-/* 365 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(317)
-	  , isArray  = __webpack_require__(366)
-	  , SPECIES  = __webpack_require__(344)('species');
+	var isObject = __webpack_require__(315)
+	  , isArray  = __webpack_require__(364)
+	  , SPECIES  = __webpack_require__(342)('species');
 
 	module.exports = function(original){
 	  var C;
@@ -9816,31 +9400,31 @@
 	};
 
 /***/ }),
-/* 366 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 7.2.2 IsArray(argument)
-	var cof = __webpack_require__(334);
+	var cof = __webpack_require__(332);
 	module.exports = Array.isArray || function isArray(arg){
 	  return cof(arg) == 'Array';
 	};
 
 /***/ }),
-/* 367 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// https://github.com/DavidBruant/Map-Set.prototype.toJSON
-	var $export  = __webpack_require__(310);
+	var $export  = __webpack_require__(307);
 
-	$export($export.P + $export.R, 'Map', {toJSON: __webpack_require__(368)('Map')});
+	$export($export.P + $export.R, 'Map', {toJSON: __webpack_require__(366)('Map')});
 
 /***/ }),
-/* 368 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// https://github.com/DavidBruant/Map-Set.prototype.toJSON
-	var classof = __webpack_require__(359)
-	  , from    = __webpack_require__(369);
+	var classof = __webpack_require__(357)
+	  , from    = __webpack_require__(367);
 	module.exports = function(NAME){
 	  return function toJSON(){
 	    if(classof(this) != NAME)throw TypeError(NAME + "#toJSON isn't generic");
@@ -9849,10 +9433,10 @@
 	};
 
 /***/ }),
-/* 369 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var forOf = __webpack_require__(355);
+	var forOf = __webpack_require__(353);
 
 	module.exports = function(iter, ITERATOR){
 	  var result = [];
@@ -9862,151 +9446,227 @@
 
 
 /***/ }),
-/* 370 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.Menus = exports.Screen = undefined;
 
-	var _keys = __webpack_require__(371);
-
-	var _keys2 = _interopRequireDefault(_keys);
-
-	var _getIterator2 = __webpack_require__(375);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-	var _toConsumableArray2 = __webpack_require__(378);
+	var _toConsumableArray2 = __webpack_require__(369);
 
 	var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-	var _typeof2 = __webpack_require__(384);
+	var _typeof2 = __webpack_require__(375);
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
-	var _error = __webpack_require__(401);
+	var _getIterator2 = __webpack_require__(392);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+	exports.generateCalHtml = generateCalHtml;
+	exports.toggleMenu = toggleMenu;
+	exports.fillInMenu = fillInMenu;
+
+	var _view = __webpack_require__(395);
+
+	var _helperFunctions = __webpack_require__(411);
+
+	var _objects = __webpack_require__(412);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Screen = exports.Screen = {
-	    fillInMenu: function fillInMenu(menu) {
-	        var menuElt = document.querySelector(".menu.wrapper");
-	        var headerElt = document.querySelector(".menu.header");
-	        var contentElt = document.querySelector(".menu.content");
-	        var titleElt = headerElt.getElementsByTagName("h2")[0];
-	        var bkgElt = document.querySelector(".menu.background");
-	        var footerElt = document.querySelector(".menu.footer");
-	        var hasId = menu.hasOwnProperty("data") ? menu.data.hasOwnProperty("id") : false;
-	        var buttonPlacements = {
-	            content: []
+	function generateCalHtml(parent) {
+	    // weekly labels
+	    var weekLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+	    // monthly labels
+	    var monthLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+	    // days in months, in order
+	    var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+	    // starting date of the calender
+	    var firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+	    var totalDays = daysInMonth[firstDay.getMonth()];
+	    var month = monthLabels[firstDay.getMonth()];
+	    var year = firstDay.getFullYear();
+	    var tableDiv = parent;
+	    var table = _view.View.elt("table");
+	    var tr = void 0;
+	    //let tdHeight = document.querySelector("body").clientHeight*.82*.15;
+	    var th = _view.View.elt("div", { id: "calCurrentMonth" }, _view.View.elt("span", {
+	        id: "month"
+	    }, '' + month), _view.View.elt("span", {
+	        id: "year"
+	    }, '' + year));
+	    document.querySelector("#calender .header").appendChild(th);
+
+	    if (firstDay.getMonth() == 1) //february
+	        if (isLeapYear(firstDay.getFullYear())) totalDays = 29;
+
+	    tr = _view.View.elt("tr");
+	    for (var day = 0; day < 7; day++) {
+	        var td = _view.View.elt("td", {
+	            class: "weekday"
+	        }, _view.View.elt("span", {}, '' + weekLabels[day]));
+	        tr.appendChild(td);
+	    }
+	    table.appendChild(tr);
+
+	    var cell = 0;
+	    for (var i = 0; i < 6; i++) {
+	        tr = _view.View.elt("tr");
+
+	        var _loop = function _loop() {
+	            cell++;
+	            var fday = firstDay.getDay() + 1;
+	            var day = cell - fday + 1;
+	            var td = void 0;
+	            var eventContainer = void 0;
+	            if (cell >= fday && day <= totalDays) {
+	                eventContainer = _view.View.elt("div", { class: "eventContainer" });
+	                td = _view.View.elt("td", {
+	                    class: "day",
+	                    id: 'event_' + day + '-' + firstDay.getMonth() + '-' + firstDay.getFullYear()
+	                }, _view.View.elt("text", {
+	                    class: "calNumber"
+	                }, '' + day), eventContainer);
+
+	                eventContainer.addEventListener("click", function (event) {
+	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
+	                    selectedDateTD = td;
+	                    console.log("click");
+	                    if (event.target == eventContainer) {
+	                        if ((0, _helperFunctions.isMobile)()) toggleMenu(_objects.Menus.mobile);else toggleMenu(_objects.Menus.addEvent);
+	                    }
+	                });
+
+	                td.addEventListener("click", function (event) {
+	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
+	                    selectedDateTD = td;
+	                    if (event.target == td) {
+	                        console.log("td");
+	                        if ((0, _helperFunctions.isMobile)()) toggleMenu(_objects.Menus.mobile);else toggleMenu(_objects.Menus.addEvent);
+	                    }
+	                });
+	            } else td = _view.View.elt("td", {
+	                class: "nonday"
+	            });
+
+	            td.appendChild(_view.View.elt("div"));
+
+	            tr.appendChild(td);
 	        };
 
-	        //Set ids
-	        if (hasId) {
-	            menuElt.id = menu.id + "Wrapper";
-	            headerElt.id = menu.id + "Header";
-	            contentElt.id = menu.id + "Content";
-	            titleElt.id = menu.id + "Title";
-	            bkgElt.id = menu.id + "Background";
-	            footerElt.id = menu.id + "Footer";
-	        } else {
-	            menuElt.removeAttribute('id');
-	            headerElt.removeAttribute('id');
-	            contentElt.removeAttribute('id');
-	            titleElt.removeAttribute('id');
-	            bkgElt.removeAttribute('id');
-	            footerElt.removeAttribute('id');
+	        for (var j = 0; j < 7; j++) {
+	            _loop();
+	        }
+	        table.appendChild(tr);
+	    }
+	    tableDiv.appendChild(table);
+	}
+
+	/**
+	    * Disables menu if it shown and enables with selected menu when it is not shown
+	    * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
+	    */
+	function toggleMenu(menu) {
+	    var menuWrapper = document.querySelector(".menu.wrapper");
+	    var isShown = _view.View.hasClass(menuWrapper, 'hidden') ? false : true;
+
+	    if (menu === true) _view.View.removeClass(menuWrapper, 'hidden');
+	    if (menu === false) _view.View.addClass(menuWrapper, 'hidden');
+
+	    if (isShown) _view.View.addClass(menuWrapper, 'hidden');else {
+	        fillInMenu(menu);
+	        _view.View.removeClass(document.querySelector(".menu.wrapper"), 'hidden');
+	    }
+	}
+
+	//get copy of clean menu
+	//does not include outer menu wrapper div
+	var clearedMenu = $(".menu.wrapper").clone(true);
+	console.log(clearedMenu);
+
+	function clearMenu() {
+	    $(".menu.wrapper").replaceWith(clearedMenu.clone(true));
+	}
+
+	function fillInMenu(menu) {
+	    //clear elements of previous content
+	    clearMenu();
+
+	    var menuElt = document.querySelector(".menu.wrapper");
+	    var headerElt = document.querySelector(".menu.header");
+	    var contentElt = document.querySelector(".menu.content");
+	    var titleElt = headerElt.getElementsByTagName("h2")[0];
+	    var bkgElt = document.querySelector(".menu.background");
+	    var footerElt = document.querySelector(".menu.footer");
+	    var hasId = menu.hasOwnProperty("data") ? menu.data.hasOwnProperty("id") : false;
+	    var buttonPlacements = {
+	        content: []
+	    };
+
+	    var close = document.querySelector(".menu.close");
+	    close.addEventListener("click", function (event) {
+	        var modal = close.parentNode.parentNode;
+	        _view.View.toggleClass(modal, 'hidden', true);
+	    });
+
+	    //Set ids
+	    if (hasId) {
+	        menuElt.id = menu.id + "Wrapper";
+	        headerElt.id = menu.id + "Header";
+	        contentElt.id = menu.id + "Content";
+	        titleElt.id = menu.id + "Title";
+	        bkgElt.id = menu.id + "Background";
+	        footerElt.id = menu.id + "Footer";
+	    } else {
+	        menuElt.removeAttribute('id');
+	        headerElt.removeAttribute('id');
+	        contentElt.removeAttribute('id');
+	        titleElt.removeAttribute('id');
+	        bkgElt.removeAttribute('id');
+	        footerElt.removeAttribute('id');
+	    }
+
+	    //sort buttons by placement, if button has no placement content is assumed
+	    if (menu.hasOwnProperty("buttons")) {
+	        if (menu.buttons.constructor !== Array) {
+	            menu.buttons = [menu.buttons];
 	        }
 
-	        //sort buttons by placement, if button has no placement content is assumed
-	        if (menu.hasOwnProperty("buttons")) {
-	            if (menu.buttons.constructor !== Array) {
-	                menu.buttons = [menu.buttons];
+	        menu.buttons.forEach(function (button) {
+	            if (!button.hasOwnProperty("data") || !button.data.hasOwnProperty("placement")) {
+	                buttonPlacements.content.push(button);
+	            } else {
+	                if (buttonPlacements.hasOwnProperty(button.data.placement)) buttonPlacements[button.data.placement].push(button);else buttonPlacements[button.data.placement] = [button];
 	            }
+	        });
+	    }
 
-	            menu.buttons.forEach(function (button) {
-	                if (!button.hasOwnProperty("data") || !button.data.hasOwnProperty("placement")) {
-	                    buttonPlacements.content.push(button);
-	                } else {
-	                    if (buttonPlacements.hasOwnProperty(button.data.placement)) buttonPlacements[button.data.placement].push(button);else buttonPlacements[button.placement] = [button];
-	                }
-	            });
-	        }
+	    if (menu.hasOwnProperty("header")) {
+	        var header = (0, _helperFunctions.forceArray)(menu.header);
+	        if (header[0].hasOwnProperty("title")) titleElt.textContent = header[0].title;
+	    }
 
-	        if (menu.hasOwnProperty("header") && menu["header"].hasOwnProperty("title")) titleElt.textContent = menu.header.title;
-
-	        //append child objects
-	        if (menu.hasOwnProperty("header")) for (var obj in menu.header) {
-	            if ((typeof obj === "undefined" ? "undefined" : (0, _typeof3.default)(obj)) === "object" && obj !== "title") headerElt.appendChild(createObjToElt(menu.header[obj]));
-	        }if (menu.hasOwnProperty("content")) for (var _obj in menu.content) {
-	            if ((typeof _obj === "undefined" ? "undefined" : (0, _typeof3.default)(_obj)) === "object") bkgElt.appendChild(createObjToElt(menu.content[_obj]));
-	        }if (menu.hasOwnProperty("footer")) for (var _obj2 in menu.footer) {
-	            if ((typeof _obj2 === "undefined" ? "undefined" : (0, _typeof3.default)(_obj2)) === "object") footerElt.appendChild(createObjToElt(menu.footer[_obj2]));
-	        } //append button div
-	        for (var place in buttonPlacements) {
-	            var _elt = void 0;
-	            if (place === "header") {
-	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));
-	                headerElt.appendChild(_elt);
-	            } else if (place === "content" && buttonPlacements.content) {
-	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
-	                bkgElt.appendChild(_elt);
-	            } else if (place === "footer") {
-	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
-	                footerElt.appendChild(_elt);
-	            } else if (place === "form") {
-	                if (hasId) _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else _elt = s.eltObjToElt(s.eltObj.apply(s, ["div", { class: "menuBtns menuBtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
-	                document.querySelector("#" + buttonPlacements.form[0].parentId).appendChild(_elt);
-	            } else throw new Error("Could not place button. Button placement " + place + " is invalid");
-	        }
-	    },
-
-	    /**
-	        * Disables menu if it shown and enables with selected menu when it is not shown
-	        * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
-	        */
-	    toggleMenu: function toggleMenu(menu) {
-	        var isShown = document.querySelector(".menu.wrapper").style.display === "none" ? false : true;
-
-	        if (menu === true) document.querySelector(".menu.wrapper").style.display = "";
-	        if (menu === false) document.querySelector(".menu.wrapper").style.display = "none";
-
-	        if (isShown) document.querySelector(".menu.wrapper").style.display = "none";else {
-	            s.fillInMenu(menu);
-	            document.querySelector(".menu.wrapper").style.display = "none";
-	        }
-	    },
-	    /**
-	        * Creates an element node
-	        * @param {string} name name of element
-	        * @param {{}} attributes attributes of element as an object
-	        * @param {HTMLElement|string} children additional arguments added to node as children
-	        */
-	    elt: function elt(name, attributes) {
-	        for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-	            children[_key - 2] = arguments[_key];
-	        }
-
-	        var node = document.createElement(name);
-	        if (attributes) {
-	            for (var attr in attributes) {
-	                if (attributes.hasOwnProperty(attr)) node.setAttribute(attr, attributes[attr]);
-	            }
-	        }
+	    //append child objects
+	    if (menu.hasOwnProperty("header")) {
+	        var objs = (0, _helperFunctions.forceArray)(menu.header);
 	        var _iteratorNormalCompletion = true;
 	        var _didIteratorError = false;
 	        var _iteratorError = undefined;
 
 	        try {
-	            for (var _iterator = (0, _getIterator3.default)(children), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                var child = _step.value;
+	            for (var _iterator = (0, _getIterator3.default)(objs), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var obj = _step.value;
 
-	                if (typeof child == "string") child = document.createTextNode(child);
-	                node.appendChild(child);
+	                if (obj.constructor === Object && obj.hasOwnProperty("elm")) headerElt.appendChild(_view.View.eltObjToElt(obj));
 	            }
 	        } catch (err) {
 	            _didIteratorError = true;
@@ -10022,204 +9682,90 @@
 	                }
 	            }
 	        }
-
-	        return node;
-	    },
-
-	    /**
-	        * Creates an object representation of an element
-	        * @param {string} element Name of the element
-	        * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
-	        * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
-	        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child s.eltObjs. Can also be a child text node represented as a string
-	        * @return {{element: string, attributes: {}, data: {}, children: []}}
-	        */
-	    eltObj: function eltObj(element) {
-	        for (var _len2 = arguments.length, children = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
-	            children[_key2 - 3] = arguments[_key2];
-	        }
-
-	        var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	        var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-	        var elementObj = {
-	            elem: element
-	        };
-
-	        if (attributes.constructor === Object) elementObj["attributes"] = attributes;else if (attributes.constructor === String) {//attempt to transform string into an object
-	            /*
-	            let parse = JSON.parse("{" + attributes + "}");
-	            if (parse.constructor === Object)
-	                elementObj["attributes"] = parse;
-	                */
-	        }
-
-	        if (data.constructor === Object) elementObj["data"] = data;else if (data.constructor === String) {//attempt to transform string into an object
-	            /*
-	            let parse = JSON.parse("{" + data + "}");
-	            if (parse.constructor === Object)
-	                elementObj["data"] = parse;
-	                */
-	        }
-
-	        elementObj["children"] = children;
-
-	        return elementObj;
-	    },
-
-	    /**
-	     * Transforms element object into an element.
-	     * @param {{element: string, attributes: {}, data: {}, children: []}} createObj
-	     * @return {HTMLElement}
-	     */
-	    eltObjToElt: function eltObjToElt(createObj) {
-	        if (!createObj || createObj.constructor === Object && (0, _keys2.default)(createObj).length > 0) throw new Error("Create object could not be converted to element: create object must be a non empty object");
-	        if (!createObj.hasOwnProperty("elem")) throw new Error("Create object could not be converted to element: create object must have elem as property");
-
-	        var children = [];
-	        createObj.children.forEach(function (child) {
-	            children.push(createObjToElt(child));
-	        });
-
-	        if (createObj.constructor === String) return elt(createObj);else if (creatObj.constructor === Object) return elt.apply(undefined, [createObj.elem, createObj.attributes].concat((0, _toConsumableArray3.default)(createObj.children)));else throw new Error("Could not convert object to an element. Must be either an object or a string");
 	    }
-	}; //Menu contains wrapper, header, content, footer, and optional buttons inside or outside of form and optional close button in the header
-	//Menu is an object
+	    if (menu.hasOwnProperty("content")) {
+	        var _objs = (0, _helperFunctions.forceArray)(menu.content);
+	        var _iteratorNormalCompletion2 = true;
+	        var _didIteratorError2 = false;
+	        var _iteratorError2 = undefined;
 
+	        try {
+	            for (var _iterator2 = (0, _getIterator3.default)(_objs), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                var _obj = _step2.value;
 
-	var s = Screen;
-
-	/**
-	 * Stores menus
-	 * {id, header, content, footer, buttons}
-	 * note: if button placement is in form, should include parent id
-	 */
-	var Menus = exports.Menus = {
-	    addEvent: {
-	        id: "addEvent",
-	        header: {
-	            title: "Add Event to Calender"
-	        },
-	        content: s.eltObj("form", { id: "addEventForm", onsubmit: "addEventFormSubmit(event)" }, {}, s.eltObj("input", { type: "time", name: "time", id: "addEventTime" }, {}, s.eltObj("label", { for: "addEventTime" }, {}, "Time:")), s.eltObj("input", { name: "title", id: "addEventTitle" }, {}, s.eltObj("label", { for: "addEventTitle" }, {}, "Title:")), s.eltObj("textarea", { name: "notes", id: "addEventNotes", pattern: ".{0}" }, {}, s.eltObj("label", { for: "addEventNotes" }, {}, "Notes:"))),
-	        buttons: [s.eltObj("button", { id: "addEventSubmit", type: "submit" }, { placement: "form", parentId: "addEventForm" }, "save")]
-	    },
-
-	    editEvent: {
-	        id: "editEvent",
-	        header: {
-	            title: "Edit Event"
-	        },
-	        content: s.eltObj("form", { id: "editEventForm" }, {}, s.eltObj("input", { type: "time", name: "time", id: "editEventTime" }, {}, s.eltObj("label", { for: "editEventTime" }, {}, "Time:")), s.eltObj("input", { name: "title", id: "editEventTitle" }, {}, s.eltObj("label", { for: "editEventTitle" }, {}, "Title:")), s.eltObj("textarea", { name: "notes", id: "editEventNotes", pattern: ".{0}" }, {}, s.eltObj("label", { for: "editEventNotes" }, {}, "Notes:"))),
-	        buttons: [s.eltObj("button", { id: "editEventSubmit", type: "submit" }, { placement: "form", parentId: "editEventForm" }, "save")]
-	    },
-
-	    viewEvent: {
-	        id: "viewEvent",
-	        content: [s.eltObj("h3", { id: "viewTitle", class: "stitched" }, "(No Title)"), s.eltObj("br"), s.eltObj("p", { id: "viewTime" }, "(No Time)"), s.eltObj("br"), s.eltObj("p", { id: "viewNotes" }, "(No Notes)")],
-	        buttons: [s.eltObj("button", { id: "viewEdit", onclick: "showEditMenu()" }, { placement: "footer" }, "Edit Event"), s.eltObj("button", { id: "viewDelete", onclick: "deleteEvent()" }, { placement: "footer" }, "Delete Event")]
-	    },
-
-	    mobile: {
-	        id: "mobile",
-	        content: [s.eltObj("span", {}, {}, "Events")],
-	        buttons: [s.eltObj("button", { id: "mobileAddEvent", onclick: "showMenu('addEvent')" }, { placement: "footer" }, "New Event")]
-	    },
-
-	    contentGenerators: {
-	        viewEvent:
-	        /**
-	         * Fills in viewEvents content
-	         * @param {string} title title of event
-	         * @param {string} time time of event
-	         * @param {string} notes notes about event
-	         */
-	        function viewEvent() {
-	            var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "(No Title)";
-	            var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "(No Time)";
-	            var notes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "(No Notes)";
-
-	            Menus.viewEvent.content = [s.eltObj("h3", { id: "viewTitle", class: "stitched" }, title), s.eltObj("br"), s.eltObj("p", { id: "viewTime" }, time), s.eltObj("br"), s.eltObj("p", { id: "viewNotes" }, notes)];
+	                if ((typeof _obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(_obj)) === "object") bkgElt.appendChild(_view.View.eltObjToElt(_obj));
+	            }
+	        } catch (err) {
+	            _didIteratorError2 = true;
+	            _iteratorError2 = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                    _iterator2.return();
+	                }
+	            } finally {
+	                if (_didIteratorError2) {
+	                    throw _iteratorError2;
+	                }
+	            }
 	        }
 	    }
-	};
+	    if (menu.hasOwnProperty("footer")) {
+	        var _objs2 = (0, _helperFunctions.forceArray)(menu.footer);
+	        var _iteratorNormalCompletion3 = true;
+	        var _didIteratorError3 = false;
+	        var _iteratorError3 = undefined;
+
+	        try {
+	            for (var _iterator3 = (0, _getIterator3.default)(_objs2), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                var _obj2 = _step3.value;
+
+	                if ((typeof _obj2 === 'undefined' ? 'undefined' : (0, _typeof3.default)(_obj2)) === "object") footerElt.appendChild(_view.View.eltObjToElt(_obj2));
+	            }
+	        } catch (err) {
+	            _didIteratorError3 = true;
+	            _iteratorError3 = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	                    _iterator3.return();
+	                }
+	            } finally {
+	                if (_didIteratorError3) {
+	                    throw _iteratorError3;
+	                }
+	            }
+	        }
+	    }
+
+	    //append button div
+	    for (var place in buttonPlacements) {
+	        var elt = void 0;
+	        if (place === "header") {
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));
+	            headerElt.appendChild(elt);
+	        } else if (place === "content" && buttonPlacements.content) {
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
+	            bkgElt.appendChild(elt);
+	        } else if (place === "footer") {
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
+	            footerElt.appendChild(elt);
+	        } else if (place === "form") {
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
+	            document.querySelector(".menu.background").querySelector("#" + buttonPlacements.form[0].data.parentId).appendChild(elt);
+	        } else throw new Error("Could not place button. Button placement " + place + " is invalid");
+	    }
+	}
 
 /***/ }),
-/* 371 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(372), __esModule: true };
-
-/***/ }),
-/* 372 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(373);
-	module.exports = __webpack_require__(300).Object.keys;
-
-/***/ }),
-/* 373 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// 19.1.2.14 Object.keys(O)
-	var toObject = __webpack_require__(346)
-	  , $keys    = __webpack_require__(330);
-
-	__webpack_require__(374)('keys', function(){
-	  return function keys(it){
-	    return $keys(toObject(it));
-	  };
-	});
-
-/***/ }),
-/* 374 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// most Object methods by ES6 should accept primitives
-	var $export = __webpack_require__(310)
-	  , core    = __webpack_require__(300)
-	  , fails   = __webpack_require__(320);
-	module.exports = function(KEY, exec){
-	  var fn  = (core.Object || {})[KEY] || Object[KEY]
-	    , exp = {};
-	  exp[KEY] = exec(fn);
-	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
-	};
-
-/***/ }),
-/* 375 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(376), __esModule: true };
-
-/***/ }),
-/* 376 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(347);
-	__webpack_require__(304);
-	module.exports = __webpack_require__(377);
-
-/***/ }),
-/* 377 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var anObject = __webpack_require__(316)
-	  , get      = __webpack_require__(358);
-	module.exports = __webpack_require__(300).getIterator = function(it){
-	  var iterFn = get(it);
-	  if(typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
-	  return anObject(iterFn.call(it));
-	};
-
-/***/ }),
-/* 378 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _from = __webpack_require__(379);
+	var _from = __webpack_require__(370);
 
 	var _from2 = _interopRequireDefault(_from);
 
@@ -10238,34 +9784,34 @@
 	};
 
 /***/ }),
-/* 379 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(380), __esModule: true };
+	module.exports = { "default": __webpack_require__(371), __esModule: true };
 
 /***/ }),
-/* 380 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(304);
-	__webpack_require__(381);
-	module.exports = __webpack_require__(300).Array.from;
+	__webpack_require__(301);
+	__webpack_require__(372);
+	module.exports = __webpack_require__(309).Array.from;
 
 /***/ }),
-/* 381 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var ctx            = __webpack_require__(312)
-	  , $export        = __webpack_require__(310)
-	  , toObject       = __webpack_require__(346)
-	  , call           = __webpack_require__(356)
-	  , isArrayIter    = __webpack_require__(357)
-	  , toLength       = __webpack_require__(336)
-	  , createProperty = __webpack_require__(382)
-	  , getIterFn      = __webpack_require__(358);
+	var ctx            = __webpack_require__(310)
+	  , $export        = __webpack_require__(307)
+	  , toObject       = __webpack_require__(344)
+	  , call           = __webpack_require__(354)
+	  , isArrayIter    = __webpack_require__(355)
+	  , toLength       = __webpack_require__(334)
+	  , createProperty = __webpack_require__(373)
+	  , getIterFn      = __webpack_require__(356);
 
-	$export($export.S + $export.F * !__webpack_require__(383)(function(iter){ Array.from(iter); }), 'Array', {
+	$export($export.S + $export.F * !__webpack_require__(374)(function(iter){ Array.from(iter); }), 'Array', {
 	  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
 	  from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
 	    var O       = toObject(arrayLike)
@@ -10295,12 +9841,12 @@
 
 
 /***/ }),
-/* 382 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var $defineProperty = __webpack_require__(315)
-	  , createDesc      = __webpack_require__(323);
+	var $defineProperty = __webpack_require__(313)
+	  , createDesc      = __webpack_require__(321);
 
 	module.exports = function(object, index, value){
 	  if(index in object)$defineProperty.f(object, index, createDesc(0, value));
@@ -10308,10 +9854,10 @@
 	};
 
 /***/ }),
-/* 383 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var ITERATOR     = __webpack_require__(344)('iterator')
+	var ITERATOR     = __webpack_require__(342)('iterator')
 	  , SAFE_CLOSING = false;
 
 	try {
@@ -10334,18 +9880,18 @@
 	};
 
 /***/ }),
-/* 384 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _iterator = __webpack_require__(385);
+	var _iterator = __webpack_require__(376);
 
 	var _iterator2 = _interopRequireDefault(_iterator);
 
-	var _symbol = __webpack_require__(388);
+	var _symbol = __webpack_require__(379);
 
 	var _symbol2 = _interopRequireDefault(_symbol);
 
@@ -10360,72 +9906,72 @@
 	};
 
 /***/ }),
-/* 385 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(386), __esModule: true };
+	module.exports = { "default": __webpack_require__(377), __esModule: true };
 
 /***/ }),
-/* 386 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(304);
-	__webpack_require__(347);
-	module.exports = __webpack_require__(387).f('iterator');
+	__webpack_require__(301);
+	__webpack_require__(345);
+	module.exports = __webpack_require__(378).f('iterator');
 
 /***/ }),
-/* 387 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports.f = __webpack_require__(344);
+	exports.f = __webpack_require__(342);
 
 /***/ }),
-/* 388 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(389), __esModule: true };
+	module.exports = { "default": __webpack_require__(380), __esModule: true };
 
 /***/ }),
-/* 389 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	__webpack_require__(381);
+	__webpack_require__(300);
 	__webpack_require__(390);
-	__webpack_require__(303);
-	__webpack_require__(399);
-	__webpack_require__(400);
-	module.exports = __webpack_require__(300).Symbol;
+	__webpack_require__(391);
+	module.exports = __webpack_require__(309).Symbol;
 
 /***/ }),
-/* 390 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	// ECMAScript 6 symbols shim
-	var global         = __webpack_require__(311)
-	  , has            = __webpack_require__(325)
-	  , DESCRIPTORS    = __webpack_require__(319)
-	  , $export        = __webpack_require__(310)
-	  , redefine       = __webpack_require__(324)
-	  , META           = __webpack_require__(361).KEY
-	  , $fails         = __webpack_require__(320)
-	  , shared         = __webpack_require__(339)
-	  , setToStringTag = __webpack_require__(343)
-	  , uid            = __webpack_require__(340)
-	  , wks            = __webpack_require__(344)
-	  , wksExt         = __webpack_require__(387)
-	  , wksDefine      = __webpack_require__(391)
-	  , keyOf          = __webpack_require__(392)
-	  , enumKeys       = __webpack_require__(393)
-	  , isArray        = __webpack_require__(366)
-	  , anObject       = __webpack_require__(316)
-	  , toIObject      = __webpack_require__(332)
-	  , toPrimitive    = __webpack_require__(322)
-	  , createDesc     = __webpack_require__(323)
-	  , _create        = __webpack_require__(328)
-	  , gOPNExt        = __webpack_require__(396)
-	  , $GOPD          = __webpack_require__(398)
-	  , $DP            = __webpack_require__(315)
-	  , $keys          = __webpack_require__(330)
+	var global         = __webpack_require__(308)
+	  , has            = __webpack_require__(323)
+	  , DESCRIPTORS    = __webpack_require__(317)
+	  , $export        = __webpack_require__(307)
+	  , redefine       = __webpack_require__(322)
+	  , META           = __webpack_require__(359).KEY
+	  , $fails         = __webpack_require__(318)
+	  , shared         = __webpack_require__(337)
+	  , setToStringTag = __webpack_require__(341)
+	  , uid            = __webpack_require__(338)
+	  , wks            = __webpack_require__(342)
+	  , wksExt         = __webpack_require__(378)
+	  , wksDefine      = __webpack_require__(382)
+	  , keyOf          = __webpack_require__(383)
+	  , enumKeys       = __webpack_require__(384)
+	  , isArray        = __webpack_require__(364)
+	  , anObject       = __webpack_require__(314)
+	  , toIObject      = __webpack_require__(330)
+	  , toPrimitive    = __webpack_require__(320)
+	  , createDesc     = __webpack_require__(321)
+	  , _create        = __webpack_require__(326)
+	  , gOPNExt        = __webpack_require__(387)
+	  , $GOPD          = __webpack_require__(389)
+	  , $DP            = __webpack_require__(313)
+	  , $keys          = __webpack_require__(328)
 	  , gOPD           = $GOPD.f
 	  , dP             = $DP.f
 	  , gOPN           = gOPNExt.f
@@ -10548,11 +10094,11 @@
 
 	  $GOPD.f = $getOwnPropertyDescriptor;
 	  $DP.f   = $defineProperty;
-	  __webpack_require__(397).f = gOPNExt.f = $getOwnPropertyNames;
-	  __webpack_require__(395).f  = $propertyIsEnumerable;
-	  __webpack_require__(394).f = $getOwnPropertySymbols;
+	  __webpack_require__(388).f = gOPNExt.f = $getOwnPropertyNames;
+	  __webpack_require__(386).f  = $propertyIsEnumerable;
+	  __webpack_require__(385).f = $getOwnPropertySymbols;
 
-	  if(DESCRIPTORS && !__webpack_require__(309)){
+	  if(DESCRIPTORS && !__webpack_require__(306)){
 	    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
 	  }
 
@@ -10627,7 +10173,7 @@
 	});
 
 	// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-	$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(314)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+	$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(312)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 	// 19.4.3.5 Symbol.prototype[@@toStringTag]
 	setToStringTag($Symbol, 'Symbol');
 	// 20.2.1.9 Math[@@toStringTag]
@@ -10636,25 +10182,25 @@
 	setToStringTag(global.JSON, 'JSON', true);
 
 /***/ }),
-/* 391 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var global         = __webpack_require__(311)
-	  , core           = __webpack_require__(300)
-	  , LIBRARY        = __webpack_require__(309)
-	  , wksExt         = __webpack_require__(387)
-	  , defineProperty = __webpack_require__(315).f;
+	var global         = __webpack_require__(308)
+	  , core           = __webpack_require__(309)
+	  , LIBRARY        = __webpack_require__(306)
+	  , wksExt         = __webpack_require__(378)
+	  , defineProperty = __webpack_require__(313).f;
 	module.exports = function(name){
 	  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
 	  if(name.charAt(0) != '_' && !(name in $Symbol))defineProperty($Symbol, name, {value: wksExt.f(name)});
 	};
 
 /***/ }),
-/* 392 */
+/* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var getKeys   = __webpack_require__(330)
-	  , toIObject = __webpack_require__(332);
+	var getKeys   = __webpack_require__(328)
+	  , toIObject = __webpack_require__(330);
 	module.exports = function(object, el){
 	  var O      = toIObject(object)
 	    , keys   = getKeys(O)
@@ -10665,13 +10211,13 @@
 	};
 
 /***/ }),
-/* 393 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// all enumerable object keys, includes symbols
-	var getKeys = __webpack_require__(330)
-	  , gOPS    = __webpack_require__(394)
-	  , pIE     = __webpack_require__(395);
+	var getKeys = __webpack_require__(328)
+	  , gOPS    = __webpack_require__(385)
+	  , pIE     = __webpack_require__(386);
 	module.exports = function(it){
 	  var result     = getKeys(it)
 	    , getSymbols = gOPS.f;
@@ -10685,24 +10231,24 @@
 	};
 
 /***/ }),
-/* 394 */
+/* 385 */
 /***/ (function(module, exports) {
 
 	exports.f = Object.getOwnPropertySymbols;
 
 /***/ }),
-/* 395 */
+/* 386 */
 /***/ (function(module, exports) {
 
 	exports.f = {}.propertyIsEnumerable;
 
 /***/ }),
-/* 396 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-	var toIObject = __webpack_require__(332)
-	  , gOPN      = __webpack_require__(397).f
+	var toIObject = __webpack_require__(330)
+	  , gOPN      = __webpack_require__(388).f
 	  , toString  = {}.toString;
 
 	var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -10722,30 +10268,30 @@
 
 
 /***/ }),
-/* 397 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-	var $keys      = __webpack_require__(331)
-	  , hiddenKeys = __webpack_require__(341).concat('length', 'prototype');
+	var $keys      = __webpack_require__(329)
+	  , hiddenKeys = __webpack_require__(339).concat('length', 'prototype');
 
 	exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
 	  return $keys(O, hiddenKeys);
 	};
 
 /***/ }),
-/* 398 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var pIE            = __webpack_require__(395)
-	  , createDesc     = __webpack_require__(323)
-	  , toIObject      = __webpack_require__(332)
-	  , toPrimitive    = __webpack_require__(322)
-	  , has            = __webpack_require__(325)
-	  , IE8_DOM_DEFINE = __webpack_require__(318)
+	var pIE            = __webpack_require__(386)
+	  , createDesc     = __webpack_require__(321)
+	  , toIObject      = __webpack_require__(330)
+	  , toPrimitive    = __webpack_require__(320)
+	  , has            = __webpack_require__(323)
+	  , IE8_DOM_DEFINE = __webpack_require__(316)
 	  , gOPD           = Object.getOwnPropertyDescriptor;
 
-	exports.f = __webpack_require__(319) ? gOPD : function getOwnPropertyDescriptor(O, P){
+	exports.f = __webpack_require__(317) ? gOPD : function getOwnPropertyDescriptor(O, P){
 	  O = toIObject(O);
 	  P = toPrimitive(P, true);
 	  if(IE8_DOM_DEFINE)try {
@@ -10755,19 +10301,252 @@
 	};
 
 /***/ }),
-/* 399 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(391)('asyncIterator');
+	__webpack_require__(382)('asyncIterator');
 
 /***/ }),
-/* 400 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(391)('observable');
+	__webpack_require__(382)('observable');
 
 /***/ }),
-/* 401 */
+/* 392 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(393), __esModule: true };
+
+/***/ }),
+/* 393 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(345);
+	__webpack_require__(301);
+	module.exports = __webpack_require__(394);
+
+/***/ }),
+/* 394 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var anObject = __webpack_require__(314)
+	  , get      = __webpack_require__(356);
+	module.exports = __webpack_require__(309).getIterator = function(it){
+	  var iterFn = get(it);
+	  if(typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
+	  return anObject(iterFn.call(it));
+	};
+
+/***/ }),
+/* 395 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.View = undefined;
+
+	var _getIterator2 = __webpack_require__(392);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+	var _error = __webpack_require__(396);
+
+	var _helperFunctions = __webpack_require__(411);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//Menu contains wrapper, header, content, footer, and optional buttons inside or outside of form and optional close button in the header
+	//Menu is an object
+	var View = exports.View = {
+	    /**
+	     * Checks if element has a specified class
+	     * @param  {string|HTMLElement}  element element or selector
+	     * @param  {string}  class_  class to find
+	     * @return {Boolean}         if class is found
+	     */
+	    hasClass: function hasClass(element, class_) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        return (' ' + element.className + ' ').indexOf(' ' + class_ + ' ') > -1;
+	    },
+	    /**
+	     * addes a class from element
+	     * @param  {string|HTMLElement} element html element or selector
+	     * @param  {string} class_  class to add
+	     */
+	    addClass: function addClass(element, class_) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        if (element.classList) element.classList.add(class_);else if (!View.hasClass(element, class_)) element.className += " " + class_;
+	    },
+
+	    /**
+	     * Removes a class from element
+	     * @param  {string|HTMLElement} element html element or selector
+	     * @param  {string} class_  class to remove
+	     */
+	    removeClass: function removeClass(element, class_) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        if (element.classList) element.classList.remove(class_);else if (View.hasClass(element, class_)) {
+	            var reg = new RegExp('(\\s|^)' + class_ + '(\\s|$)');
+	            element.class_ = element.class_.replace(reg, ' ');
+	        }
+	    },
+	    /**
+	     * Sets style attribute to none
+	     * @param {string|HTMLElement} element element or selector
+	     * @param {string} class_ class name to toggle
+	     * @param {boolean=} toggle true, adds class, and false removes class
+	     */
+	    toggleClass: function toggleClass(element, class_, toggle) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        if (toggle === true) View.addClass(element, class_);else if (toggle === false) View.removeClass(element, class_);else if (hasClass(element, class_)) View.removeClass(element, class_);else View.addClass(element, class_);
+	    },
+	    addListeners: function addListeners(elt, listeners) {
+	        //force double array
+	        if (listeners[0] !== undefined && listeners[0].constructor !== Array) listeners = [listeners];
+
+	        if (listeners[0].constructor !== Array) return;
+
+	        listeners.forEach(function (listener) {
+	            var args = listener.length > 2 ? listener.splice(2) : undefined;
+	            elt.addEventListener(listener[0], (0, _helperFunctions.bindIfNull)(listener[1]));
+	        });
+	    },
+	    /**
+	        * Creates an element node
+	        * @param {string} name name of element
+	        * @param {{}} attributes attributes of element as an object
+	        * @param {HTMLElement|string} children additional arguments added to node as children
+	        */
+	    elt: function elt(name, attributes) {
+	        for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+	            children[_key - 2] = arguments[_key];
+	        }
+
+	        var node = document.createElement(name);
+	        if (attributes) {
+	            for (var attr in attributes) {
+	                if (attributes.hasOwnProperty(attr)) node.setAttribute(attr, attributes[attr]);
+	            }
+	        }
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	            for (var _iterator = (0, _getIterator3.default)(children), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var child = _step.value;
+
+	                if (typeof child == "string") child = document.createTextNode(child);
+	                node.appendChild(child);
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                    _iterator.return();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+
+	        return node;
+	    },
+
+	    /**
+	        * Creates an object representation of an element
+	        * @param {string} element Name of the element
+	        * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
+	        * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
+	        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child View.eltObjs. Can also be a child text node represented as a string
+	        * @return {{element: string, attributes: {}, data: {}, children: []}}
+	        */
+	    eltObj: function eltObj(element) {
+	        for (var _len2 = arguments.length, children = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
+	            children[_key2 - 3] = arguments[_key2];
+	        }
+
+	        var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	        var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	        var elementObj = {
+	            elem: element
+	        };
+
+	        if (attributes.constructor === Object) elementObj["attributes"] = attributes;else if (attributes.constructor === String) {//attempt to transform string into an object
+	            /*
+	            let parse = JSON.parse("{" + attributes + "}");
+	            if (parse.constructor === Object)
+	                elementObj["attributes"] = parse;
+	                */
+	        }
+
+	        if (data.constructor === Object) elementObj["data"] = data;else if (data.constructor === String) {//attempt to transform string into an object
+	            /*
+	            let parse = JSON.parse("{" + data + "}");
+	            if (parse.constructor === Object)
+	                elementObj["data"] = parse;
+	                */
+	        }
+
+	        elementObj["children"] = children;
+
+	        return elementObj;
+	    },
+
+	    /**
+	     * Transforms element object into an element.
+	     * @param {{element: string, attributes: {}, data: {}, children: []}} createObj
+	     * @return {HTMLElement}
+	     */
+	    eltObjToElt: function eltObjToElt(createObj) {
+
+	        //strings do not need to be converted
+	        if (createObj.constructor === String) return createObj;
+
+	        if (!createObj || createObj.constructor !== Object) throw new Error("Create object could not be converted to element: create object must be a non empty object or string");
+	        if (!createObj.hasOwnProperty("elem")) throw new Error("Create object could not be converted to element: create object must have elem as property");
+
+	        //convert children to elements
+	        var children = [];
+	        if (createObj.constructor === Object) {
+	            createObj.children.forEach(function (child) {
+	                children.push(View.eltObjToElt(child));
+	            });
+	        }
+
+	        //create element
+	        var elt = View.elt.apply(View, [createObj.elem, createObj.attributes].concat(children));
+
+	        //add event listeners
+	        if (createObj.hasOwnProperty('data') && createObj.data.hasOwnProperty('listeners')) View.addListeners(elt, createObj.data.listeners);
+
+	        if (createObj.constructor === Object) return elt;else throw new Error("Could not convert object to an element. Must be either an object or a string");
+	    }
+	};
+
+/***/ }),
+/* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -10777,19 +10556,19 @@
 	});
 	exports.CreateError = undefined;
 
-	var _getPrototypeOf = __webpack_require__(402);
+	var _getPrototypeOf = __webpack_require__(397);
 
 	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-	var _classCallCheck2 = __webpack_require__(405);
+	var _classCallCheck2 = __webpack_require__(401);
 
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-	var _possibleConstructorReturn2 = __webpack_require__(406);
+	var _possibleConstructorReturn2 = __webpack_require__(402);
 
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-	var _inherits2 = __webpack_require__(407);
+	var _inherits2 = __webpack_require__(403);
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -10835,34 +10614,49 @@
 	}(CustomError);
 
 /***/ }),
-/* 402 */
+/* 397 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(403), __esModule: true };
+	module.exports = { "default": __webpack_require__(398), __esModule: true };
 
 /***/ }),
-/* 403 */
+/* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(404);
-	module.exports = __webpack_require__(300).Object.getPrototypeOf;
+	__webpack_require__(399);
+	module.exports = __webpack_require__(309).Object.getPrototypeOf;
 
 /***/ }),
-/* 404 */
+/* 399 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.2.9 Object.getPrototypeOf(O)
-	var toObject        = __webpack_require__(346)
-	  , $getPrototypeOf = __webpack_require__(345);
+	var toObject        = __webpack_require__(344)
+	  , $getPrototypeOf = __webpack_require__(343);
 
-	__webpack_require__(374)('getPrototypeOf', function(){
+	__webpack_require__(400)('getPrototypeOf', function(){
 	  return function getPrototypeOf(it){
 	    return $getPrototypeOf(toObject(it));
 	  };
 	});
 
 /***/ }),
-/* 405 */
+/* 400 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// most Object methods by ES6 should accept primitives
+	var $export = __webpack_require__(307)
+	  , core    = __webpack_require__(309)
+	  , fails   = __webpack_require__(318);
+	module.exports = function(KEY, exec){
+	  var fn  = (core.Object || {})[KEY] || Object[KEY]
+	    , exp = {};
+	  exp[KEY] = exec(fn);
+	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
+	};
+
+/***/ }),
+/* 401 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -10876,14 +10670,14 @@
 	};
 
 /***/ }),
-/* 406 */
+/* 402 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _typeof2 = __webpack_require__(384);
+	var _typeof2 = __webpack_require__(375);
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -10898,22 +10692,22 @@
 	};
 
 /***/ }),
-/* 407 */
+/* 403 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _setPrototypeOf = __webpack_require__(408);
+	var _setPrototypeOf = __webpack_require__(404);
 
 	var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
 
-	var _create = __webpack_require__(412);
+	var _create = __webpack_require__(408);
 
 	var _create2 = _interopRequireDefault(_create);
 
-	var _typeof2 = __webpack_require__(384);
+	var _typeof2 = __webpack_require__(375);
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -10936,34 +10730,34 @@
 	};
 
 /***/ }),
-/* 408 */
+/* 404 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(409), __esModule: true };
+	module.exports = { "default": __webpack_require__(405), __esModule: true };
 
 /***/ }),
-/* 409 */
+/* 405 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(410);
-	module.exports = __webpack_require__(300).Object.setPrototypeOf;
+	__webpack_require__(406);
+	module.exports = __webpack_require__(309).Object.setPrototypeOf;
 
 /***/ }),
-/* 410 */
+/* 406 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.3.19 Object.setPrototypeOf(O, proto)
-	var $export = __webpack_require__(310);
-	$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(411).set});
+	var $export = __webpack_require__(307);
+	$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(407).set});
 
 /***/ }),
-/* 411 */
+/* 407 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Works with __proto__ only. Old v8 can't work with null proto objects.
 	/* eslint-disable no-proto */
-	var isObject = __webpack_require__(317)
-	  , anObject = __webpack_require__(316);
+	var isObject = __webpack_require__(315)
+	  , anObject = __webpack_require__(314);
 	var check = function(O, proto){
 	  anObject(O);
 	  if(!isObject(proto) && proto !== null)throw TypeError(proto + ": can't set as prototype!");
@@ -10972,7 +10766,7 @@
 	  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
 	    function(test, buggy, set){
 	      try {
-	        set = __webpack_require__(312)(Function.call, __webpack_require__(398).f(Object.prototype, '__proto__').set, 2);
+	        set = __webpack_require__(310)(Function.call, __webpack_require__(389).f(Object.prototype, '__proto__').set, 2);
 	        set(test, []);
 	        buggy = !(test instanceof Array);
 	      } catch(e){ buggy = true; }
@@ -10987,28 +10781,482 @@
 	};
 
 /***/ }),
-/* 412 */
+/* 408 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(413), __esModule: true };
+	module.exports = { "default": __webpack_require__(409), __esModule: true };
 
 /***/ }),
-/* 413 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(414);
-	var $Object = __webpack_require__(300).Object;
+	__webpack_require__(410);
+	var $Object = __webpack_require__(309).Object;
 	module.exports = function create(P, D){
 	  return $Object.create(P, D);
 	};
 
 /***/ }),
+/* 410 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var $export = __webpack_require__(307)
+	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+	$export($export.S, 'Object', {create: __webpack_require__(326)});
+
+/***/ }),
+/* 411 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _toConsumableArray2 = __webpack_require__(369);
+
+	var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+	exports.forceArray = forceArray;
+	exports.bindEnd = bindEnd;
+	exports.bindFromN = bindFromN;
+	exports.bindIfNull = bindIfNull;
+	exports.isMobile = isMobile;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * forces given item(s) into array
+	 * @param items item(s) to become an array. If it is a singular array it is returned.
+	 * @return {Array}
+	 */
+	function forceArray() {
+	    for (var _len = arguments.length, items = Array(_len), _key = 0; _key < _len; _key++) {
+	        items[_key] = arguments[_key];
+	    }
+
+	    //do not transform arguments if it is a singular array
+	    if (items[0] !== undefined && items[0].constructor === Array && items.length === 1) return items[0];
+	    return items;
+	}
+
+	function bindEnd(fun) {
+	    for (var _len2 = arguments.length, boundArgs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+	        boundArgs[_key2 - 1] = arguments[_key2];
+	    }
+
+	    return function () {
+	        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+	            args[_key3] = arguments[_key3];
+	        }
+
+	        return fun.apply(undefined, args.concat(boundArgs));
+	    };
+	}
+
+	function bindFromN(fun, n) {
+	    for (var _len4 = arguments.length, boundArgs = Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
+	        boundArgs[_key4 - 2] = arguments[_key4];
+	    }
+
+	    return function () {
+	        for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+	            args[_key5] = arguments[_key5];
+	        }
+
+	        return fun.apply(undefined, (0, _toConsumableArray3.default)(args.slice(0, n - 1)).concat(boundArgs));
+	    };
+	}
+
+	function bindIfNull(fun) {
+	    for (var _len6 = arguments.length, boundArgs = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+	        boundArgs[_key6 - 1] = arguments[_key6];
+	    }
+
+	    return function () {
+	        for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+	            args[_key7] = arguments[_key7];
+	        }
+
+	        //replace given arguments if given one argument that is null or undefined
+	        if ((args[0] === undefined || args[0] === null) && args.length === 1) args = boundArgs;
+	        return fun.apply(undefined, (0, _toConsumableArray3.default)(args));
+	    };
+	}
+
+	function isLeapYear(year) {
+	    if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) return true;else return false;
+	}
+
+	function isMobile() {
+	    var mobileWidth = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 631;
+
+	    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+	    if (w <= mobileWidth) return true;else return false;
+	}
+
+/***/ }),
+/* 412 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Menus = undefined;
+	exports.Event = Event;
+
+	var _view = __webpack_require__(395);
+
+	var _functions = __webpack_require__(413);
+
+	var _helperFunctions = __webpack_require__(411);
+
+	var _calHtml = __webpack_require__(368);
+
+	/**
+	 * Calender Events
+	 * @param {string} time time of the event
+	 * @param {string} title title of the event
+	 * @param {string} notes notes of the event
+	 * @param {string} tdid the id of the td that the event belongs to, should be in the form of day-month-year
+	 */
+	function Event() {
+	    var time = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "(No Time)";
+	    var title = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "(No Title)";
+
+	    var _this = this;
+
+	    var notes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "(No Notes)";
+	    var tdid = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+	    this.time = time;
+	    this.title = title;
+	    this.notes = notes;
+	    this.tdID = tdid;
+	    this.id = 'calEvent_' + this.tdID + '_#' + ++eventCnt;
+
+	    if (this.tdID === null) {
+	        throw new error("Error: event tdID cannot be null");
+	    }
+
+	    if (this.time === '' && this.title === '') {
+	        throw new error("Error: cannot create blank event");
+	    }
+
+	    this.toElement = function () {
+	        var e = _view.View.elt("div", {
+	            class: 'calEvent',
+	            id: _this.id
+	        }, _view.View.elt("span", {
+	            class: 'calEventTime'
+	        }, _this.time), _view.View.elt("span", {
+	            class: 'calEventTitle'
+	        }, _this.title));
+
+	        //click event for event
+	        e.addEventListener("click", function (event) {
+	            selectedEvent = e;
+	            if (!(0, _helperFunctions.isMobile)()) {
+	                (0, _functions.fillInView)();
+	                (0, _calHtml.toggleMenu)(Menus.viewEvent);
+	            }
+	        });
+	        return e;
+	    };
+	}
+
+	/**
+	 * Calender Sticker
+	 * @param {string} type type should correspond to a mapping
+	 * @param {object} transform transform object
+	 */
+	function Sticker(type, transform) {
+	    if (stickerMap.has(type)) this.type = type;else console.error("Sticker type does not exsist");
+
+	    this.transform = transform;
+	}
+
+	/**
+	 * Transformations applied to a sticker
+	 * @param {number} scale
+	 * @param {number} rotate
+	 */
+	function Transform() {
+	    var scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	    var rotate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+	    this.scale = scale;
+	    this.rotate = rotate;
+	}
+
+	/**
+	 * Stores menus
+	 * {id, header, content, footer, buttons}
+	 * note: if button placement is in form, should include parent id
+	 */
+	var Menus = exports.Menus = {
+	    addEvent: {
+	        id: "addEvent",
+	        header: {
+	            title: "Add Event to Calender"
+	        },
+	        content: _view.View.eltObj("form", { id: "addEventForm", name: "addEventForm" }, { listeners: ["submit", addEventFormSubmit] }, _view.View.eltObj("input", { type: "time", name: "time", id: "addEventTime" }, {}), _view.View.eltObj("label", { for: "addEventTime" }, {}, "Time:"), _view.View.eltObj("input", { name: "title", id: "addEventTitle" }, {}), _view.View.eltObj("label", { for: "addEventTitle" }, {}, "Title:"), _view.View.eltObj("textarea", { name: "notes", id: "addEventNotes", pattern: ".{0}" }, {}), _view.View.eltObj("label", { for: "addEventNotes" }, {}, "Notes:")),
+	        buttons: [_view.View.eltObj("button", { id: "addEventSubmit", type: "submit" }, { placement: "form", parentId: "addEventForm" }, "save")]
+	    },
+
+	    editEvent: {
+	        id: "editEvent",
+	        header: {
+	            title: "Edit Event"
+	        },
+	        content: _view.View.eltObj("form", { id: "editEventForm" }, {}, _view.View.eltObj("input", { type: "time", name: "time", id: "editEventTime" }, {}), _view.View.eltObj("label", { for: "editEventTime" }, {}, "Time:"), _view.View.eltObj("input", { name: "title", id: "editEventTitle" }, {}), _view.View.eltObj("label", { for: "editEventTitle" }, {}, "Title:"), _view.View.eltObj("textarea", { name: "notes", id: "editEventNotes", pattern: ".{0}" }, {}), _view.View.eltObj("label", { for: "editEventNotes" }, {}, "Notes:")),
+	        buttons: [_view.View.eltObj("button", { id: "editEventSubmit", type: "submit" }, { placement: "form", parentId: "editEventForm" }, "save")]
+	    },
+
+	    viewEvent: {
+	        id: "viewEvent",
+	        content: [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, "(No Title)"), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, "(No Time)"), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, "(No Notes)")],
+	        buttons: [_view.View.eltObj("button", { id: "viewEdit" }, { placement: "footer", listeners: ["click", showMenu, 'editEvent'] }, "Edit Event"), _view.View.eltObj("button", { id: "viewDelete" }, { placement: "footer", listeners: ["click", deleteEvent] }, "Delete Event")]
+	    },
+
+	    mobile: {
+	        id: "mobile",
+	        content: [_view.View.eltObj("span", {}, {}, "Events")],
+	        buttons: [_view.View.eltObj("button", { id: "mobileAddEvent", onclick: "showMenu('addEvent')" }, { placement: "footer", listeners: ["click", showMenu, 'addEvent'] }, "New Event")]
+	    },
+
+	    contentGenerators: {
+	        viewEvent:
+	        /**
+	         * Fills in viewEvents content
+	         * @param {Event} event event to view
+	         */
+	        function viewEvent(event) {
+	            Menus.viewEvent.content = [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, event.title), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, event.time), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, event.notes)];
+	        }
+	    }
+
+	    //////////////////////////////////////////////
+	    /////|EVENT LISTENERS|///////////////////////
+	    ////////////////////////////////////////////
+
+	    /**
+	     * Shows menu from given string
+	     * @param  {string} menu the menu to show
+	     */
+	};function showMenu(menu) {
+	    var menuToShow = null;
+	    switch (menu) {
+	        case 'editEvent':
+	            menuToShow = Menus.editEvent;break;
+	        case 'addEvent':
+	            menuToShow = Menus.addEvent;break;
+	        case 'viewEvent':
+	            menuToShow = Menus.viewEvent;break;
+	        case 'mobile':
+	            menuToShow = Menus.mobile;break;
+	        default:
+	            throw error("Menu could not be shown. Menu could not be found.");
+	    }
+	    (0, _calHtml.toggleMenu)(menuToShow);
+	}
+
+	function addEventFormSubmit(event) {
+	    var addEventForm = document.querySelector("#addEventForm");
+	    var time = addEventForm.elements.time.value;
+	    var title = addEventForm.elements.title.value;
+	    var notes = addEventForm.elements.notes.value;
+
+	    try {
+	        var ev = new Event(time, title, notes, selectedDateTD.id);
+	        var evElem = ev.toElement();
+
+	        events.push(ev);
+	        selectedDateTD.getElementsByClassName("eventContainer")[0].appendChild(evElem);
+	        selectedEvent = evElem;
+	        (0, _functions.fillInView)();
+	        (0, _functions.save)(); //save the new event
+	    } catch (err) {
+	        var extraMsg = '';
+	        console.error(err.name, ":", err.message); //log error
+	        //Do not create event if error
+	        if (!((time === "" || time === undefined) && (time === "" || time === undefined))) extraMsg = 'Event must have time or title.';
+	        alert('Event could not be created. ' + extraMsg);
+	    } finally {
+	        _view.View.toggleClass(addEventForm.parentElement.parentElement.parentElement, 'hidden', false);
+	        addEventForm.reset();
+	        //event.preventDefault();
+	    }
+	}
+
+	function editFormSubmit(event) {
+	    var editForm = document.querySelector("#editEventForm");
+	    var time = editForm.elements.time.value;
+	    var title = editForm.elements.title.value;
+	    var notes = editForm.elements.notes.value;
+
+	    //find stored event to update its data
+	    events.some(function (e) {
+	        if (e.id == selectedEvent.id) {
+	            if (time) e.time = time;
+	            if (title) e.title = title;
+	            if (notes) e.notes = notes;
+	            (0, _functions.save)();
+	            return true;
+	        }
+	    });
+
+	    if (time) selectedEvent.getElementsByClassName("calEventTime")[0].textContent = time;
+	    if (title) selectedEvent.getElementsByClassName("calEventTitle")[0].textContent = title;
+
+	    _view.View.toggleClass(editForm.parentElement.parentElement.parentElement, 'hidden', false);
+	    editForm.reset();
+
+	    (0, _functions.fillInView)();
+	    (0, _calHtml.toggleMenu)(Menus.viewEvent);
+	    //event.preventDefault();
+	}
+
+	function deleteEvent() {
+	    var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+	    var eventElt = arguments[1];
+
+	    var userConfirm = confirm("This will permanently delete the event. Do you wish to continue?");
+	    if (userConfirm) {
+	        //If event is either not provided or is not an object, search for a matching event
+	        if (!event || !eventElt || event.constructor !== Object) {
+	            events.some(function (e) {
+	                if (e.id == selectedEvent.id) {
+	                    event = e;
+	                    eventElt = selectedEvent;
+	                    return true;
+	                }
+	            });
+	        }
+
+	        if (event !== null && events.indexOf(event)) {
+	            events.splice(events.indexOf(event), 1);
+	            (0, _functions.save)();
+	        } else {
+	            console.warn("Warning: event was not deleted. Event could not be found");
+	        }
+
+	        //remove div
+	        eventElt.parentElement.removeChild(eventElt);
+	        _view.View.toggleClass(".menu", 'hidden', false);
+	    }
+	}
+
+/***/ }),
+/* 413 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _stringify = __webpack_require__(414);
+
+	var _stringify2 = _interopRequireDefault(_stringify);
+
+	exports.save = save;
+	exports.load = load;
+	exports.fillInView = fillInView;
+
+	var _objects = __webpack_require__(412);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Saves calender information to local storage
+	 */
+	function save() {
+	    //save events
+	    var evs = {};
+	    events.forEach(function (event, i) {
+	        evs[i] = event;
+	    });
+
+	    localStorage.setItem('events', (0, _stringify2.default)(evs));
+
+	    //save stickers
+	    var sckers = {};
+	    stickers.forEach(function (sticker, i) {
+	        sckers[i] = sticker;
+	    });
+	    localStorage.setItem('stickers', (0, _stringify2.default)(sckers));
+
+	    //save frame
+	    localStorage.setItem('frame', (0, _stringify2.default)(frame));
+	}
+
+	/**
+	 * Loads and reinstates calender information from storage a
+	 */
+	function load() {
+	    var evs = JSON.parse(localStorage.getItem('events'));
+	    var sckers = JSON.parse(localStorage.getItem('stickers'));
+	    //let fme = JSON.parse(localStorage.getItem('frame'));
+
+	    for (var e in evs) {
+	        //add events to stored events
+	        var newEvent = new _objects.Event(evs[e].time, evs[e].title, evs[e].notes, evs[e].tdID); //create a new event from the stored one
+	        events.push(newEvent);
+	        //parse event into an element and append to corresponding div
+	        var td = document.getElementById('' + newEvent.tdID);
+	        if (td) //check that query selection is not null
+	            td.getElementsByClassName("eventContainer")[0].appendChild(newEvent.toElement());
+	    }
+	    //TODO: load stickers
+	    for (var s in sckers) {
+	        stickers.push(sckers[s]);
+	    }
+	    //frame = fme;
+	}
+
+	/**
+	 * Fills in view menu
+	 * @param {string} title title of event
+	 * @param {string} time time of event
+	 * @param {string} notes notes about event
+	 */
+	function fillInView() {
+	    var title = "(No Title)",
+	        time = "(No Time)",
+	        notes = "(No Notes)";
+
+	    events.some(function (e) {
+	        if (e.id == selectedEvent.id) {
+	            if (e.title != "") title = e.title;
+	            if (e.time != "") time = e.time;
+	            if (e.notes != "") notes = e.notes;
+	            return true;
+	        }
+	    });
+	    _objects.Menus.contentGenerators.viewEvent(title, time, notes);
+	}
+
+/***/ }),
 /* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var $export = __webpack_require__(310)
-	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-	$export($export.S, 'Object', {create: __webpack_require__(328)});
+	module.exports = { "default": __webpack_require__(415), __esModule: true };
+
+/***/ }),
+/* 415 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var core  = __webpack_require__(309)
+	  , $JSON = core.JSON || (core.JSON = {stringify: JSON.stringify});
+	module.exports = function stringify(it){ // eslint-disable-line no-unused-vars
+	  return $JSON.stringify.apply($JSON, arguments);
+	};
 
 /***/ })
 /******/ ]);
