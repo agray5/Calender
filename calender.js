@@ -9459,11 +9459,7 @@
 
 	var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
-	var _typeof2 = __webpack_require__(375);
-
-	var _typeof3 = _interopRequireDefault(_typeof2);
-
-	var _getIterator2 = __webpack_require__(392);
+	var _getIterator2 = __webpack_require__(375);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -9471,7 +9467,7 @@
 	exports.toggleMenu = toggleMenu;
 	exports.fillInMenu = fillInMenu;
 
-	var _view = __webpack_require__(395);
+	var _view = __webpack_require__(378);
 
 	var _helperFunctions = __webpack_require__(411);
 
@@ -9540,7 +9536,6 @@
 	                eventContainer.addEventListener("click", function (event) {
 	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
 	                    selectedDateTD = td;
-	                    console.log("click");
 	                    if (event.target == eventContainer) {
 	                        if ((0, _helperFunctions.isMobile)()) toggleMenu(_objects.Menus.mobile);else toggleMenu(_objects.Menus.addEvent);
 	                    }
@@ -9550,7 +9545,6 @@
 	                    selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
 	                    selectedDateTD = td;
 	                    if (event.target == td) {
-	                        console.log("td");
 	                        if ((0, _helperFunctions.isMobile)()) toggleMenu(_objects.Menus.mobile);else toggleMenu(_objects.Menus.addEvent);
 	                    }
 	                });
@@ -9573,7 +9567,7 @@
 
 	/**
 	    * Disables menu if it shown and enables with selected menu when it is not shown
-	    * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
+	    * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean} menu not needed if disabling
 	    */
 	function toggleMenu(menu) {
 	    var menuWrapper = document.querySelector(".menu.wrapper");
@@ -9581,8 +9575,8 @@
 
 	    if (menu === true) _view.View.removeClass(menuWrapper, 'hidden');
 	    if (menu === false) _view.View.addClass(menuWrapper, 'hidden');
-
-	    if (isShown) _view.View.addClass(menuWrapper, 'hidden');else {
+	    //Toggle menu off only if it is not hidden and given menu is already being displyed
+	    if (isShown && menuWrapper.id === menu.id + 'Wrapper') _view.View.addClass(menuWrapper, 'hidden');else {
 	        fillInMenu(menu);
 	        _view.View.removeClass(document.querySelector(".menu.wrapper"), 'hidden');
 	    }
@@ -9591,7 +9585,6 @@
 	//get copy of clean menu
 	//does not include outer menu wrapper div
 	var clearedMenu = $(".menu.wrapper").clone(true);
-	console.log(clearedMenu);
 
 	function clearMenu() {
 	    $(".menu.wrapper").replaceWith(clearedMenu.clone(true));
@@ -9607,7 +9600,7 @@
 	    var titleElt = headerElt.getElementsByTagName("h2")[0];
 	    var bkgElt = document.querySelector(".menu.background");
 	    var footerElt = document.querySelector(".menu.footer");
-	    var hasId = menu.hasOwnProperty("data") ? menu.data.hasOwnProperty("id") : false;
+	    var hasId = menu.hasOwnProperty("id");
 	    var buttonPlacements = {
 	        content: []
 	    };
@@ -9693,7 +9686,9 @@
 	            for (var _iterator2 = (0, _getIterator3.default)(_objs), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	                var _obj = _step2.value;
 
-	                if ((typeof _obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(_obj)) === "object") bkgElt.appendChild(_view.View.eltObjToElt(_obj));
+	                if (_obj.constructor === Object) {
+	                    bkgElt.appendChild(_view.View.eltObjToElt(_obj));
+	                }
 	            }
 	        } catch (err) {
 	            _didIteratorError2 = true;
@@ -9720,7 +9715,7 @@
 	            for (var _iterator3 = (0, _getIterator3.default)(_objs2), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 	                var _obj2 = _step3.value;
 
-	                if ((typeof _obj2 === 'undefined' ? 'undefined' : (0, _typeof3.default)(_obj2)) === "object") footerElt.appendChild(_view.View.eltObjToElt(_obj2));
+	                if (_obj2.constructor === Object) footerElt.appendChild(_view.View.eltObjToElt(_obj2));
 	            }
 	        } catch (err) {
 	            _didIteratorError3 = true;
@@ -9741,17 +9736,18 @@
 	    //append button div
 	    for (var place in buttonPlacements) {
 	        var elt = void 0;
+	        var class_ = "menu btn-container";
 	        if (place === "header") {
-	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsHeader', id: menu.id + "BtnsHeader" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsHeader' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.header))));
 	            headerElt.appendChild(elt);
 	        } else if (place === "content" && buttonPlacements.content) {
-	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsContent', id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsContent' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
 	            bkgElt.appendChild(elt);
 	        } else if (place === "footer") {
-	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsFooter', id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsFooter' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
 	            footerElt.appendChild(elt);
 	        } else if (place === "form") {
-	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: "menuBtns menuBtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
+	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsForm', id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsForm' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
 	            document.querySelector(".menu.background").querySelector("#" + buttonPlacements.form[0].data.parentId).appendChild(elt);
 	        } else throw new Error("Could not place button. Button placement " + place + " is invalid");
 	    }
@@ -9883,15 +9879,398 @@
 /* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	module.exports = { "default": __webpack_require__(376), __esModule: true };
+
+/***/ }),
+/* 376 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(345);
+	__webpack_require__(301);
+	module.exports = __webpack_require__(377);
+
+/***/ }),
+/* 377 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var anObject = __webpack_require__(314)
+	  , get      = __webpack_require__(356);
+	module.exports = __webpack_require__(309).getIterator = function(it){
+	  var iterFn = get(it);
+	  if(typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
+	  return anObject(iterFn.call(it));
+	};
+
+/***/ }),
+/* 378 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.View = undefined;
+
+	var _getIterator2 = __webpack_require__(375);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+	var _toConsumableArray2 = __webpack_require__(369);
+
+	var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+	var _error = __webpack_require__(379);
+
+	var _helperFunctions = __webpack_require__(411);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//Menu contains wrapper, header, content, footer, and optional buttons inside or outside of form and optional close button in the header
+	//Menu is an object
+	var View = exports.View = {
+	    /**
+	     * Checks if element has a specified class
+	     * @param  {string|HTMLElement}  element element or selector
+	     * @param  {string}  class_  class to find
+	     * @return {Boolean}         if class is found
+	     */
+	    hasClass: function hasClass(element, class_) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        return (' ' + element.className + ' ').indexOf(' ' + class_ + ' ') > -1;
+	    },
+	    /**
+	     * addes a class from element
+	     * @param  {string|HTMLElement} element html element or selector
+	     * @param  {string} class_  class to add
+	     */
+	    addClass: function addClass(element, class_) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        if (element.classList) element.classList.add(class_);else if (!View.hasClass(element, class_)) element.className += " " + class_;
+	    },
+
+	    /**
+	     * Removes a class from element
+	     * @param  {string|HTMLElement} element html element or selector
+	     * @param  {string} class_  class to remove
+	     */
+	    removeClass: function removeClass(element, class_) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        if (element.classList) element.classList.remove(class_);else if (View.hasClass(element, class_)) {
+	            var reg = new RegExp('(\\s|^)' + class_ + '(\\s|$)');
+	            element.class_ = element.class_.replace(reg, ' ');
+	        }
+	    },
+	    /**
+	     * Sets style attribute to none
+	     * @param {string|HTMLElement} element element or selector
+	     * @param {string} class_ class name to toggle
+	     * @param {boolean=} toggle true, adds class, and false removes class
+	     */
+	    toggleClass: function toggleClass(element, class_, toggle) {
+	        if (element.constructor === String) {
+	            element = document.querySelector(element);
+	            if (element === undefined) return;
+	        }
+	        if (toggle === true) View.addClass(element, class_);else if (toggle === false) View.removeClass(element, class_);else if (hasClass(element, class_)) View.removeClass(element, class_);else View.addClass(element, class_);
+	    },
+	    addListeners: function addListeners(elt, listeners) {
+	        //force double array
+	        if (listeners[0] !== undefined && listeners[0].constructor !== Array) listeners = [listeners];
+
+	        if (listeners[0].constructor !== Array) return;
+
+	        listeners.forEach(function (listener) {
+	            var args = listener.length > 2 ? listener.splice(2) : [];
+	            elt.addEventListener(listener[0], _helperFunctions.bindIfBoundArgs.apply(undefined, [listener[1]].concat((0, _toConsumableArray3.default)(args))));
+	        });
+	    },
+	    /**
+	        * Creates an element node
+	        * @param {string} name name of element
+	        * @param {{}} attributes attributes of element as an object
+	        * @param {HTMLElement|string} children additional arguments added to node as children
+	        */
+	    elt: function elt(name, attributes) {
+	        for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+	            children[_key - 2] = arguments[_key];
+	        }
+
+	        var node = document.createElement(name);
+	        if (attributes) {
+	            for (var attr in attributes) {
+	                if (attributes.hasOwnProperty(attr)) node.setAttribute(attr, attributes[attr]);
+	            }
+	        }
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	            for (var _iterator = (0, _getIterator3.default)(children), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var child = _step.value;
+
+	                if (typeof child == "string") child = document.createTextNode(child);
+	                node.appendChild(child);
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                    _iterator.return();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+
+	        return node;
+	    },
+
+	    /**
+	        * Creates an object representation of an element
+	        * @param {string} element Name of the element
+	        * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
+	        * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
+	        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child View.eltObjs. Can also be a child text node represented as a string
+	        * @return {{element: string, attributes: {}, data: {}, children: []}}
+	        */
+	    eltObj: function eltObj(element) {
+	        for (var _len2 = arguments.length, children = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
+	            children[_key2 - 3] = arguments[_key2];
+	        }
+
+	        var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	        var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	        var elementObj = {
+	            elem: element
+	        };
+
+	        if (attributes.constructor === Object) elementObj["attributes"] = attributes;else if (attributes.constructor === String) {//attempt to transform string into an object
+	            /*
+	            let parse = JSON.parse("{" + attributes + "}");
+	            if (parse.constructor === Object)
+	                elementObj["attributes"] = parse;
+	                */
+	        }
+
+	        if (data.constructor === Object) elementObj["data"] = data;else if (data.constructor === String) {//attempt to transform string into an object
+	            /*
+	            let parse = JSON.parse("{" + data + "}");
+	            if (parse.constructor === Object)
+	                elementObj["data"] = parse;
+	                */
+	        }
+
+	        elementObj["children"] = children;
+
+	        return elementObj;
+	    },
+
+	    /**
+	     * Transforms element object into an element.
+	     * @param {{element: string, attributes: {}, data: {}, children: []}} createObj
+	     * @return {HTMLElement}
+	     */
+	    eltObjToElt: function eltObjToElt(createObj) {
+
+	        //strings do not need to be converted
+	        if (createObj.constructor === String) return createObj;
+
+	        if (!createObj || createObj.constructor !== Object) throw new Error("Create object could not be converted to element: create object must be a non empty object or string");
+	        if (!createObj.hasOwnProperty("elem")) throw new Error("Create object could not be converted to element: create object must have elem as property");
+
+	        //convert children to elements
+	        var children = [];
+	        if (createObj.constructor === Object) {
+	            createObj.children.forEach(function (child) {
+	                children.push(View.eltObjToElt(child));
+	            });
+	        }
+
+	        //create element
+	        var elt = View.elt.apply(View, [createObj.elem, createObj.attributes].concat(children));
+
+	        //add event listeners
+	        if (createObj.hasOwnProperty('data') && createObj.data.hasOwnProperty('listeners')) View.addListeners(elt, createObj.data.listeners);
+
+	        if (createObj.constructor === Object) return elt;else throw new Error("Could not convert object to an element. Must be either an object or a string");
+	    }
+	};
+
+/***/ }),
+/* 379 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.CreateError = undefined;
+
+	var _getPrototypeOf = __webpack_require__(380);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(384);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(385);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(403);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CustomError = function (_Error) {
+	    (0, _inherits3.default)(CustomError, _Error);
+
+	    function CustomError() {
+	        var _ref;
+
+	        (0, _classCallCheck3.default)(this, CustomError);
+
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	        }
+
+	        var _this = (0, _possibleConstructorReturn3.default)(this, (_ref = CustomError.__proto__ || (0, _getPrototypeOf2.default)(CustomError)).call.apply(_ref, [this].concat(args)));
+
+	        Error.captureStackTrace(_this, CustomError);
+	        return _this;
+	    }
+
+	    return CustomError;
+	}(Error);
+
+	var CreateError = exports.CreateError = function (_CustomError) {
+	    (0, _inherits3.default)(CreateError, _CustomError);
+
+	    function CreateError() {
+	        var _ref2;
+
+	        (0, _classCallCheck3.default)(this, CreateError);
+
+	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	            args[_key2] = arguments[_key2];
+	        }
+
+	        return (0, _possibleConstructorReturn3.default)(this, (_ref2 = CreateError.__proto__ || (0, _getPrototypeOf2.default)(CreateError)).call.apply(_ref2, [this, "Create error."].concat(args)));
+	    }
+
+	    return CreateError;
+	}(CustomError);
+
+/***/ }),
+/* 380 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = { "default": __webpack_require__(381), __esModule: true };
+
+/***/ }),
+/* 381 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	__webpack_require__(382);
+	module.exports = __webpack_require__(309).Object.getPrototypeOf;
+
+/***/ }),
+/* 382 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// 19.1.2.9 Object.getPrototypeOf(O)
+	var toObject        = __webpack_require__(344)
+	  , $getPrototypeOf = __webpack_require__(343);
+
+	__webpack_require__(383)('getPrototypeOf', function(){
+	  return function getPrototypeOf(it){
+	    return $getPrototypeOf(toObject(it));
+	  };
+	});
+
+/***/ }),
+/* 383 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// most Object methods by ES6 should accept primitives
+	var $export = __webpack_require__(307)
+	  , core    = __webpack_require__(309)
+	  , fails   = __webpack_require__(318);
+	module.exports = function(KEY, exec){
+	  var fn  = (core.Object || {})[KEY] || Object[KEY]
+	    , exp = {};
+	  exp[KEY] = exec(fn);
+	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
+	};
+
+/***/ }),
+/* 384 */
+/***/ (function(module, exports) {
+
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _iterator = __webpack_require__(376);
+	exports.default = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+
+/***/ }),
+/* 385 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	exports.__esModule = true;
+
+	var _typeof2 = __webpack_require__(386);
+
+	var _typeof3 = _interopRequireDefault(_typeof2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
+	};
+
+/***/ }),
+/* 386 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	exports.__esModule = true;
+
+	var _iterator = __webpack_require__(387);
 
 	var _iterator2 = _interopRequireDefault(_iterator);
 
-	var _symbol = __webpack_require__(379);
+	var _symbol = __webpack_require__(390);
 
 	var _symbol2 = _interopRequireDefault(_symbol);
 
@@ -9906,43 +10285,43 @@
 	};
 
 /***/ }),
-/* 376 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(377), __esModule: true };
+	module.exports = { "default": __webpack_require__(388), __esModule: true };
 
 /***/ }),
-/* 377 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	__webpack_require__(301);
 	__webpack_require__(345);
-	module.exports = __webpack_require__(378).f('iterator');
+	module.exports = __webpack_require__(389).f('iterator');
 
 /***/ }),
-/* 378 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports.f = __webpack_require__(342);
 
 /***/ }),
-/* 379 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(380), __esModule: true };
+	module.exports = { "default": __webpack_require__(391), __esModule: true };
 
 /***/ }),
-/* 380 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(381);
+	__webpack_require__(392);
 	__webpack_require__(300);
-	__webpack_require__(390);
-	__webpack_require__(391);
+	__webpack_require__(401);
+	__webpack_require__(402);
 	module.exports = __webpack_require__(309).Symbol;
 
 /***/ }),
-/* 381 */
+/* 392 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9958,18 +10337,18 @@
 	  , setToStringTag = __webpack_require__(341)
 	  , uid            = __webpack_require__(338)
 	  , wks            = __webpack_require__(342)
-	  , wksExt         = __webpack_require__(378)
-	  , wksDefine      = __webpack_require__(382)
-	  , keyOf          = __webpack_require__(383)
-	  , enumKeys       = __webpack_require__(384)
+	  , wksExt         = __webpack_require__(389)
+	  , wksDefine      = __webpack_require__(393)
+	  , keyOf          = __webpack_require__(394)
+	  , enumKeys       = __webpack_require__(395)
 	  , isArray        = __webpack_require__(364)
 	  , anObject       = __webpack_require__(314)
 	  , toIObject      = __webpack_require__(330)
 	  , toPrimitive    = __webpack_require__(320)
 	  , createDesc     = __webpack_require__(321)
 	  , _create        = __webpack_require__(326)
-	  , gOPNExt        = __webpack_require__(387)
-	  , $GOPD          = __webpack_require__(389)
+	  , gOPNExt        = __webpack_require__(398)
+	  , $GOPD          = __webpack_require__(400)
 	  , $DP            = __webpack_require__(313)
 	  , $keys          = __webpack_require__(328)
 	  , gOPD           = $GOPD.f
@@ -10094,9 +10473,9 @@
 
 	  $GOPD.f = $getOwnPropertyDescriptor;
 	  $DP.f   = $defineProperty;
-	  __webpack_require__(388).f = gOPNExt.f = $getOwnPropertyNames;
-	  __webpack_require__(386).f  = $propertyIsEnumerable;
-	  __webpack_require__(385).f = $getOwnPropertySymbols;
+	  __webpack_require__(399).f = gOPNExt.f = $getOwnPropertyNames;
+	  __webpack_require__(397).f  = $propertyIsEnumerable;
+	  __webpack_require__(396).f = $getOwnPropertySymbols;
 
 	  if(DESCRIPTORS && !__webpack_require__(306)){
 	    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
@@ -10182,13 +10561,13 @@
 	setToStringTag(global.JSON, 'JSON', true);
 
 /***/ }),
-/* 382 */
+/* 393 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var global         = __webpack_require__(308)
 	  , core           = __webpack_require__(309)
 	  , LIBRARY        = __webpack_require__(306)
-	  , wksExt         = __webpack_require__(378)
+	  , wksExt         = __webpack_require__(389)
 	  , defineProperty = __webpack_require__(313).f;
 	module.exports = function(name){
 	  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
@@ -10196,7 +10575,7 @@
 	};
 
 /***/ }),
-/* 383 */
+/* 394 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var getKeys   = __webpack_require__(328)
@@ -10211,13 +10590,13 @@
 	};
 
 /***/ }),
-/* 384 */
+/* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// all enumerable object keys, includes symbols
 	var getKeys = __webpack_require__(328)
-	  , gOPS    = __webpack_require__(385)
-	  , pIE     = __webpack_require__(386);
+	  , gOPS    = __webpack_require__(396)
+	  , pIE     = __webpack_require__(397);
 	module.exports = function(it){
 	  var result     = getKeys(it)
 	    , getSymbols = gOPS.f;
@@ -10231,24 +10610,24 @@
 	};
 
 /***/ }),
-/* 385 */
+/* 396 */
 /***/ (function(module, exports) {
 
 	exports.f = Object.getOwnPropertySymbols;
 
 /***/ }),
-/* 386 */
+/* 397 */
 /***/ (function(module, exports) {
 
 	exports.f = {}.propertyIsEnumerable;
 
 /***/ }),
-/* 387 */
+/* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 	var toIObject = __webpack_require__(330)
-	  , gOPN      = __webpack_require__(388).f
+	  , gOPN      = __webpack_require__(399).f
 	  , toString  = {}.toString;
 
 	var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -10268,7 +10647,7 @@
 
 
 /***/ }),
-/* 388 */
+/* 399 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
@@ -10280,10 +10659,10 @@
 	};
 
 /***/ }),
-/* 389 */
+/* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var pIE            = __webpack_require__(386)
+	var pIE            = __webpack_require__(397)
 	  , createDesc     = __webpack_require__(321)
 	  , toIObject      = __webpack_require__(330)
 	  , toPrimitive    = __webpack_require__(320)
@@ -10301,395 +10680,16 @@
 	};
 
 /***/ }),
-/* 390 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(382)('asyncIterator');
-
-/***/ }),
-/* 391 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(382)('observable');
-
-/***/ }),
-/* 392 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(393), __esModule: true };
-
-/***/ }),
-/* 393 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(345);
-	__webpack_require__(301);
-	module.exports = __webpack_require__(394);
-
-/***/ }),
-/* 394 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var anObject = __webpack_require__(314)
-	  , get      = __webpack_require__(356);
-	module.exports = __webpack_require__(309).getIterator = function(it){
-	  var iterFn = get(it);
-	  if(typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
-	  return anObject(iterFn.call(it));
-	};
-
-/***/ }),
-/* 395 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.View = undefined;
-
-	var _getIterator2 = __webpack_require__(392);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-	var _error = __webpack_require__(396);
-
-	var _helperFunctions = __webpack_require__(411);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	//Menu contains wrapper, header, content, footer, and optional buttons inside or outside of form and optional close button in the header
-	//Menu is an object
-	var View = exports.View = {
-	    /**
-	     * Checks if element has a specified class
-	     * @param  {string|HTMLElement}  element element or selector
-	     * @param  {string}  class_  class to find
-	     * @return {Boolean}         if class is found
-	     */
-	    hasClass: function hasClass(element, class_) {
-	        if (element.constructor === String) {
-	            element = document.querySelector(element);
-	            if (element === undefined) return;
-	        }
-	        return (' ' + element.className + ' ').indexOf(' ' + class_ + ' ') > -1;
-	    },
-	    /**
-	     * addes a class from element
-	     * @param  {string|HTMLElement} element html element or selector
-	     * @param  {string} class_  class to add
-	     */
-	    addClass: function addClass(element, class_) {
-	        if (element.constructor === String) {
-	            element = document.querySelector(element);
-	            if (element === undefined) return;
-	        }
-	        if (element.classList) element.classList.add(class_);else if (!View.hasClass(element, class_)) element.className += " " + class_;
-	    },
-
-	    /**
-	     * Removes a class from element
-	     * @param  {string|HTMLElement} element html element or selector
-	     * @param  {string} class_  class to remove
-	     */
-	    removeClass: function removeClass(element, class_) {
-	        if (element.constructor === String) {
-	            element = document.querySelector(element);
-	            if (element === undefined) return;
-	        }
-	        if (element.classList) element.classList.remove(class_);else if (View.hasClass(element, class_)) {
-	            var reg = new RegExp('(\\s|^)' + class_ + '(\\s|$)');
-	            element.class_ = element.class_.replace(reg, ' ');
-	        }
-	    },
-	    /**
-	     * Sets style attribute to none
-	     * @param {string|HTMLElement} element element or selector
-	     * @param {string} class_ class name to toggle
-	     * @param {boolean=} toggle true, adds class, and false removes class
-	     */
-	    toggleClass: function toggleClass(element, class_, toggle) {
-	        if (element.constructor === String) {
-	            element = document.querySelector(element);
-	            if (element === undefined) return;
-	        }
-	        if (toggle === true) View.addClass(element, class_);else if (toggle === false) View.removeClass(element, class_);else if (hasClass(element, class_)) View.removeClass(element, class_);else View.addClass(element, class_);
-	    },
-	    addListeners: function addListeners(elt, listeners) {
-	        //force double array
-	        if (listeners[0] !== undefined && listeners[0].constructor !== Array) listeners = [listeners];
-
-	        if (listeners[0].constructor !== Array) return;
-
-	        listeners.forEach(function (listener) {
-	            var args = listener.length > 2 ? listener.splice(2) : undefined;
-	            elt.addEventListener(listener[0], (0, _helperFunctions.bindIfNull)(listener[1]));
-	        });
-	    },
-	    /**
-	        * Creates an element node
-	        * @param {string} name name of element
-	        * @param {{}} attributes attributes of element as an object
-	        * @param {HTMLElement|string} children additional arguments added to node as children
-	        */
-	    elt: function elt(name, attributes) {
-	        for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-	            children[_key - 2] = arguments[_key];
-	        }
-
-	        var node = document.createElement(name);
-	        if (attributes) {
-	            for (var attr in attributes) {
-	                if (attributes.hasOwnProperty(attr)) node.setAttribute(attr, attributes[attr]);
-	            }
-	        }
-	        var _iteratorNormalCompletion = true;
-	        var _didIteratorError = false;
-	        var _iteratorError = undefined;
-
-	        try {
-	            for (var _iterator = (0, _getIterator3.default)(children), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                var child = _step.value;
-
-	                if (typeof child == "string") child = document.createTextNode(child);
-	                node.appendChild(child);
-	            }
-	        } catch (err) {
-	            _didIteratorError = true;
-	            _iteratorError = err;
-	        } finally {
-	            try {
-	                if (!_iteratorNormalCompletion && _iterator.return) {
-	                    _iterator.return();
-	                }
-	            } finally {
-	                if (_didIteratorError) {
-	                    throw _iteratorError;
-	                }
-	            }
-	        }
-
-	        return node;
-	    },
-
-	    /**
-	        * Creates an object representation of an element
-	        * @param {string} element Name of the element
-	        * @param {{}|string} attributes Attributes as an object. Singular attribute can be given as a string
-	        * @param {{}|string} data Meta-data, such as placement, as an object. Singular data attribute can be given as a string
-	        * @param {{element: string, attributes: {}, data: {}, children: []}|string} children stored as an array of child View.eltObjs. Can also be a child text node represented as a string
-	        * @return {{element: string, attributes: {}, data: {}, children: []}}
-	        */
-	    eltObj: function eltObj(element) {
-	        for (var _len2 = arguments.length, children = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
-	            children[_key2 - 3] = arguments[_key2];
-	        }
-
-	        var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	        var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-	        var elementObj = {
-	            elem: element
-	        };
-
-	        if (attributes.constructor === Object) elementObj["attributes"] = attributes;else if (attributes.constructor === String) {//attempt to transform string into an object
-	            /*
-	            let parse = JSON.parse("{" + attributes + "}");
-	            if (parse.constructor === Object)
-	                elementObj["attributes"] = parse;
-	                */
-	        }
-
-	        if (data.constructor === Object) elementObj["data"] = data;else if (data.constructor === String) {//attempt to transform string into an object
-	            /*
-	            let parse = JSON.parse("{" + data + "}");
-	            if (parse.constructor === Object)
-	                elementObj["data"] = parse;
-	                */
-	        }
-
-	        elementObj["children"] = children;
-
-	        return elementObj;
-	    },
-
-	    /**
-	     * Transforms element object into an element.
-	     * @param {{element: string, attributes: {}, data: {}, children: []}} createObj
-	     * @return {HTMLElement}
-	     */
-	    eltObjToElt: function eltObjToElt(createObj) {
-
-	        //strings do not need to be converted
-	        if (createObj.constructor === String) return createObj;
-
-	        if (!createObj || createObj.constructor !== Object) throw new Error("Create object could not be converted to element: create object must be a non empty object or string");
-	        if (!createObj.hasOwnProperty("elem")) throw new Error("Create object could not be converted to element: create object must have elem as property");
-
-	        //convert children to elements
-	        var children = [];
-	        if (createObj.constructor === Object) {
-	            createObj.children.forEach(function (child) {
-	                children.push(View.eltObjToElt(child));
-	            });
-	        }
-
-	        //create element
-	        var elt = View.elt.apply(View, [createObj.elem, createObj.attributes].concat(children));
-
-	        //add event listeners
-	        if (createObj.hasOwnProperty('data') && createObj.data.hasOwnProperty('listeners')) View.addListeners(elt, createObj.data.listeners);
-
-	        if (createObj.constructor === Object) return elt;else throw new Error("Could not convert object to an element. Must be either an object or a string");
-	    }
-	};
-
-/***/ }),
-/* 396 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.CreateError = undefined;
-
-	var _getPrototypeOf = __webpack_require__(397);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(401);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(402);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(403);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var CustomError = function (_Error) {
-	    (0, _inherits3.default)(CustomError, _Error);
-
-	    function CustomError() {
-	        var _ref;
-
-	        (0, _classCallCheck3.default)(this, CustomError);
-
-	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	            args[_key] = arguments[_key];
-	        }
-
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (_ref = CustomError.__proto__ || (0, _getPrototypeOf2.default)(CustomError)).call.apply(_ref, [this].concat(args)));
-
-	        Error.captureStackTrace(_this, CustomError);
-	        return _this;
-	    }
-
-	    return CustomError;
-	}(Error);
-
-	var CreateError = exports.CreateError = function (_CustomError) {
-	    (0, _inherits3.default)(CreateError, _CustomError);
-
-	    function CreateError() {
-	        var _ref2;
-
-	        (0, _classCallCheck3.default)(this, CreateError);
-
-	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	            args[_key2] = arguments[_key2];
-	        }
-
-	        return (0, _possibleConstructorReturn3.default)(this, (_ref2 = CreateError.__proto__ || (0, _getPrototypeOf2.default)(CreateError)).call.apply(_ref2, [this, "Create error."].concat(args)));
-	    }
-
-	    return CreateError;
-	}(CustomError);
-
-/***/ }),
-/* 397 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(398), __esModule: true };
-
-/***/ }),
-/* 398 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	__webpack_require__(399);
-	module.exports = __webpack_require__(309).Object.getPrototypeOf;
-
-/***/ }),
-/* 399 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// 19.1.2.9 Object.getPrototypeOf(O)
-	var toObject        = __webpack_require__(344)
-	  , $getPrototypeOf = __webpack_require__(343);
-
-	__webpack_require__(400)('getPrototypeOf', function(){
-	  return function getPrototypeOf(it){
-	    return $getPrototypeOf(toObject(it));
-	  };
-	});
-
-/***/ }),
-/* 400 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// most Object methods by ES6 should accept primitives
-	var $export = __webpack_require__(307)
-	  , core    = __webpack_require__(309)
-	  , fails   = __webpack_require__(318);
-	module.exports = function(KEY, exec){
-	  var fn  = (core.Object || {})[KEY] || Object[KEY]
-	    , exp = {};
-	  exp[KEY] = exec(fn);
-	  $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
-	};
-
-/***/ }),
 /* 401 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
-
-	exports.__esModule = true;
-
-	exports.default = function (instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	};
+	__webpack_require__(393)('asyncIterator');
 
 /***/ }),
 /* 402 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
-
-	exports.__esModule = true;
-
-	var _typeof2 = __webpack_require__(375);
-
-	var _typeof3 = _interopRequireDefault(_typeof2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function (self, call) {
-	  if (!self) {
-	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-	  }
-
-	  return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
-	};
+	__webpack_require__(393)('observable');
 
 /***/ }),
 /* 403 */
@@ -10707,7 +10707,7 @@
 
 	var _create2 = _interopRequireDefault(_create);
 
-	var _typeof2 = __webpack_require__(375);
+	var _typeof2 = __webpack_require__(386);
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -10766,7 +10766,7 @@
 	  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
 	    function(test, buggy, set){
 	      try {
-	        set = __webpack_require__(310)(Function.call, __webpack_require__(389).f(Object.prototype, '__proto__').set, 2);
+	        set = __webpack_require__(310)(Function.call, __webpack_require__(400).f(Object.prototype, '__proto__').set, 2);
 	        set(test, []);
 	        buggy = !(test instanceof Array);
 	      } catch(e){ buggy = true; }
@@ -10822,6 +10822,7 @@
 	exports.bindEnd = bindEnd;
 	exports.bindFromN = bindFromN;
 	exports.bindIfNull = bindIfNull;
+	exports.bindIfBoundArgs = bindIfBoundArgs;
 	exports.isMobile = isMobile;
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -10880,8 +10881,24 @@
 	        }
 
 	        //replace given arguments if given one argument that is null or undefined
-	        if ((args[0] === undefined || args[0] === null) && args.length === 1) args = boundArgs;
+	        if ((args[0] === undefined || args[0] === null) && (args.length === 1 || boundArgs.length === 0)) args = boundArgs;
 	        return fun.apply(undefined, (0, _toConsumableArray3.default)(args));
+	    };
+	}
+
+	function bindIfBoundArgs(fun) {
+	    for (var _len8 = arguments.length, boundArgs = Array(_len8 > 1 ? _len8 - 1 : 0), _key8 = 1; _key8 < _len8; _key8++) {
+	        boundArgs[_key8 - 1] = arguments[_key8];
+	    }
+
+	    return function () {
+	        for (var _len9 = arguments.length, args = Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+	            args[_key9] = arguments[_key9];
+	        }
+
+	        //replace given arguments if given one argument that is null or undefined
+	        if ((boundArgs[0] === undefined || boundArgs[0] === null) && (boundArgs.length === 1 || boundArgs.length === 0)) boundArgs = args;
+	        return fun.apply(undefined, (0, _toConsumableArray3.default)(boundArgs));
 	    };
 	}
 
@@ -10909,7 +10926,7 @@
 	exports.Menus = undefined;
 	exports.Event = Event;
 
-	var _view = __webpack_require__(395);
+	var _view = __webpack_require__(378);
 
 	var _functions = __webpack_require__(413);
 
@@ -11014,19 +11031,20 @@
 	            title: "Edit Event"
 	        },
 	        content: _view.View.eltObj("form", { id: "editEventForm" }, {}, _view.View.eltObj("input", { type: "time", name: "time", id: "editEventTime" }, {}), _view.View.eltObj("label", { for: "editEventTime" }, {}, "Time:"), _view.View.eltObj("input", { name: "title", id: "editEventTitle" }, {}), _view.View.eltObj("label", { for: "editEventTitle" }, {}, "Title:"), _view.View.eltObj("textarea", { name: "notes", id: "editEventNotes", pattern: ".{0}" }, {}), _view.View.eltObj("label", { for: "editEventNotes" }, {}, "Notes:")),
-	        buttons: [_view.View.eltObj("button", { id: "editEventSubmit", type: "submit" }, { placement: "form", parentId: "editEventForm" }, "save")]
+	        buttons: [_view.View.eltObj("button", { id: "editEventSubmit", type: "submit" }, { placement: "form", parentId: "editEventForm",
+	            listeners: ["click", editFormSubmit] }, "save")]
 	    },
 
 	    viewEvent: {
 	        id: "viewEvent",
 	        content: [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, "(No Title)"), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, "(No Time)"), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, "(No Notes)")],
-	        buttons: [_view.View.eltObj("button", { id: "viewEdit" }, { placement: "footer", listeners: ["click", showMenu, 'editEvent'] }, "Edit Event"), _view.View.eltObj("button", { id: "viewDelete" }, { placement: "footer", listeners: ["click", deleteEvent] }, "Delete Event")]
+	        buttons: [_view.View.eltObj("button", { id: "viewEdit" }, { placement: "content", listeners: ["click", showMenu, 'editEvent'] }, "Edit Event"), _view.View.eltObj("button", { id: "viewDelete" }, { placement: "content", listeners: ["click", deleteEvent] }, "Delete Event")]
 	    },
 
 	    mobile: {
 	        id: "mobile",
 	        content: [_view.View.eltObj("span", {}, {}, "Events")],
-	        buttons: [_view.View.eltObj("button", { id: "mobileAddEvent", onclick: "showMenu('addEvent')" }, { placement: "footer", listeners: ["click", showMenu, 'addEvent'] }, "New Event")]
+	        buttons: [_view.View.eltObj("button", { id: "mobileAddEvent" }, { placement: "footer", listeners: ["click", showMenu, 'addEvent'] }, "New Event")]
 	    },
 
 	    contentGenerators: {
@@ -11036,7 +11054,10 @@
 	         * @param {Event} event event to view
 	         */
 	        function viewEvent(event) {
-	            Menus.viewEvent.content = [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, event.title), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, event.time), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, event.notes)];
+	            var title = event.title ? event.title : "(No Title)";
+	            var time = event.time ? event.time : "(No Time)";
+	            var notes = event.notes ? event.notes : "(No Notes)";
+	            Menus.viewEvent.content = [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, {}, title), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, {}, time), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, {}, notes)];
 	        }
 	    }
 
@@ -11060,7 +11081,7 @@
 	        case 'mobile':
 	            menuToShow = Menus.mobile;break;
 	        default:
-	            throw error("Menu could not be shown. Menu could not be found.");
+	            console.error('Menu could not be shown. Menu:', menu, 'could not be found.');
 	    }
 	    (0, _calHtml.toggleMenu)(menuToShow);
 	}
@@ -11118,7 +11139,7 @@
 
 	    (0, _functions.fillInView)();
 	    (0, _calHtml.toggleMenu)(Menus.viewEvent);
-	    //event.preventDefault();
+	    event.preventDefault();
 	}
 
 	function deleteEvent() {
@@ -11137,7 +11158,7 @@
 	                }
 	            });
 	        }
-
+	        // Remove event from events list
 	        if (event !== null && events.indexOf(event)) {
 	            events.splice(events.indexOf(event), 1);
 	            (0, _functions.save)();
@@ -11145,9 +11166,9 @@
 	            console.warn("Warning: event was not deleted. Event could not be found");
 	        }
 
-	        //remove div
+	        // Remove div
 	        eventElt.parentElement.removeChild(eventElt);
-	        _view.View.toggleClass(".menu", 'hidden', false);
+	        _view.View.toggleClass(".menu.wrapper", 'hidden', true);
 	    }
 	}
 
@@ -11227,19 +11248,14 @@
 	 * @param {string} notes notes about event
 	 */
 	function fillInView() {
-	    var title = "(No Title)",
-	        time = "(No Time)",
-	        notes = "(No Notes)";
-
+	    //Match td to an event
 	    events.some(function (e) {
 	        if (e.id == selectedEvent.id) {
-	            if (e.title != "") title = e.title;
-	            if (e.time != "") time = e.time;
-	            if (e.notes != "") notes = e.notes;
+	            //Gives view event object content
+	            _objects.Menus.contentGenerators.viewEvent(e);
 	            return true;
 	        }
 	    });
-	    _objects.Menus.contentGenerators.viewEvent(title, time, notes);
 	}
 
 /***/ }),
