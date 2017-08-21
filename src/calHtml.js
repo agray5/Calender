@@ -67,7 +67,6 @@ export function generateCalHtml(parent) {
                 eventContainer.addEventListener("click", event => {
                     selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
                     selectedDateTD = td;
-                    console.log("click");
                     if (event.target == eventContainer){
                         if(isMobile())
                             toggleMenu(Menus.mobile);
@@ -80,7 +79,6 @@ export function generateCalHtml(parent) {
                     selectedDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), day);
                     selectedDateTD = td;
                     if (event.target == td){
-                        console.log("td");
                         if(isMobile())
                             toggleMenu(Menus.mobile);
                         else
@@ -104,7 +102,7 @@ export function generateCalHtml(parent) {
 
 /**
     * Disables menu if it shown and enables with selected menu when it is not shown
-    * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean}menu not needed if disabling
+    * @param {{id:string, header:{}, content:{}, footer:{}, buttons:[]}|boolean} menu not needed if disabling
     */
 export function toggleMenu  (menu){
     let menuWrapper = document.querySelector(".menu.wrapper");
@@ -114,8 +112,8 @@ export function toggleMenu  (menu){
         View.removeClass(menuWrapper, 'hidden');
     if (menu === false)
         View.addClass(menuWrapper, 'hidden');
-
-    if (isShown)
+    //Toggle menu off only if it is not hidden and given menu is already being displyed
+    if (isShown && menuWrapper.id === (menu.id + 'Wrapper'))
         View.addClass(menuWrapper, 'hidden');
     else{
         fillInMenu(menu);
@@ -126,7 +124,6 @@ export function toggleMenu  (menu){
 //get copy of clean menu
 //does not include outer menu wrapper div
 let clearedMenu = $(".menu.wrapper").clone(true);
-console.log(clearedMenu);
 
 function clearMenu(){
     $(".menu.wrapper").replaceWith(clearedMenu.clone(true));
@@ -142,7 +139,7 @@ export function fillInMenu (menu) {
     let titleElt = headerElt.getElementsByTagName("h2")[0];
     let bkgElt = document.querySelector(".menu.background");
     let footerElt = document.querySelector(".menu.footer");
-    let hasId = menu.hasOwnProperty("data") ? menu.data.hasOwnProperty("id") : false;
+    let hasId = menu.hasOwnProperty("id");
     let buttonPlacements = {
         content: []
     };
@@ -204,38 +201,41 @@ export function fillInMenu (menu) {
     }
     if (menu.hasOwnProperty("content")){
         let objs = forceArray(menu.content);
-        for (let obj of objs)
-            if (typeof obj === "object")
+        for (let obj of objs){
+            if (obj.constructor === Object){
                 bkgElt.appendChild(View.eltObjToElt(obj));
+            }
+        }
     }
     if (menu.hasOwnProperty("footer")){
         let objs = forceArray(menu.footer);
         for (let obj of objs)
-            if (typeof obj === "object")
+            if (obj.constructor === Object)
                 footerElt.appendChild(View.eltObjToElt(obj));
     }
 
     //append button div
     for (let place in buttonPlacements){
         let elt;
+        let class_ = "menu btn-container";
         if (place === "header"){
-            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsHeader", id: menu.id + "BtnsHeader"}, {}, ...buttonPlacements.header));
-            else elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsHeader"}, {}, ...buttonPlacements.header));
+            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsHeader', id: menu.id + "BtnsHeader"}, {}, ...buttonPlacements.header));
+            else elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsHeader'}, {}, ...buttonPlacements.header));
             headerElt.appendChild(elt);
         }
         else if (place === "content" && buttonPlacements.content){
-            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsContent", id: menu.id + "BtnsContent"}, {}, ...buttonPlacements.content));
-            else elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsContent"}, {}, ...buttonPlacements.content));
+            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsContent', id: menu.id + "BtnsContent"}, {}, ...buttonPlacements.content));
+            else elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsContent'}, {}, ...buttonPlacements.content));
             bkgElt.appendChild(elt);
         }
         else if (place === "footer"){
-            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsFooter", id: menu.id + "BtnsFooter"}, {}, ...buttonPlacements.footer));
-            else elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsFooter"}, {}, ...buttonPlacements.footer));
+            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsFooter', id: menu.id + "BtnsFooter"}, {}, ...buttonPlacements.footer));
+            else elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsFooter'}, {}, ...buttonPlacements.footer));
             footerElt.appendChild(elt);
         }
         else if (place === "form"){
-            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsForm", id: menu.id + "BtnsForm"}, {}, ...buttonPlacements.form));
-            else elt = View.eltObjToElt(View.eltObj("div", {class: "menuBtns menuBtnsForm"}, {}, ...buttonPlacements.form));
+            if(hasId) elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsForm', id: menu.id + "BtnsForm"}, {}, ...buttonPlacements.form));
+            else elt = View.eltObjToElt(View.eltObj("div", {class: class_ + ' btnsForm'}, {}, ...buttonPlacements.form));
             document.querySelector(".menu.background").querySelector("#"+buttonPlacements.form[0].data.parentId).appendChild(elt);
         }
         else

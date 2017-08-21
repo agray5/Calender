@@ -109,7 +109,8 @@ export const Menus = {
                 View.eltObj("textarea", {name: "notes", id: "editEventNotes", pattern: ".{0}"}, {}),
                 View.eltObj("label", {for: "editEventNotes"}, {}, "Notes:")),
         buttons: [
-            View.eltObj("button", {id: "editEventSubmit", type: "submit"}, {placement: "form", parentId: "editEventForm"}, "save")
+            View.eltObj("button", {id: "editEventSubmit", type: "submit"}, {placement: "form", parentId: "editEventForm",
+                                                                            listeners: ["click", editFormSubmit]}, "save")
         ]
     },
 
@@ -124,8 +125,8 @@ export const Menus = {
         View.eltObj("p",  {id: "viewNotes"}, "(No Notes)")
         ],
         buttons: [
-            View.eltObj("button", {id: "viewEdit"}, {placement: "footer", listeners: ["click", showMenu, 'editEvent']}, "Edit Event"),
-            View.eltObj("button", {id: "viewDelete"}, {placement: "footer", listeners: ["click", deleteEvent]}, "Delete Event")
+            View.eltObj("button", {id: "viewEdit"}, {placement: "content", listeners: ["click", showMenu, 'editEvent']}, "Edit Event"),
+            View.eltObj("button", {id: "viewDelete"}, {placement: "content", listeners: ["click", deleteEvent]}, "Delete Event")
         ]
     },
 
@@ -135,7 +136,7 @@ export const Menus = {
             View.eltObj("span", {}, {}, "Events")
         ],
         buttons: [
-            View.eltObj("button", {id: "mobileAddEvent", onclick: "showMenu('addEvent')"}, {placement: "footer", listeners: ["click", showMenu, 'addEvent']}, "New Event")
+            View.eltObj("button", {id: "mobileAddEvent"}, {placement: "footer", listeners: ["click", showMenu, 'addEvent']}, "New Event")
         ]
     },
 
@@ -146,13 +147,16 @@ export const Menus = {
          * @param {Event} event event to view
          */
          (event) => {
+            let title = event.title ? event.title : "(No Title)";
+            let time  = event.time  ? event.time  : "(No Time)";
+            let notes = event.notes ? event.notes : "(No Notes)";
             Menus.viewEvent.content =
             [
-            View.eltObj("h3", {id: "viewTitle", class: "stitched"}, event.title),
+            View.eltObj("h3", {id: "viewTitle", class: "stitched"}, {}, title),
             View.eltObj("br"),
-            View.eltObj("p",  {id: "viewTime"}, event.time),
+            View.eltObj("p",  {id: "viewTime"}, {}, time),
             View.eltObj("br"),
-            View.eltObj("p",  {id: "viewNotes"}, event.notes)
+            View.eltObj("p",  {id: "viewNotes"}, {}, notes)
             ]
         }
     }
@@ -173,7 +177,7 @@ function showMenu(menu){
         case 'addEvent' : menuToShow = Menus.addEvent;  break;
         case 'viewEvent': menuToShow = Menus.viewEvent; break;
         case 'mobile'   : menuToShow = Menus.mobile;    break;
-        default: throw error("Menu could not be shown. Menu could not be found.");
+        default: console.error('Menu could not be shown. Menu:', menu, 'could not be found.');
     }
     toggleMenu(menuToShow);
 }
@@ -228,12 +232,12 @@ function editFormSubmit(event) {
     if (time) selectedEvent.getElementsByClassName("calEventTime")[0].textContent = time;
     if (title) selectedEvent.getElementsByClassName("calEventTitle")[0].textContent = title;
 
-   View.toggleClass(editForm.parentElement.parentElement.parentElement, 'hidden', false);
+    View.toggleClass(editForm.parentElement.parentElement.parentElement, 'hidden', false);
     editForm.reset();
 
     fillInView();
-   toggleMenu(Menus.viewEvent);
-    //event.preventDefault();
+    toggleMenu(Menus.viewEvent);
+    event.preventDefault();
 }
 
 function deleteEvent(event = null, eventElt){
@@ -249,7 +253,7 @@ function deleteEvent(event = null, eventElt){
                 }
             });
         }
-
+        // Remove event from events list
         if(event !== null && events.indexOf(event)){
             events.splice(events.indexOf(event), 1);
             save();
@@ -258,8 +262,8 @@ function deleteEvent(event = null, eventElt){
             console.warn("Warning: event was not deleted. Event could not be found");
         }
 
-        //remove div
+        // Remove div
         eventElt.parentElement.removeChild(eventElt);
-        View.toggleClass(".menu", 'hidden', false);
+        View.toggleClass(".menu.wrapper", 'hidden', true);
     }
 }

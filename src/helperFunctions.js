@@ -25,11 +25,22 @@ export function bindFromN(fun, n, ...boundArgs) {
 export function bindIfNull(fun, ...boundArgs){
     return function(...args){
         //replace given arguments if given one argument that is null or undefined
-        if ((args[0] === undefined || args[0] === null) && args.length === 1)
+        if ((args[0] === undefined || args[0] === null) && (args.length === 1 || boundArgs.length === 0))
             args = boundArgs;
         return fun(...args);
     }
 }
+
+export function bindIfBoundArgs(fun, ...boundArgs){
+    return function(...args){
+        //replace given arguments if given one argument that is null or undefined
+        if ((boundArgs[0] === undefined || boundArgs[0] === null) && (boundArgs.length === 1 || boundArgs.length === 0))
+                boundArgs = args;
+        return fun(...boundArgs);
+    }
+}
+
+
 
 function isLeapYear(year) {
     if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)

@@ -135,6 +135,7 @@ body {
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
   width: 752px;
+  min-height: 8%;
   top: 22%;
   padding: 2px;
   border: 2px solid #207cca;
@@ -209,13 +210,17 @@ body {
   margin-top: 20px;
 }
 
+.menu.content textarea {
+  max-height: 60px;
+}
+
 .menu.btn-container {
   position: absolute;
   bottom: 0;
   left: 0;
 }
 
-.menu.btn-container .btn {
+.menu.btn-container .btn, .menu.btn-container button {
   position: relative;
   float: left;
   margin: 20px;
@@ -225,6 +230,7 @@ body {
   background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
   color: white;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 input,

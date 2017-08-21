@@ -1,7 +1,7 @@
 //Menu contains wrapper, header, content, footer, and optional buttons inside or outside of form and optional close button in the header
 //Menu is an object
 import {CreateError} from './error.js'
-import {forceArray, bindIfNull} from './helperFunctions'
+import {forceArray, bindIfBoundArgs} from './helperFunctions'
 
 export const View = {
     /**
@@ -82,8 +82,8 @@ export const View = {
             return;
 
         listeners.forEach(listener => {
-            let args = listener.length > 2 ? listener.splice(2) : undefined;
-            elt.addEventListener(listener[0], bindIfNull(listener[1]));
+            let args = listener.length > 2 ? listener.splice(2) : [];
+            elt.addEventListener(listener[0], bindIfBoundArgs(listener[1], ...args));
         })
     },
     /**

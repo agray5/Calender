@@ -54,17 +54,12 @@ export function load() {
  * @param {string} notes notes about event
  */
 export function fillInView() {
-    let title = "(No Title)",
-        time = "(No Time)",
-        notes = "(No Notes)";
-
+    //Match td to an event
     events.some(e => {
         if (e.id == selectedEvent.id) {
-            if (e.title != "") title = e.title;
-            if (e.time != "") time = e.time;
-            if (e.notes != "") notes = e.notes;
+            //Gives view event object content
+            Menus.contentGenerators.viewEvent(e);
             return true;
         }
-    })
-    Menus.contentGenerators.viewEvent(title, time, notes);
+    });
 }
