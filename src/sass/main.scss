@@ -1,0 +1,282 @@
+@import "mixins";
+@import "functions";
+@import "varibles";
+
+html, body{
+    @include cover;
+}
+
+body {
+    @include layer(0);
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.25em;
+    user-select: none;
+    @include mq('tablet-wide'){
+        line-height: 1.375em;
+    }
+}
+
+#calender {
+    @include cover;
+    & .header {
+        @include cover( 'width');
+        height: $cal-header-height;
+        position: relative;
+        font-size: 50px;
+
+        & #calCurrentMonth{
+            @include center;
+            font-family: $font-fancy;
+
+            & #month{
+                margin-right: 10%;
+            }
+        }
+    }
+    & .table {
+        height: $cal-body-height;
+        & table {
+            @include cover;
+            table-layout: fixed;
+            border-collapse: collapse;
+
+            & tr {
+                height: weighted-per(100%, 10%, 7);
+            }
+
+            & td {
+                width: percentage((100 / 7) / 100);
+                height: weighted-per(100%, 10%, 7);
+                position: relative;
+                overflow-y: hidden;
+                overflow-x: hidden;
+
+                & .eventContainer {
+                    @include cover('width');
+                    margin-top: 20px;
+                    height: 100px;
+                    max-height: 70%;
+                    overflow: auto;
+
+                    & .calEvent{
+                        border: solid 1%;
+                        margin-bottom: 2%;
+                        overflow: hidden;
+
+                        & .calEventTime{
+                            font-weight: bold;
+                        }
+                    }
+                }
+
+                &.weekday {
+                    height: 10%;
+                    outline: 0;
+                    & span{
+                        @include abs-anchor('b');
+                    }
+                }
+                & .calNumber {
+                    @include abs-pos(10px, 10px);
+                    font-size: 12px;
+                    text-align: right;
+                    margin-bottom: 3px;
+                }
+            }
+        }
+    }
+    & .footer {
+        @include cover('width');
+        @include abs-anchor('b');
+        background: yellow;
+        height: $cal-footer-height;
+    }
+}
+
+
+/* MODAL */
+
+.menu{
+    //@include layer(1);
+    &.wrapper {
+        @include cover;
+        @include abs-anchor('tl');
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    &.box {
+        @include layer(2);
+        @include center;
+        display: flex;
+        flex-direction: column;
+
+        & .header {
+            width: 760px - 8px;
+            min-height: 8%;
+            padding: 2px;
+            border: 2px solid;
+            text-align: center;
+            border-radius: 25px 25px 0px 0px;
+            color: white;
+
+            & .close {
+                @include abs-anchor('tr');
+                cursor: pointer;
+                border: 1px solid;
+                border-radius: 0px 25px 5px 0px;
+                padding: 8px;
+                /*/margin-bottom: 20px;*/
+
+            }
+        }
+
+
+        & .main{
+            background-color: #ffaf35;
+            width: 700px;
+            height: 40%;
+            max-height: 600px;
+            position: relative;
+
+            & .background{
+                @include center;
+                @include cover;
+            }
+
+            & .content {
+                @include layer(3);
+                position: relative;
+                width: 100%;
+                height: 100%;
+
+                & ul{
+                    list-style: none;
+                }
+
+                & label,
+                  textarea,
+                  input{
+                    margin-top: 20px;
+                }
+
+                & textarea{
+                    max-height: 60px;
+                }
+
+                & .credits.container{
+                    @include abs-anchor('br');
+                    width: 40%;
+                    color: gray;
+                    font-size: 9px;
+
+                    & a{
+                        color: gray;
+                    }
+                }
+                & .btn-container{
+                    //@include abs-anchor('bl');
+                    position: relative;
+
+                    & .btn, button{
+                        position: relative;
+                        float: left;
+                        margin: 20px;
+                        padding: 5px;
+                        width: 100px;
+                        color: white;
+                        border-radius: 10px;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}
+
+input,
+textarea {
+    margin-right: 45%;
+    padding: 9px;
+    width: 200px;
+    border: solid 1px #E5E5E5;
+    outline: 0;
+    font: normal 13px/100% Verdana, Tahoma, sans-serif;
+    background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    color: black;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
+    border-radius: 5px;
+}
+
+textarea {
+    margin-right: 6.5%;
+    width: 400px;
+    max-width: 400px;
+    height: 150px;
+}
+
+label {
+    position: relative;
+    float: left;
+    margin-right: 10px;
+    width: 50px;
+    text-shadow: 1px 1px lightgray;
+}
+
+
+.viewContent {
+    text-align: center;
+}
+
+#viewEventTitle {
+    font-size: 30px;
+}
+
+
+/* Background pattern from Subtle Patterns */
+
+.stitched {
+    padding: 15px;
+    margin: 10px;
+    background: url('img/cloth.jpg');
+    color: chocolate;
+    font-size: 21px;
+    font-weight: bold;
+    border: 2px dashed chocolate;
+    border-radius: 10px;
+    box-shadow: 0 0 0 4px #dadcb7, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+    text-shadow: -1px -1px brown;
+    font-weight: normal;
+}
+
+.hidden {
+    display: none;
+}
+
+/* THEMES */
+.theme-oranges {
+    @include theme(url('img/oranges.jpg') 100px/100px repeat,
+                   30px solid,
+                   url('img/goldFrame.png') 55 55 50 50 fill stretch
+                   )
+}
+
+.theme-cats {
+    /* https://coolors.co/f2eeed-efdfe0-bbcbcb-9590a8-634b66 */
+    /*
+border-style: solid;
+border-width: 42px 42px 47px 46px;
+border-image: url(paw-print-frame.png) 89 108 100 113 fill repeat;
+     */
+    $primary: #efdfe0;
+    $seconday: #F0F3F8;
+    $tertiary: #B8CBB4;
+    $accent: $seconday;
+    @include theme(url('img/catTile.png') 100px/100px repeat,
+                   30px solid,
+                   //url('img/paw-print-frame.png') 89 108 100 113 fill repeat
+                   url('img/pinkFrame.png') 55 55 50 50 fill stretch
+                   )
+    @include theme-colors($primary, $seconday, $tertiary, $accent);
+}

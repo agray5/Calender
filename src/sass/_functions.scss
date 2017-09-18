@@ -1,0 +1,6 @@
+@function weighted-per($total-percent, $weighted-percent, $total-items-amount, $weighted-items-amount: 1){
+    $normal-items-amount: $total-items-amount - $weighted-items-amount;
+    $total-weighted-percent: $weighted-percent * $weighted-items-amount;
+    $remaining-percent: $total-percent - $total-weighted-percent;
+    @return ($remaining-percent / $normal-items-amount);
+}
