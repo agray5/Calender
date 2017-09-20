@@ -1,3 +1,4 @@
+
 // selected date
 let selectedDate = new Date();
 let selectedDateTD = "none";
@@ -18,3 +19,5 @@ let stickers = [];
 
 //current frame
 let frame = {};
+
+let settings = {};
