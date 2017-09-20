@@ -9,110 +9,32 @@
   <meta name="description" content="calender widget">
   <meta name="author" content="April Gray">
 
+  <link href="https://fonts.googleapis.com/css?family=Milonga" rel="stylesheet">
   <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
   <div id="calender">
-      <div class="header">Header</div>
+      <div class="header"></div>
       <div class="table"></div>
       <div class="footer">Footer</div>
   </div>
 
 <div class="menu wrapper hidden">
-  <div class="menu header">
-    <span class="menu close btn">&times;</span>
-    <h2 class"menu title"></h2>
-  </div>
-  <div class="menu content">
-    <div class="menu background">
+    <div class="menu box">
+        <div class="menu header">
+            <span class="menu close btn">&times;</span>
+            <h2 class"menu title"></h2>
+        </div>
+        <div class="menu main">
+            <div class="menu background"></div>
+            <div class="menu content"></div>
+        </div>
+        <div class="menu footer">
+        </div>
     </div>
-  </div>
-  <div class="menu footer">
-  </div>
 </div>
 
-<!--
-  <div id="eventModal" class="modal">
-    <div id="eventModalHeader" class="modalHeader">
-      <span class="close">&times;</span>
-      <h2>Add Event to Calender</h2>
-    </div>
-    <div id="eventModalContent" class="modalContent">
-      <div class="modalBackground">
-        <form id="eventForm" class="modalForm">
-          <ul>
-            <li><label for="time">Time: </label><input type="time" id="eventTime" name="time"></input>
-            </li>
-            <li><label for="title">Title: </label><input id="eventTitle" name="title"></input>
-            </li>
-            <li><label for="notes">Notes: </label><textarea id="eventNotes" name="notes" pattern=".{0}"></textarea>
-            </li>
-          </ul>
-          <div class="modalBtns">
-            <button type="submit" id="eventSubmit" class="modalBtn">save</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="editModal" class="modal">
-    <div id="editModalHeader" class="modalHeader">
-      <span class="close">&times;</span>
-      <h2>Edit Event</h2>
-    </div>
-    <div id="edittModalContent" class="modalContent">
-      <div class="modalBackground">
-        <form id="editForm" class="modalForm">
-          <ul>
-            <li><label for="time">Time: </label><input id="editTime" name="time" type="time"></input>
-            </li>
-            <li><label for="title">Title: </label><input id="editTitle" name="title"></input>
-            </li>
-            <li><label for="time">Notes: </label> <textarea id="editNotes" name="notes" pattern=".{0}"></textarea>
-            </li>
-          </ul>
-          <div class="modalBtns">
-            <button type="submit" id="editSubmit" class="modalBtn">save</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="viewModal" class="modal">
-    <div id="viewModalHeader" class="modalHeader">
-      <span class="close">&times;</span>
-      <h2>Event</h2>
-    </div>
-    <div id="viewModalContent" class="modalContent">
-      <div class="modalBackground">
-        <h3 id="viewEventTitle" class="viewContent stitched">EVENT TITLE</h3><br>
-        <p id="viewEventTime" class="viewContent">EVENT TIME</p>
-        <p id="viewEventNotes" class="viewContent">Event Notes</p>
-        <div class="modalBtns">
-          <button id="viewEdit" class="modalBtn">edit</button>
-          <button id="viewDelete" class="modalBtn">delete</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="mobileMenuModal" class="modal">
-    <div id="mobileMenuModalContent" class="modalContent">
-      <div class="mobileMenumodalBackground">
-        <span>Events</span>
-        <ul id="mobileEventsList">
-        <ul>
-        <div class="modalBtns">
-          <button id="mobileNewEvent" class="modalBtn">New Event</button>
-          <button id="MobileBack" class="modalBtn">Back</button>
-        </div>
-      </div>
-    </div>
-  </div>
--->
 </body>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"

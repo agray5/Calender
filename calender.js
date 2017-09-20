@@ -8069,12 +8069,25 @@
 
 	var _functions = __webpack_require__(413);
 
+	var _objects = __webpack_require__(412);
+
+	var _view = __webpack_require__(378);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	// map sticker type to image
 	var stickerMap = new _map2.default();
 
 	var dayEls = document.getElementsByClassName("day");
+
+	settings = {
+	    theme: _objects.Themes.cat,
+	    themeName: function themeName() {
+	        for (var name in _objects.Themes) {
+	            if (_objects.Themes[name] === settings.theme) return name;
+	        }
+	    }
+	};
 
 	for (var i = 0; i < dayEls.length; i++) {
 	    dayEls[i].addEventListener('click', function (event) {
@@ -8085,6 +8098,9 @@
 	//localStorage.clear();
 	(0, _calHtml.generateCalHtml)(document.querySelector("#calender .table"));
 	(0, _functions.load)();
+
+	//set Theme
+	_view.View.addClass(document.querySelector("html"), settings.theme.class);
 
 /***/ }),
 /* 298 */
@@ -9491,8 +9507,6 @@
 	    var totalDays = daysInMonth[firstDay.getMonth()];
 	    var month = monthLabels[firstDay.getMonth()];
 	    var year = firstDay.getFullYear();
-	    var tableDiv = parent;
-	    var table = _view.View.elt("table");
 	    var tr = void 0;
 	    //let tdHeight = document.querySelector("body").clientHeight*.82*.15;
 	    var th = _view.View.elt("div", { id: "calCurrentMonth" }, _view.View.elt("span", {
@@ -9505,19 +9519,15 @@
 	    if (firstDay.getMonth() == 1) //february
 	        if (isLeapYear(firstDay.getFullYear())) totalDays = 29;
 
-	    tr = _view.View.elt("tr");
 	    for (var day = 0; day < 7; day++) {
-	        var td = _view.View.elt("td", {
+	        var td = _view.View.elt("div", {
 	            class: "weekday"
 	        }, _view.View.elt("span", {}, '' + weekLabels[day]));
-	        tr.appendChild(td);
+	        parent.appendChild(td);
 	    }
-	    table.appendChild(tr);
 
 	    var cell = 0;
 	    for (var i = 0; i < 6; i++) {
-	        tr = _view.View.elt("tr");
-
 	        var _loop = function _loop() {
 	            cell++;
 	            var fday = firstDay.getDay() + 1;
@@ -9525,9 +9535,10 @@
 	            var td = void 0;
 	            var eventContainer = void 0;
 	            if (cell >= fday && day <= totalDays) {
+	                //Day is a calender day
 	                eventContainer = _view.View.elt("div", { class: "eventContainer" });
-	                td = _view.View.elt("td", {
-	                    class: "day",
+	                td = _view.View.elt("div", {
+	                    class: "day cell",
 	                    id: 'event_' + day + '-' + firstDay.getMonth() + '-' + firstDay.getFullYear()
 	                }, _view.View.elt("text", {
 	                    class: "calNumber"
@@ -9548,21 +9559,19 @@
 	                        if ((0, _helperFunctions.isMobile)()) toggleMenu(_objects.Menus.mobile);else toggleMenu(_objects.Menus.addEvent);
 	                    }
 	                });
-	            } else td = _view.View.elt("td", {
-	                class: "nonday"
+	            } else td = _view.View.elt("div", {
+	                class: "nonday cell"
 	            });
 
 	            td.appendChild(_view.View.elt("div"));
 
-	            tr.appendChild(td);
+	            parent.appendChild(td);
 	        };
 
 	        for (var j = 0; j < 7; j++) {
 	            _loop();
 	        }
-	        table.appendChild(tr);
 	    }
-	    tableDiv.appendChild(table);
 	}
 
 	/**
@@ -9595,10 +9604,12 @@
 	    clearMenu();
 
 	    var menuElt = document.querySelector(".menu.wrapper");
+	    var boxElt = document.querySelector(".menu.box");
 	    var headerElt = document.querySelector(".menu.header");
-	    var contentElt = document.querySelector(".menu.content");
 	    var titleElt = headerElt.getElementsByTagName("h2")[0];
+	    var mainElt = document.querySelector(".menu.main");
 	    var bkgElt = document.querySelector(".menu.background");
+	    var contentElt = document.querySelector(".menu.content");
 	    var footerElt = document.querySelector(".menu.footer");
 	    var hasId = menu.hasOwnProperty("id");
 	    var buttonPlacements = {
@@ -9607,26 +9618,33 @@
 
 	    var close = document.querySelector(".menu.close");
 	    close.addEventListener("click", function (event) {
-	        var modal = close.parentNode.parentNode;
+	        var modal = close.parentNode.parentNode.parentNode;
 	        _view.View.toggleClass(modal, 'hidden', true);
 	    });
 
 	    //Set ids
 	    if (hasId) {
 	        menuElt.id = menu.id + "Wrapper";
+	        boxElt.id = menu.id + "Box";
 	        headerElt.id = menu.id + "Header";
-	        contentElt.id = menu.id + "Content";
 	        titleElt.id = menu.id + "Title";
+	        mainElt.id = menu.id + "Main";
 	        bkgElt.id = menu.id + "Background";
+	        contentElt.id = menu.id + "Content";
 	        footerElt.id = menu.id + "Footer";
 	    } else {
 	        menuElt.removeAttribute('id');
+	        boxElt.removeAttribute('id');
 	        headerElt.removeAttribute('id');
-	        contentElt.removeAttribute('id');
 	        titleElt.removeAttribute('id');
+	        mainElt.removeAttribute('id');
 	        bkgElt.removeAttribute('id');
+	        contentElt.removeAttribute('id');
 	        footerElt.removeAttribute('id');
 	    }
+
+	    //Set Theme
+	    _view.View.addClass(menuElt, settings.theme.class);
 
 	    //sort buttons by placement, if button has no placement content is assumed
 	    if (menu.hasOwnProperty("buttons")) {
@@ -9687,7 +9705,7 @@
 	                var _obj = _step2.value;
 
 	                if (_obj.constructor === Object) {
-	                    bkgElt.appendChild(_view.View.eltObjToElt(_obj));
+	                    contentElt.appendChild(_view.View.eltObjToElt(_obj));
 	                }
 	            }
 	        } catch (err) {
@@ -9742,15 +9760,25 @@
 	            headerElt.appendChild(elt);
 	        } else if (place === "content" && buttonPlacements.content) {
 	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsContent', id: menu.id + "BtnsContent" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsContent' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.content))));
-	            bkgElt.appendChild(elt);
+	            contentElt.appendChild(elt);
 	        } else if (place === "footer") {
 	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsFooter', id: menu.id + "BtnsFooter" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsFooter' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.footer))));
 	            footerElt.appendChild(elt);
 	        } else if (place === "form") {
 	            if (hasId) elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsForm', id: menu.id + "BtnsForm" }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));else elt = _view.View.eltObjToElt(_view.View.eltObj.apply(_view.View, ["div", { class: class_ + ' btnsForm' }, {}].concat((0, _toConsumableArray3.default)(buttonPlacements.form))));
-	            document.querySelector(".menu.background").querySelector("#" + buttonPlacements.form[0].data.parentId).appendChild(elt);
+	            document.querySelector(".menu.content").querySelector("#" + buttonPlacements.form[0].data.parentId).appendChild(elt);
 	        } else throw new Error("Could not place button. Button placement " + place + " is invalid");
 	    }
+
+	    //Set theme credits
+	    var credits = (0, _helperFunctions.forceArray)(settings.theme.credits);
+	    var creditsContainer = _view.View.elt("div", { "class": "menu credits container" });
+	    credits.forEach(function (eltObj) {
+	        var elt = _view.View.eltObjToElt(eltObj);
+	        _view.View.addClass(elt, "menu", "credit");
+	        creditsContainer.append(elt);
+	    });
+	    contentElt.append(creditsContainer);
 	}
 
 /***/ }),
@@ -9945,14 +9973,20 @@
 	    /**
 	     * addes a class from element
 	     * @param  {string|HTMLElement} element html element or selector
-	     * @param  {string} class_  class to add
+	     * @param  {string} classes  classes to add
 	     */
-	    addClass: function addClass(element, class_) {
+	    addClass: function addClass(element) {
+	        for (var _len = arguments.length, classes = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	            classes[_key - 1] = arguments[_key];
+	        }
+
 	        if (element.constructor === String) {
 	            element = document.querySelector(element);
 	            if (element === undefined) return;
 	        }
-	        if (element.classList) element.classList.add(class_);else if (!View.hasClass(element, class_)) element.className += " " + class_;
+	        classes.forEach(function (class_) {
+	            if (element.classList) element.classList.add(class_);else if (!View.hasClass(element, class_)) element.className += " " + class_;
+	        });
 	    },
 
 	    /**
@@ -9990,7 +10024,7 @@
 	        if (listeners[0].constructor !== Array) return;
 
 	        listeners.forEach(function (listener) {
-	            var args = listener.length > 2 ? listener.splice(2) : [];
+	            var args = listener.length > 2 ? listener.slice(2) : [];
 	            elt.addEventListener(listener[0], _helperFunctions.bindIfBoundArgs.apply(undefined, [listener[1]].concat((0, _toConsumableArray3.default)(args))));
 	        });
 	    },
@@ -10001,8 +10035,8 @@
 	        * @param {HTMLElement|string} children additional arguments added to node as children
 	        */
 	    elt: function elt(name, attributes) {
-	        for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-	            children[_key - 2] = arguments[_key];
+	        for (var _len2 = arguments.length, children = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+	            children[_key2 - 2] = arguments[_key2];
 	        }
 
 	        var node = document.createElement(name);
@@ -10049,8 +10083,8 @@
 	        * @return {{element: string, attributes: {}, data: {}, children: []}}
 	        */
 	    eltObj: function eltObj(element) {
-	        for (var _len2 = arguments.length, children = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
-	            children[_key2 - 3] = arguments[_key2];
+	        for (var _len3 = arguments.length, children = Array(_len3 > 3 ? _len3 - 3 : 0), _key3 = 3; _key3 < _len3; _key3++) {
+	            children[_key3 - 3] = arguments[_key3];
 	        }
 
 	        var attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -10923,7 +10957,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.Menus = undefined;
+	exports.Themes = exports.Menus = undefined;
 	exports.Event = Event;
 
 	var _view = __webpack_require__(378);
@@ -11038,7 +11072,7 @@
 	    viewEvent: {
 	        id: "viewEvent",
 	        content: [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, "(No Title)"), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, "(No Time)"), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, "(No Notes)")],
-	        buttons: [_view.View.eltObj("button", { id: "viewEdit" }, { placement: "content", listeners: ["click", showMenu, 'editEvent'] }, "Edit Event"), _view.View.eltObj("button", { id: "viewDelete" }, { placement: "content", listeners: ["click", deleteEvent] }, "Delete Event")]
+	        buttons: [_view.View.eltObj("button", { id: "viewEdit" }, { placement: "content", listeners: ["click", showMenu, "editEvent"] }, "Edit Event"), _view.View.eltObj("button", { id: "viewDelete" }, { placement: "content", listeners: ["click", deleteEvent] }, "Delete Event")]
 	    },
 
 	    mobile: {
@@ -11059,6 +11093,17 @@
 	            var notes = event.notes ? event.notes : "(No Notes)";
 	            Menus.viewEvent.content = [_view.View.eltObj("h3", { id: "viewTitle", class: "stitched" }, {}, title), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewTime" }, {}, time), _view.View.eltObj("br"), _view.View.eltObj("p", { id: "viewNotes" }, {}, notes)];
 	        }
+	    }
+	};
+
+	var Themes = exports.Themes = {
+	    cat: {
+	        "class": "theme-cats",
+	        credits: [_view.View.eltObj("a", { href: "http://www.freepik.com/free-vector/cats-watercolor-pattern_888893.htm", target: "_blank" }, {}, "Pattern vector created by Irikul - Freepik.com")]
+	    },
+	    oranges: {
+	        "class": "theme-oranges",
+	        credits: [_view.View.eltObj("p", {}, {}, "© Mnovelo | ", _view.View.eltObj("a", { href: "http://www.dreamstime.com/", target: "_blank" }, {}, "Dreamstime Stock Photos"), " & ", _view.View.eltObj("a", { href: "http://www.stockfreeimages.com/", target: "_blank" }, {}, "Stock Free Images"), _view.View.eltObj("br"), _view.View.eltObj("a", { href: "http://www.freepik.com/free-vector/vintage-frame_763280.htm", target: "_blank" }, {}, "Designed by Freepik"))]
 	    }
 
 	    //////////////////////////////////////////////
@@ -11103,14 +11148,14 @@
 	        (0, _functions.save)(); //save the new event
 	    } catch (err) {
 	        var extraMsg = '';
-	        console.error(err.name, ":", err.message); //log error
+	        console.error(err.name + ":", err.message); //log error
 	        //Do not create event if error
-	        if (!((time === "" || time === undefined) && (time === "" || time === undefined))) extraMsg = 'Event must have time or title.';
+	        if ((time === "" || time === undefined) && (time === "" || time === undefined)) extraMsg = 'Event must have time or title.';
 	        alert('Event could not be created. ' + extraMsg);
 	    } finally {
-	        _view.View.toggleClass(addEventForm.parentElement.parentElement.parentElement, 'hidden', false);
+	        _view.View.toggleClass(addEventForm.parentElement.parentElement.parentElement.parentElement, 'hidden', true);
 	        addEventForm.reset();
-	        //event.preventDefault();
+	        event.preventDefault();
 	    }
 	}
 
@@ -11215,6 +11260,10 @@
 
 	    //save frame
 	    localStorage.setItem('frame', (0, _stringify2.default)(frame));
+
+	    //save Themes
+	    console.log("theme", settings.themeName);
+	    localStorage.setItem('theme', settings.themeName);
 	}
 
 	/**
@@ -11239,6 +11288,9 @@
 	        stickers.push(sckers[s]);
 	    }
 	    //frame = fme;
+
+	    //load saved theme
+	    settings.theme = localStorage.getItem('Theme') ? _objects.Themes[localStorage.getItem('Theme')] : settings.theme;
 	}
 
 	/**

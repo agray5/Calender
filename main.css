@@ -6,7 +6,6 @@ html, body {
 body {
   z-index: 0;
   margin: 0;
-  background-color: silver;
   font-size: 16px;
   line-height: 1.25em;
   -webkit-user-select: none;
@@ -28,47 +27,72 @@ body {
 
 #calender .header {
   width: 100%;
-  background: red;
   height: 10%;
+  position: relative;
+  font-size: 50px;
+}
+
+#calender .header #calCurrentMonth {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  font-family: "Milonga", cursive;
+}
+
+#calender .header #calCurrentMonth #month {
+  margin-right: 10%;
 }
 
 #calender .table {
   height: 82%;
+  overflow: hidden;
 }
 
-#calender .table table {
-  width: 100%;
-  height: 100%;
-  table-layout: fixed;
-}
-
-#calender .table table td {
+#calender .table div {
   width: 14.28571%;
   height: 15%;
   position: relative;
-  overflow-y: auto;
+  float: left;
+  overflow: hidden;
+  text-align: center;
+}
+
+#calender .table div .eventContainer {
+  width: 100%;
+  margin-top: 30px;
+  height: 100px;
+  max-height: 70%;
+  overflow: auto;
   overflow-x: hidden;
 }
 
-#calender .table table td.weekday {
-  height: 10%;
-  background-color: green;
+#calender .table div .eventContainer .calEvent {
+  border: solid 1px white;
+  margin-bottom: 2%;
+  overflow: hidden;
+  width: 100%;
+  height: 18px;
+  text-align: left;
+  font-size: 12px;
 }
 
-#calender .table table td.weekday span {
+#calender .table div .eventContainer .calEvent .calEventTime {
+  font-weight: bold;
+}
+
+#calender .table div.weekday {
+  height: 10%;
+  text-align: center;
+}
+
+#calender .table div.weekday span {
   position: absolute;
   bottom: 0;
 }
 
-#calender .table table td.day, #calender .table table td.nonday {
-  background: lightblue;
-}
-
-#calender .table table td.nonday {
-  background: gray;
-}
-
-#calender .table table td .calNumber {
+#calender .table div .calNumber {
   top: 10px;
   right: 10px;
   bottom: auto;
@@ -87,36 +111,10 @@ body {
   height: 8%;
 }
 
-.eventContainer {
-  width: 100%;
-  margin-top: 20px;
-  height: 70%;
-  overflow: auto;
-}
-
-.eventContainer .calEvent {
-  background: rgba(0, 150, 0, 0.9);
-  border: lightgreen solid 1%;
-  height: 20px;
-  width: 97%;
-  margin-bottom: 2%;
-  overflow: hidden;
-}
-
-.eventContainer .calEvent .calEventTime {
-  font-weight: bold;
-  color: darkgray;
-}
-
 /* MODAL */
-.menu {
-  /* <a href="http://www.freepik.com/free-vector/vintage-frame_763280.htm">Designed by Freepik</a> */
-}
-
 .menu.wrapper {
   width: 100%;
   height: 100%;
-  z-index: 1;
   position: absolute;
   top: 0;
   left: 0;
@@ -124,48 +122,52 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-.menu.header, .menu .background {
+.menu.box {
   z-index: 2;
-}
-
-.menu.header {
   position: absolute;
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.menu.box .header {
   width: 752px;
   min-height: 8%;
-  top: 22%;
   padding: 2px;
-  border: 2px solid #207cca;
-  background-color: blue;
+  border: 2px solid;
   text-align: center;
   border-radius: 25px 25px 0px 0px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#1e5799), color-stop(50%, #2989d8), color-stop(51%, #207cca), to(#7db9e8));
-  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
   color: white;
 }
 
-.menu.header .close {
+.menu.box .header .close {
   position: absolute;
   top: 0;
   right: 0;
   cursor: pointer;
-  background: -webkit-gradient(linear, left top, left bottom, from(#feccb1), color-stop(50%, #f17432), color-stop(51%, #ea5507), to(#fb955e));
-  background: linear-gradient(to bottom, #feccb1 0%, #f17432 50%, #ea5507 51%, #fb955e 100%);
-  border: 1px solid #ea5507;
+  border: 1px solid;
   border-radius: 0px 25px 5px 0px;
   padding: 8px;
   /*/margin-bottom: 20px;*/
 }
 
-.menu.header .close:hover {
-  -webkit-box-shadow: #ea5507 0px 0px 8px;
-          box-shadow: #ea5507 0px 0px 8px;
+.menu.box .main {
+  background-color: #ffaf35;
+  width: 700px;
+  height: 40%;
+  max-height: 600px;
+  position: relative;
 }
 
-.menu.background {
+.menu.box .main .background {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -173,61 +175,52 @@ body {
           transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-  background: url("img/oranges2frosted.jpg") repeat;
-  background-size: 100px 100px;
-  background-attachment: fixed;
-  border: 5px double yellow;
-  /*background: radial-gradient(circle, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));*/
 }
 
-.menu.content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-  background-color: #ffaf35;
-  width: 700px;
-  height: 40%;
-  max-height: 600px;
-  border-radius: 25px 25px 0px 0px;
-  background: url("img/oranges2.jpg") repeat;
-  background-size: 100px 100px;
-  border-style: solid;
-  border-width: 30px;
-  -o-border-image: url("img/goldFrame.png") 55 55 50 50 stretch;
-     border-image: url("img/goldFrame.png") 55 55 50 50 fill stretch;
-  /*border: 2px solid orange;*/
+.menu.box .main .content {
+  z-index: 3;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.menu.content ul {
+.menu.box .main .content ul {
   list-style: none;
 }
 
-.menu.content label,
-.menu.content textarea,
-.menu.content input {
+.menu.box .main .content label,
+.menu.box .main .content textarea,
+.menu.box .main .content input {
   margin-top: 20px;
 }
 
-.menu.content textarea {
+.menu.box .main .content textarea {
   max-height: 60px;
 }
 
-.menu.btn-container {
+.menu.box .main .content .credits.container {
   position: absolute;
   bottom: 0;
-  left: 0;
+  right: 0;
+  width: 40%;
+  color: gray;
+  font-size: 9px;
 }
 
-.menu.btn-container .btn, .menu.btn-container button {
+.menu.box .main .content .credits.container a {
+  color: gray;
+}
+
+.menu.box .main .content .btn-container {
+  position: relative;
+}
+
+.menu.box .main .content .btn-container .btn, .menu.box .main .content .btn-container button {
   position: relative;
   float: left;
   margin: 20px;
   padding: 5px;
   width: 100px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#1e5799), color-stop(50%, #2989d8), color-stop(51%, #207cca), to(#7db9e8));
-  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
   color: white;
   border-radius: 10px;
   cursor: pointer;
@@ -246,13 +239,6 @@ textarea {
   -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
           box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
   border-radius: 5px;
-}
-
-input:hover, input :focus,
-textarea:hover,
-textarea :focus {
-  -webkit-box-shadow: 0px 0px 8px rgba(255, 255, 0, 0.3);
-          box-shadow: 0px 0px 8px rgba(255, 255, 0, 0.3);
 }
 
 textarea {
@@ -296,4 +282,138 @@ label {
 
 .hidden {
   display: none;
+}
+
+/* THEMES */
+.theme-oranges .header {
+  background: url("img/oranges.jpg") 100px/100px repeat;
+  background-size: 200px 200px;
+}
+
+.theme-oranges.menu .background:before {
+  z-index: -2;
+  content: "";
+  background: url("img/oranges.jpg") 100px/100px repeat;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: 0;
+  left: 0;
+  -webkit-filter: blur(1px);
+          filter: blur(1px);
+}
+
+.theme-oranges.menu .background:after {
+  content: "";
+  background: rgba(230, 240, 255, 0.4);
+  border: 2px dashed transparent;
+  -webkit-box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
+          box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.theme-oranges.menu .main {
+  background: url("img/oranges.jpg") 100px/100px repeat;
+  border: 30px solid;
+  -o-border-image: url("img/goldFrame.png") 55 55 50 50 stretch;
+     border-image: url("img/goldFrame.png") 55 55 50 50 fill stretch;
+  border-radius: "";
+}
+
+.theme-cats {
+  /* https://coolors.co/f2eeed-efdfe0-bbcbcb-9590a8-634b66 */
+  /*
+border-style: solid;
+border-width: 42px 42px 47px 46px;
+border-image: url(paw-print-frame.png) 89 108 100 113 fill repeat;
+     */
+}
+
+.theme-cats .header {
+  background: url("img/catTile.png") 100px/100px repeat;
+  background-size: 200px 200px;
+}
+
+.theme-cats.menu .background:before {
+  z-index: -2;
+  content: "";
+  background: url("img/catTile.png") 100px/100px repeat;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: 0;
+  left: 0;
+  -webkit-filter: blur(1px);
+          filter: blur(1px);
+}
+
+.theme-cats.menu .background:after {
+  content: "";
+  background: rgba(230, 240, 255, 0.4);
+  border: 2px dashed transparent;
+  -webkit-box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
+          box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.theme-cats.menu .main {
+  background: url("img/catTile.png") 100px/100px repeat;
+  border: 30px solid;
+  -o-border-image: url("img/pinkFrame.png") 55 55 50 50 stretch;
+     border-image: url("img/pinkFrame.png") 55 55 50 50 fill stretch;
+  border-radius: "";
+}
+
+.theme-cats .day {
+  background-color: #efdfe0;
+}
+
+.theme-cats .weekday {
+  background-color: #F0F3F8;
+}
+
+.theme-cats .nonday {
+  background-color: #B8CBB4;
+}
+
+.theme-cats .calEvent {
+  background-color: #F0F3F8;
+  border-color: white;
+}
+
+.theme-cats .cell {
+  outline: 2px solid #F0F3F8;
+}
+
+.theme-cats .menu.header {
+  background: -webkit-gradient(linear, left top, left bottom, from(#65885e), color-stop(50%, #B8CBB4), color-stop(51%, #96bf8d), to(#d7dcd6));
+  background: linear-gradient(to bottom, #65885e 0%, #B8CBB4 50%, #96bf8d 51%, #d7dcd6 100%);
+  border-color: #96bf8d;
+}
+
+.theme-cats .menu.header .close {
+  background: -webkit-gradient(linear, left top, left bottom, from(white), color-stop(50%, #efdfe0), color-stop(51%, #f2c3c6), to(#f7f9fb));
+  background: linear-gradient(to bottom, white 0%, #efdfe0 50%, #f2c3c6 51%, #f7f9fb 100%);
+  border-color: #f2c3c6;
+}
+
+.theme-cats .menu.header .close:hover {
+  -webkit-box-shadow: #f2c3c6 0px 0px 8px;
+          box-shadow: #f2c3c6 0px 0px 8px;
+}
+
+.theme-cats .menu.btn-container button {
+  background: -webkit-gradient(linear, left top, left bottom, from(#65885e), color-stop(50%, #B8CBB4), color-stop(51%, #96bf8d), to(#d7dcd6));
+  background: linear-gradient(to bottom, #65885e 0%, #B8CBB4 50%, #96bf8d 51%, #d7dcd6 100%);
+}
+
+.theme-cats textarea:hover, .theme-cats textarea :focus, .theme-cats input:hover, .theme-cats input :focus {
+  -webkit-box-shadow: 0px 0px 8px rgba(240, 243, 248, 0.3);
+          box-shadow: 0px 0px 8px rgba(240, 243, 248, 0.3);
 }
