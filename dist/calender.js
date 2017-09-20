@@ -8082,7 +8082,6 @@
 
 	settings = {
 	    theme: _objects.Themes.cat,
-
 	    themeName: function themeName() {
 	        for (var name in _objects.Themes) {
 	            if (_objects.Themes[name] === settings.theme) return name;
@@ -9508,8 +9507,6 @@
 	    var totalDays = daysInMonth[firstDay.getMonth()];
 	    var month = monthLabels[firstDay.getMonth()];
 	    var year = firstDay.getFullYear();
-	    var tableDiv = parent;
-	    var table = _view.View.elt("table");
 	    var tr = void 0;
 	    //let tdHeight = document.querySelector("body").clientHeight*.82*.15;
 	    var th = _view.View.elt("div", { id: "calCurrentMonth" }, _view.View.elt("span", {
@@ -9522,19 +9519,15 @@
 	    if (firstDay.getMonth() == 1) //february
 	        if (isLeapYear(firstDay.getFullYear())) totalDays = 29;
 
-	    tr = _view.View.elt("tr");
 	    for (var day = 0; day < 7; day++) {
-	        var td = _view.View.elt("td", {
+	        var td = _view.View.elt("div", {
 	            class: "weekday"
 	        }, _view.View.elt("span", {}, '' + weekLabels[day]));
-	        tr.appendChild(td);
+	        parent.appendChild(td);
 	    }
-	    table.appendChild(tr);
 
 	    var cell = 0;
 	    for (var i = 0; i < 6; i++) {
-	        tr = _view.View.elt("tr");
-
 	        var _loop = function _loop() {
 	            cell++;
 	            var fday = firstDay.getDay() + 1;
@@ -9542,9 +9535,10 @@
 	            var td = void 0;
 	            var eventContainer = void 0;
 	            if (cell >= fday && day <= totalDays) {
+	                //Day is a calender day
 	                eventContainer = _view.View.elt("div", { class: "eventContainer" });
-	                td = _view.View.elt("td", {
-	                    class: "day",
+	                td = _view.View.elt("div", {
+	                    class: "day cell",
 	                    id: 'event_' + day + '-' + firstDay.getMonth() + '-' + firstDay.getFullYear()
 	                }, _view.View.elt("text", {
 	                    class: "calNumber"
@@ -9565,21 +9559,19 @@
 	                        if ((0, _helperFunctions.isMobile)()) toggleMenu(_objects.Menus.mobile);else toggleMenu(_objects.Menus.addEvent);
 	                    }
 	                });
-	            } else td = _view.View.elt("td", {
-	                class: "nonday"
+	            } else td = _view.View.elt("div", {
+	                class: "nonday cell"
 	            });
 
 	            td.appendChild(_view.View.elt("div"));
 
-	            tr.appendChild(td);
+	            parent.appendChild(td);
 	        };
 
 	        for (var j = 0; j < 7; j++) {
 	            _loop();
 	        }
-	        table.appendChild(tr);
 	    }
-	    tableDiv.appendChild(table);
 	}
 
 	/**

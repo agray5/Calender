@@ -21,8 +21,6 @@ export function generateCalHtml(parent) {
     let totalDays = daysInMonth[firstDay.getMonth()];
     let month = monthLabels[firstDay.getMonth()];
     let year = firstDay.getFullYear();
-    let tableDiv = parent;
-    let table = View.elt("table");
     let tr;
     //let tdHeight = document.querySelector("body").clientHeight*.82*.15;
     let th = View.elt("div", {id:"calCurrentMonth"}, View.elt("span", {
@@ -36,28 +34,25 @@ export function generateCalHtml(parent) {
         if (isLeapYear(firstDay.getFullYear()))
             totalDays = 29;
 
-    tr = View.elt("tr");
     for (let day = 0; day < 7; day++) {
-        let td = View.elt("td", {
+        let td = View.elt("div", {
             class: "weekday"
         }, View.elt("span", {}, `${weekLabels[day]}`));
-        tr.appendChild(td);
+        parent.appendChild(td);
     }
-    table.appendChild(tr);
 
     let cell = 0;
     for (let i = 0; i < 6; i++) {
-        tr = View.elt("tr");
         for (var j = 0; j < 7; j++) {
             cell++;
             let fday = firstDay.getDay() + 1;
             let day = cell - fday + 1;
             let td;
             let eventContainer;
-            if (cell >= fday && day <= totalDays) {
+            if (cell >= fday && day <= totalDays) { //Day is a calender day
                 eventContainer = View.elt("div", {class: "eventContainer"})
-                td = View.elt("td", {
-                        class: "day",
+                td = View.elt("div", {
+                        class: "day cell",
                         id: `event_${day}-${firstDay.getMonth()}-${firstDay.getFullYear()}`,
                     }, View.elt("text", {
                         class: "calNumber"
@@ -87,17 +82,15 @@ export function generateCalHtml(parent) {
                 })
             }
             else
-                td = View.elt("td", {
-                    class: "nonday"
+                td = View.elt("div", {
+                    class: "nonday cell"
                 });
 
             td.appendChild(View.elt("div"));
 
-            tr.appendChild(td);
+            parent.appendChild(td);
         }
-        table.appendChild(tr);
     }
-    tableDiv.appendChild(table);
 }
 
 /**

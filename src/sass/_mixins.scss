@@ -247,15 +247,15 @@ $breakpoints: (
                 darken(saturate($tertiary, 10%), 10%) 51%,
                 lighten(desaturate($tertiary, 10%), 10%) 100%);
 
-    td.day {
+    .day {
         background-color: $primary;
     }
 
-    td.weekday {
+    .weekday {
         background-color: $seconday;
     }
 
-    td.nonday {
+    .nonday {
         background-color: $tertiary;
     }
 
@@ -264,7 +264,7 @@ $breakpoints: (
         border-color: lighten($seconday, 10%);
     }
 
-    td {
+    .cell {
         outline: 2px solid $accent;
     }
 
