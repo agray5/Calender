@@ -8080,7 +8080,7 @@
 
 	var dayEls = document.getElementsByClassName("day");
 
-	var settings = {
+	settings = {
 	    theme: _objects.Themes.cat,
 	    themeName: function themeName() {
 	        return settings.theme.class;
