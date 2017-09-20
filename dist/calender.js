@@ -8083,9 +8083,7 @@
 	settings = {
 	    theme: _objects.Themes.cat,
 	    themeName: function themeName() {
-	        for (var name in _objects.Themes) {
-	            if (_objects.Themes[name] === settings.theme) return name;
-	        }
+	        return settings.theme.class;
 	    }
 	};
 
@@ -11262,7 +11260,6 @@
 	    localStorage.setItem('frame', (0, _stringify2.default)(frame));
 
 	    //save Themes
-	    console.log("theme", settings.themeName);
 	    localStorage.setItem('theme', settings.themeName);
 	}
 

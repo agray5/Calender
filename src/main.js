@@ -11,10 +11,7 @@ let dayEls = document.getElementsByClassName("day");
 settings = {
     theme: Themes.cat,
     themeName: () => {
-        for (let name in Themes) {
-            if (Themes[name] === settings.theme)
-                return name;
-        }
+        return settings.theme.class;
     }
 }
 

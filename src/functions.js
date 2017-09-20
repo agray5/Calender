@@ -23,7 +23,6 @@ export function save() {
     localStorage.setItem('frame', JSON.stringify(frame));
 
     //save Themes
-    console.log("theme", settings.themeName);
     localStorage.setItem('theme', settings.themeName)
 }
 
