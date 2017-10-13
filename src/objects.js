@@ -40,7 +40,7 @@ export function Event(time = "(No Time)", title = "(No Title)", notes = "(No Not
             selectedEvent = e;
             if(!isMobile()){
                 fillInView();
-               toggleMenu(Menus.viewEvent);
+               showMenu(Menus.viewEvent);
             }
         });
         return e;
@@ -140,6 +140,13 @@ export const Menus = {
         ]
     },
 
+    selectTheme: {
+        id: "selectTheme",
+        header: {
+            title: "Select Theme"
+        }
+    },
+
     contentGenerators: {
         viewEvent:
         /**
@@ -158,17 +165,32 @@ export const Menus = {
             View.eltObj("br"),
             View.eltObj("p",  {id: "viewNotes"}, {}, notes)
             ]
+        },
+        selectTheme:
+        /**
+         * Fill in theme picker with avalible themes
+         */
+        () => {
+            let themes = [];
+            for(let theme in Themes){
+                themes.push(View.eltObj("option"), {value:theme.name}, {}, `${theme.name}`);
+            }
+            Menus.selectTheme.content = [
+                View.eltObj("select", {}, {}, ...themes),
+            ]
         }
     }
 }
 
 export const Themes = {
     cat: {
+        name: "Cats",
         "class": "theme-cats",
         credits:  [View.eltObj("a", {href:"http://www.freepik.com/free-vector/cats-watercolor-pattern_888893.htm", target:"_blank"}, {}, "Pattern vector created by Irikul - Freepik.com"),
                   ]
     },
     oranges: {
+        name: "Oranges",
         "class": "theme-oranges",
         credits: [View.eltObj("p", {}, {}, "© Mnovelo | ", View.eltObj("a", {href:"http://www.dreamstime.com/", target:"_blank"}, {}, "Dreamstime Stock Photos"),
                   " & ", View.eltObj("a", {href:"http://www.stockfreeimages.com/", target:"_blank"}, {}, "Stock Free Images"),  View.eltObj("br"),
@@ -185,19 +207,26 @@ export const Themes = {
 /**
  * Shows menu from given string
  * @param  {string} menu the menu to show
+ * @param  {Object=} menuParams optional params to fill in menu
  */
-function showMenu(menu){
+export function showMenu(menu, ...menuParams){
     let menuToShow = null;
-    switch(menu){
-        case 'editEvent': menuToShow = Menus.editEvent; break;
-        case 'addEvent' : menuToShow = Menus.addEvent;  break;
-        case 'viewEvent': menuToShow = Menus.viewEvent; break;
-        case 'mobile'   : menuToShow = Menus.mobile;    break;
-        default: console.error('Menu could not be shown. Menu:', menu, 'could not be found.');
+
+    if(!Menus.hasOwnProperty(menu) && menu instanceof String)
+        console.error('Menu could not be shown. Menu:', menu, 'could not be found.');
+    else if(menu instanceof String)
+        menuToShow = Menus[menu];
+    else{
+        menuToShow = menu;
+        menu = menu.id;
     }
+
+    //generate content if needed
+    if(Menus.contentGenerators.hasOwnProperty(menu))
+        Menus.contentGenerators[menu](...menuParams);
+
     toggleMenu(menuToShow);
 }
-
 
 function addEventFormSubmit(event) {
     let addEventForm = document.querySelector("#addEventForm");
@@ -252,7 +281,7 @@ function editFormSubmit(event) {
     editForm.reset();
 
     fillInView();
-    toggleMenu(Menus.viewEvent);
+    showMenu(Menus.viewEvent);
     event.preventDefault();
 }
 

@@ -1,6 +1,6 @@
 import {View} from './view'
 import {isMobile, forceArray} from './helperFunctions'
-import {Menus, Themes} from './objects'
+import {Menus, Themes, showMenu} from './objects'
 
 export function generateCalHtml(parent) {
     // weekly labels
@@ -64,9 +64,9 @@ export function generateCalHtml(parent) {
                     selectedDateTD = td;
                     if (event.target == eventContainer){
                         if(isMobile())
-                            toggleMenu(Menus.mobile);
+                            showMenu(Menus.mobile);
                         else
-                            toggleMenu(Menus.addEvent);
+                            showMenu(Menus.addEvent);
                     }
                 });
 
@@ -75,9 +75,9 @@ export function generateCalHtml(parent) {
                     selectedDateTD = td;
                     if (event.target == td){
                         if(isMobile())
-                            toggleMenu(Menus.mobile);
+                            showMenu(Menus.mobile);
                         else
-                            toggleMenu(Menus.addEvent);
+                            showMenu(Menus.addEvent);
                     }
                 })
             }

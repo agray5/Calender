@@ -107,8 +107,24 @@ body {
   width: 100%;
   position: absolute;
   bottom: 0;
-  background: yellow;
   height: 8%;
+}
+
+#calender .footer .credits {
+  font-size: 10px;
+  float: right;
+}
+
+#calender .footer .standOut {
+  padding: 2px 10px;
+  float: left;
+}
+
+#calender .footer svg {
+  height: 50px;
+  width: 50px;
+  margin: 0 10px;
+  cursor: pointer;
 }
 
 /* MODAL */
@@ -417,3 +433,17 @@ border-image: url(paw-print-frame.png) 89 108 100 113 fill repeat;
   -webkit-box-shadow: 0px 0px 8px rgba(240, 243, 248, 0.3);
           box-shadow: 0px 0px 8px rgba(240, 243, 248, 0.3);
 }
+
+.theme-cats .footer {
+  background: #F0F3F8;
+}
+
+.theme-cats .footer svg {
+  fill: #debdbf;
+}
+
+.theme-cats .footer svg:hover {
+  fill: #B8CBB4;
+}
+
+/* Class */

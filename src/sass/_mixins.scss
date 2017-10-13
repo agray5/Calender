@@ -299,4 +299,23 @@ $breakpoints: (
         }
     }
 
+    .footer{
+        background: $seconday;
+        $oppsite-primary: opposite-lightness($primary);
+
+        & svg{
+            fill: darken($primary, 10);
+
+            &:hover{
+                fill: $tertiary;
+            }
+        }
+
+        & .standOut{
+            //background: linear-gradient(to right, rgba(complement($primary),0.5) 0,
+            //rgba(invert($primary),0.3) 50%,
+            //rgba(complement($primary),0) 100%);
+        }
+    }
+
 }
