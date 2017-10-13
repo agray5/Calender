@@ -8,7 +8,7 @@ let stickerMap = new Map();
 
 let dayEls = document.getElementsByClassName("day");
 
-settings = {
+let settings = {
     theme: Themes.cat,
     themeName: () => {
         return settings.theme.class;

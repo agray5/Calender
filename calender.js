@@ -11022,7 +11022,7 @@ var stickerMap = new _map2.default();
 
 var dayEls = document.getElementsByClassName("day");
 
-settings = {
+var settings = {
     theme: _objects.Themes.cat,
     themeName: function themeName() {
         return settings.theme.class;
