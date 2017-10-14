@@ -5,9 +5,9 @@ A monthly view calender that can be used to keep track of events
 A live version of the project can be found [here](https://agray5.github.io/CustomizableCalender)
 
 
-##Library Licenses
+## Library Licenses
 
-###[svg-injector](https://github.com/iconic/SVGInjector)
+### [svg-injector](https://github.com/iconic/SVGInjector)
 The MIT License (MIT)
 
 Copyright (c) 2014-2015 Waybury
