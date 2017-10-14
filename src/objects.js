@@ -1,5 +1,5 @@
 import {View} from './view'
-import {fillInView, save} from './functions'
+import {findEventFromDiv, save} from './functions'
 import {isMobile} from './helperFunctions'
 import {toggleMenu} from './calHtml'
 
@@ -39,8 +39,7 @@ export function Event(time = "(No Time)", title = "(No Title)", notes = "(No Not
         e.addEventListener("click", event => {
             selectedEvent = e;
             if(!isMobile()){
-                fillInView();
-               showMenu(Menus.viewEvent);
+                showMenu(Menus.viewEvent);
             }
         });
         return e;
@@ -153,7 +152,8 @@ export const Menus = {
          * Fills in viewEvents content
          * @param {Event} event event to view
          */
-         (event) => {
+         () => {
+            let event = findEventFromDiv(selectedEvent);
             let title = event.title ? event.title : "(No Title)";
             let time  = event.time  ? event.time  : "(No Time)";
             let notes = event.notes ? event.notes : "(No Notes)";
@@ -179,6 +179,11 @@ export const Menus = {
                 View.eltObj("select", {}, {}, ...themes),
             ]
         }
+    },
+    Update: {
+            viewEvent: () => {
+                Menus.contentGenerators.viewEvent();
+            }
     }
 }
 
@@ -212,10 +217,11 @@ export const Themes = {
 export function showMenu(menu, ...menuParams){
     let menuToShow = null;
 
-    if(!Menus.hasOwnProperty(menu) && menu instanceof String)
+    if(!Menus.hasOwnProperty(menu) && typeof menu === "string")
         console.error('Menu could not be shown. Menu:', menu, 'could not be found.');
-    else if(menu instanceof String)
+    else if(typeof menu === "string"){
         menuToShow = Menus[menu];
+    }
     else{
         menuToShow = menu;
         menu = menu.id;
@@ -238,10 +244,10 @@ function addEventFormSubmit(event) {
         let ev = new Event(time, title, notes, selectedDateTD.id);
         let evElem = ev.toElement();
 
-        events.push(ev);
-        selectedDateTD.getElementsByClassName("eventContainer")[0].appendChild(evElem);
-        selectedEvent = evElem;
-        fillInView();
+        events.push(ev); //Load new events into events
+        selectedDateTD.getElementsByClassName("eventContainer")[0].appendChild(evElem);//Add event to calender in DOM
+        selectedEvent = evElem; //Update selected event
+        Menus.Update.viewEvent(); //Update viewEvent
         save(); //save the new event
     } catch (err) {
         let extraMsg = '';
@@ -280,7 +286,6 @@ function editFormSubmit(event) {
     View.toggleClass(editForm.parentElement.parentElement.parentElement, 'hidden', false);
     editForm.reset();
 
-    fillInView();
     showMenu(Menus.viewEvent);
     event.preventDefault();
 }
@@ -298,9 +303,11 @@ function deleteEvent(event = null, eventElt){
                 }
             });
         }
+
         // Remove event from events list
-        if(event !== null && events.indexOf(event)){
+        if(event !== null && events.indexOf(event) !== -1){
             events.splice(events.indexOf(event), 1);
+            console.log(events);
             save();
         }
         else{

@@ -3821,7 +3821,6 @@ function Event() {
         e.addEventListener("click", function (event) {
             selectedEvent = e;
             if (!(0, _helperFunctions.isMobile)()) {
-                (0, _functions.fillInView)();
                 showMenu(Menus.viewEvent);
             }
         });
@@ -3903,7 +3902,8 @@ var Menus = exports.Menus = {
          * Fills in viewEvents content
          * @param {Event} event event to view
          */
-        function viewEvent(event) {
+        function viewEvent() {
+            var event = (0, _functions.findEventFromDiv)(selectedEvent);
             var title = event.title ? event.title : "(No Title)";
             var time = event.time ? event.time : "(No Time)";
             var notes = event.notes ? event.notes : "(No Notes)";
@@ -3919,6 +3919,11 @@ var Menus = exports.Menus = {
                 themes.push(_view.View.eltObj("option"), { value: theme.name }, {}, '' + theme.name);
             }
             Menus.selectTheme.content = [_view.View.eltObj.apply(_view.View, ["select", {}, {}].concat(themes))];
+        }
+    },
+    Update: {
+        viewEvent: function viewEvent() {
+            Menus.contentGenerators.viewEvent();
         }
     }
 };
@@ -3949,7 +3954,9 @@ var Themes = exports.Themes = {
 
     var menuToShow = null;
 
-    if (!Menus.hasOwnProperty(menu) && menu instanceof String) console.error('Menu could not be shown. Menu:', menu, 'could not be found.');else if (menu instanceof String) menuToShow = Menus[menu];else {
+    if (!Menus.hasOwnProperty(menu) && typeof menu === "string") console.error('Menu could not be shown. Menu:', menu, 'could not be found.');else if (typeof menu === "string") {
+        menuToShow = Menus[menu];
+    } else {
         menuToShow = menu;
         menu = menu.id;
     }
@@ -3975,10 +3982,10 @@ function addEventFormSubmit(event) {
         var ev = new Event(time, title, notes, selectedDateTD.id);
         var evElem = ev.toElement();
 
-        events.push(ev);
-        selectedDateTD.getElementsByClassName("eventContainer")[0].appendChild(evElem);
-        selectedEvent = evElem;
-        (0, _functions.fillInView)();
+        events.push(ev); //Load new events into events
+        selectedDateTD.getElementsByClassName("eventContainer")[0].appendChild(evElem); //Add event to calender in DOM
+        selectedEvent = evElem; //Update selected event
+        Menus.Update.viewEvent(); //Update viewEvent
         (0, _functions.save)(); //save the new event
     } catch (err) {
         var extraMsg = '';
@@ -4016,7 +4023,6 @@ function editFormSubmit(event) {
     _view.View.toggleClass(editForm.parentElement.parentElement.parentElement, 'hidden', false);
     editForm.reset();
 
-    (0, _functions.fillInView)();
     showMenu(Menus.viewEvent);
     event.preventDefault();
 }
@@ -4037,9 +4043,11 @@ function deleteEvent() {
                 }
             });
         }
+
         // Remove event from events list
-        if (event !== null && events.indexOf(event)) {
+        if (event !== null && events.indexOf(event) !== -1) {
             events.splice(events.indexOf(event), 1);
+            console.log(events);
             (0, _functions.save)();
         } else {
             console.warn("Warning: event was not deleted. Event could not be found");
@@ -5603,7 +5611,7 @@ var _stringify2 = _interopRequireDefault(_stringify);
 
 exports.save = save;
 exports.load = load;
-exports.fillInView = fillInView;
+exports.findEventFromDiv = findEventFromDiv;
 
 var _objects = __webpack_require__(130);
 
@@ -5663,20 +5671,19 @@ function load() {
 }
 
 /**
- * Fills in view menu
- * @param {string} title title of event
- * @param {string} time time of event
- * @param {string} notes notes about event
+ * matches event to event div
+ * @param div {Element} Event div to be matched to an event
  */
-function fillInView() {
+function findEventFromDiv(div) {
+    var ev = null;
     //Match td to an event
     events.some(function (e) {
-        if (e.id == selectedEvent.id) {
-            //Gives view event object content
-            _objects.Menus.contentGenerators.viewEvent(e);
+        if (e.id == div.id) {
+            ev = e;
             return true;
         }
     });
+    if (ev !== null) return ev;else console.error(div, "could not be matched to an event. Make sure the div is an event div.");
 }
 
 /***/ }),
@@ -11022,7 +11029,7 @@ var stickerMap = new _map2.default();
 
 var dayEls = document.getElementsByClassName("day");
 
-var settings = {
+settings = {
     theme: _objects.Themes.cat,
     themeName: function themeName() {
         return settings.theme.class;

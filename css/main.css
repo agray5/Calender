@@ -1,3 +1,4 @@
+/* code adapted from https://madebymike.com.au/writing/accessible-contrast-with-less-and-sass/ */
 html, body {
   width: 100%;
   height: 100%;
@@ -13,7 +14,6 @@ body {
       -ms-user-select: none;
           user-select: none;
 }
-
 @media only screen and (min-width: 1024px) {
   body {
     line-height: 1.375em;
@@ -24,14 +24,12 @@ body {
   width: 100%;
   height: 100%;
 }
-
 #calender .header {
   width: 100%;
   height: 10%;
   position: relative;
   font-size: 50px;
 }
-
 #calender .header #calCurrentMonth {
   position: absolute;
   top: 50%;
@@ -40,16 +38,13 @@ body {
           transform: translate(-50%, -50%);
   font-family: "Milonga", cursive;
 }
-
 #calender .header #calCurrentMonth #month {
   margin-right: 10%;
 }
-
 #calender .table {
   height: 82%;
   overflow: hidden;
 }
-
 #calender .table div {
   width: 14.28571%;
   height: 15%;
@@ -58,7 +53,6 @@ body {
   overflow: hidden;
   text-align: center;
 }
-
 #calender .table div .eventContainer {
   width: 100%;
   margin-top: 30px;
@@ -67,7 +61,6 @@ body {
   overflow: auto;
   overflow-x: hidden;
 }
-
 #calender .table div .eventContainer .calEvent {
   border: solid 1px white;
   margin-bottom: 2%;
@@ -77,21 +70,17 @@ body {
   text-align: left;
   font-size: 12px;
 }
-
 #calender .table div .eventContainer .calEvent .calEventTime {
   font-weight: bold;
 }
-
 #calender .table div.weekday {
   height: 10%;
   text-align: center;
 }
-
 #calender .table div.weekday span {
   position: absolute;
   bottom: 0;
 }
-
 #calender .table div .calNumber {
   top: 10px;
   right: 10px;
@@ -102,24 +91,20 @@ body {
   text-align: right;
   margin-bottom: 3px;
 }
-
 #calender .footer {
   width: 100%;
   position: absolute;
   bottom: 0;
   height: 8%;
 }
-
 #calender .footer .credits {
   font-size: 10px;
   float: right;
 }
-
-#calender .footer .standOut {
-  padding: 2px 10px;
+#calender .footer .icon {
+  padding: 5px 10px;
   float: left;
 }
-
 #calender .footer svg {
   height: 50px;
   width: 50px;
@@ -137,7 +122,6 @@ body {
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.7);
 }
-
 .menu.box {
   z-index: 2;
   position: absolute;
@@ -153,17 +137,15 @@ body {
       -ms-flex-direction: column;
           flex-direction: column;
 }
-
 .menu.box .header {
-  width: 752px;
-  min-height: 8%;
+  width: 750px;
+  min-height: 30px;
   padding: 2px;
   border: 2px solid;
   text-align: center;
   border-radius: 25px 25px 0px 0px;
   color: white;
 }
-
 .menu.box .header .close {
   position: absolute;
   top: 0;
@@ -174,7 +156,6 @@ body {
   padding: 8px;
   /*/margin-bottom: 20px;*/
 }
-
 .menu.box .main {
   background-color: #ffaf35;
   width: 700px;
@@ -182,7 +163,6 @@ body {
   max-height: 600px;
   position: relative;
 }
-
 .menu.box .main .background {
   position: absolute;
   top: 50%;
@@ -192,28 +172,23 @@ body {
   width: 100%;
   height: 100%;
 }
-
 .menu.box .main .content {
   z-index: 3;
   position: relative;
   width: 100%;
   height: 100%;
 }
-
 .menu.box .main .content ul {
   list-style: none;
 }
-
 .menu.box .main .content label,
 .menu.box .main .content textarea,
 .menu.box .main .content input {
   margin-top: 20px;
 }
-
 .menu.box .main .content textarea {
   max-height: 60px;
 }
-
 .menu.box .main .content .credits.container {
   position: absolute;
   bottom: 0;
@@ -222,15 +197,12 @@ body {
   color: gray;
   font-size: 9px;
 }
-
 .menu.box .main .content .credits.container a {
   color: gray;
 }
-
 .menu.box .main .content .btn-container {
   position: relative;
 }
-
 .menu.box .main .content .btn-container .btn, .menu.box .main .content .btn-container button {
   position: relative;
   float: left;
@@ -250,7 +222,7 @@ textarea {
   border: solid 1px #E5E5E5;
   outline: 0;
   font: normal 13px/100% Verdana, Tahoma, sans-serif;
-  background: linear-gradient(to bottom, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+  background: linear-gradient(to bottom, #ffffff, #eeeeee 1px, #ffffff 25px);
   color: black;
   -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
           box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
@@ -284,7 +256,7 @@ label {
 .stitched {
   padding: 15px;
   margin: 10px;
-  background: url("img/cloth.jpg");
+  background: url("../img/cloth.jpg");
   color: chocolate;
   font-size: 21px;
   font-weight: bold;
@@ -302,14 +274,13 @@ label {
 
 /* THEMES */
 .theme-oranges .header {
-  background: url("img/oranges.jpg") 100px/100px repeat;
+  background: url("../img/oranges.jpg") 100px/100px repeat;
   background-size: 200px 200px;
 }
-
 .theme-oranges.menu .background:before {
   z-index: -2;
   content: "";
-  background: url("img/oranges.jpg") 100px/100px repeat;
+  background: url("../img/oranges.jpg") 100px/100px repeat;
   position: absolute;
   height: 100%;
   top: 0;
@@ -318,7 +289,6 @@ label {
   -webkit-filter: blur(1px);
           filter: blur(1px);
 }
-
 .theme-oranges.menu .background:after {
   content: "";
   background: rgba(230, 240, 255, 0.4);
@@ -330,33 +300,30 @@ label {
   width: 100%;
   height: 100%;
 }
-
 .theme-oranges.menu .main {
-  background: url("img/oranges.jpg") 100px/100px repeat;
+  background: url("../img/oranges.jpg") 100px/100px repeat;
   border: 30px solid;
-  -o-border-image: url("img/goldFrame.png") 55 55 50 50 stretch;
-     border-image: url("img/goldFrame.png") 55 55 50 50 fill stretch;
+  -o-border-image: url("../img/goldFrame.png") 55 55 50 50 stretch;
+     border-image: url("../img/goldFrame.png") 55 55 50 50 fill stretch;
   border-radius: "";
 }
 
 .theme-cats {
   /* https://coolors.co/f2eeed-efdfe0-bbcbcb-9590a8-634b66 */
-  /*
+    /*
 border-style: solid;
 border-width: 42px 42px 47px 46px;
 border-image: url(paw-print-frame.png) 89 108 100 113 fill repeat;
      */
 }
-
 .theme-cats .header {
-  background: url("img/catTile.png") 100px/100px repeat;
+  background: url("../img/catTile.png") 100px/100px repeat;
   background-size: 200px 200px;
 }
-
 .theme-cats.menu .background:before {
   z-index: -2;
   content: "";
-  background: url("img/catTile.png") 100px/100px repeat;
+  background: url("../img/catTile.png") 100px/100px repeat;
   position: absolute;
   height: 100%;
   top: 0;
@@ -365,7 +332,6 @@ border-image: url(paw-print-frame.png) 89 108 100 113 fill repeat;
   -webkit-filter: blur(1px);
           filter: blur(1px);
 }
-
 .theme-cats.menu .background:after {
   content: "";
   background: rgba(230, 240, 255, 0.4);
@@ -377,73 +343,59 @@ border-image: url(paw-print-frame.png) 89 108 100 113 fill repeat;
   width: 100%;
   height: 100%;
 }
-
 .theme-cats.menu .main {
-  background: url("img/catTile.png") 100px/100px repeat;
+  background: url("../img/catTile.png") 100px/100px repeat;
   border: 30px solid;
-  -o-border-image: url("img/pinkFrame.png") 55 55 50 50 stretch;
-     border-image: url("img/pinkFrame.png") 55 55 50 50 fill stretch;
+  -o-border-image: url("../img/pinkFrame.png") 55 55 50 50 stretch;
+     border-image: url("../img/pinkFrame.png") 55 55 50 50 fill stretch;
   border-radius: "";
 }
-
 .theme-cats .day {
   background-color: #efdfe0;
 }
-
 .theme-cats .weekday {
   background-color: #F0F3F8;
 }
-
 .theme-cats .nonday {
   background-color: #B8CBB4;
 }
-
 .theme-cats .calEvent {
   background-color: #F0F3F8;
   border-color: white;
 }
-
 .theme-cats .cell {
   outline: 2px solid #F0F3F8;
 }
-
 .theme-cats .menu.header {
-  background: -webkit-gradient(linear, left top, left bottom, from(#65885e), color-stop(50%, #B8CBB4), color-stop(51%, #96bf8d), to(#d7dcd6));
-  background: linear-gradient(to bottom, #65885e 0%, #B8CBB4 50%, #96bf8d 51%, #d7dcd6 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#65885e), color-stop(50%, #b8cbb4), color-stop(51%, #96bf8d), to(#d7dcd6));
+  background: linear-gradient(to bottom, #65885e 0%, #b8cbb4 50%, #96bf8d 51%, #d7dcd6 100%);
   border-color: #96bf8d;
 }
-
 .theme-cats .menu.header .close {
-  background: -webkit-gradient(linear, left top, left bottom, from(white), color-stop(50%, #efdfe0), color-stop(51%, #f2c3c6), to(#f7f9fb));
-  background: linear-gradient(to bottom, white 0%, #efdfe0 50%, #f2c3c6 51%, #f7f9fb 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(50%, #efdfe0), color-stop(51%, #f2c3c6), to(#f7f9fb));
+  background: linear-gradient(to bottom, #ffffff 0%, #efdfe0 50%, #f2c3c6 51%, #f7f9fb 100%);
   border-color: #f2c3c6;
 }
-
 .theme-cats .menu.header .close:hover {
   -webkit-box-shadow: #f2c3c6 0px 0px 8px;
           box-shadow: #f2c3c6 0px 0px 8px;
 }
-
 .theme-cats .menu.btn-container button {
-  background: -webkit-gradient(linear, left top, left bottom, from(#65885e), color-stop(50%, #B8CBB4), color-stop(51%, #96bf8d), to(#d7dcd6));
-  background: linear-gradient(to bottom, #65885e 0%, #B8CBB4 50%, #96bf8d 51%, #d7dcd6 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#65885e), color-stop(50%, #b8cbb4), color-stop(51%, #96bf8d), to(#d7dcd6));
+  background: linear-gradient(to bottom, #65885e 0%, #b8cbb4 50%, #96bf8d 51%, #d7dcd6 100%);
 }
-
 .theme-cats textarea:hover, .theme-cats textarea :focus, .theme-cats input:hover, .theme-cats input :focus {
   -webkit-box-shadow: 0px 0px 8px rgba(240, 243, 248, 0.3);
           box-shadow: 0px 0px 8px rgba(240, 243, 248, 0.3);
 }
-
 .theme-cats .footer {
   background: #F0F3F8;
 }
-
 .theme-cats .footer svg {
   fill: #debdbf;
 }
-
 .theme-cats .footer svg:hover {
-  fill: #B8CBB4;
+  fill: #9bb696;
 }
 
 /* Class */

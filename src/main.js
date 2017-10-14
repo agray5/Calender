@@ -8,13 +8,12 @@ let stickerMap = new Map();
 
 let dayEls = document.getElementsByClassName("day");
 
-let settings = {
+settings = {
     theme: Themes.cat,
     themeName: () => {
         return settings.theme.class;
     }
 }
-
 
 for (var i = 0; i < dayEls.length; i++) {
     dayEls[i].addEventListener('click', function (event) {

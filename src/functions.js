@@ -51,21 +51,24 @@ export function load() {
 
     //load saved theme
     settings.theme = localStorage.getItem('Theme') ? Themes[localStorage.getItem('Theme')] : settings.theme;
+
 }
 
 /**
- * Fills in view menu
- * @param {string} title title of event
- * @param {string} time time of event
- * @param {string} notes notes about event
+ * matches event to event div
+ * @param div {Element} Event div to be matched to an event
  */
-export function fillInView() {
+export function findEventFromDiv(div) {
+    let ev = null;
     //Match td to an event
     events.some(e => {
-        if (e.id == selectedEvent.id) {
-            //Gives view event object content
-            Menus.contentGenerators.viewEvent(e);
+        if (e.id == div.id) {
+            ev = e;
             return true;
         }
     });
+    if(ev !== null)
+        return ev;
+    else
+        console.error(div, "could not be matched to an event. Make sure the div is an event div.");
 }

@@ -304,14 +304,15 @@ $breakpoints: (
         $oppsite-primary: opposite-lightness($primary);
 
         & svg{
-            fill: darken($primary, 10);
+
+            fill: contrast($primary, $seconday);
 
             &:hover{
-                fill: $tertiary;
+                fill: contrast($tertiary, $seconday);
             }
         }
 
-        & .standOut{
+        & .icon{
             //background: linear-gradient(to right, rgba(complement($primary),0.5) 0,
             //rgba(invert($primary),0.3) 50%,
             //rgba(complement($primary),0) 100%);
