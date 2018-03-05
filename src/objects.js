@@ -141,6 +141,7 @@ export const Menus = {
 
     selectTheme: {
         id: "selectTheme",
+        content: [],
         header: {
             title: "Select Theme"
         }
@@ -319,3 +320,10 @@ function deleteEvent(event = null, eventElt){
         View.toggleClass(".menu.wrapper", 'hidden', true);
     }
 }
+
+
+
+$("#customizeIcon").click(() => {
+  console.log("click");
+  showMenu(Menus.selectTheme);
+});

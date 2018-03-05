@@ -3891,6 +3891,7 @@ var Menus = exports.Menus = {
 
     selectTheme: {
         id: "selectTheme",
+        content: [],
         header: {
             title: "Select Theme"
         }
@@ -4058,6 +4059,11 @@ function deleteEvent() {
         _view.View.toggleClass(".menu.wrapper", 'hidden', true);
     }
 }
+
+$("#customizeIcon").click(function () {
+    console.log("click");
+    showMenu(Menus.selectTheme);
+});
 
 /***/ }),
 /* 131 */
