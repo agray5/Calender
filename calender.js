@@ -3664,6 +3664,7 @@ exports.bindEnd = bindEnd;
 exports.bindFromN = bindFromN;
 exports.bindIfNull = bindIfNull;
 exports.bindIfBoundArgs = bindIfBoundArgs;
+exports.isLeapYear = isLeapYear;
 exports.isMobile = isMobile;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -5262,9 +5263,8 @@ function generateCalHtml(parent) {
         id: "year"
     }, '' + year));
     document.querySelector("#calender .header").appendChild(th);
-
     if (firstDay.getMonth() == 1) //february
-        if (isLeapYear(firstDay.getFullYear())) totalDays = 29;
+        if ((0, _helperFunctions.isLeapYear)(firstDay.getFullYear())) totalDays = 29;
 
     for (var day = 0; day < 7; day++) {
         var td = _view.View.elt("div", {

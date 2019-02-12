@@ -1,5 +1,5 @@
 import {View} from './view'
-import {isMobile, forceArray} from './helperFunctions'
+import {isMobile, forceArray, isLeapYear} from './helperFunctions'
 import {Menus, Themes, showMenu} from './objects'
 
 export function generateCalHtml(parent) {
@@ -29,7 +29,6 @@ export function generateCalHtml(parent) {
         id: "year"
     }, `${year}`));
     document.querySelector("#calender .header").appendChild(th);
-
     if (firstDay.getMonth() == 1) //february
         if (isLeapYear(firstDay.getFullYear()))
             totalDays = 29;
